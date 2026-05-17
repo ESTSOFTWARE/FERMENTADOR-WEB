@@ -31,9 +31,11 @@ export const useProfileViewModel = () => {
 
   // ── Avatar ─────────────────────────────────────────────────────────────────
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
-    localStorage.getItem('profile_image') ?? null
+    user?.profile_image ?? localStorage.getItem('profile_image') ?? null
   )
-  const [pickingAvatar, setPickingAvatar] = useState(false)
+  const [pickingAvatar,   setPickingAvatar]   = useState(false)
+  const [loadingImage,    setLoadingImage]    = useState(false)
+  const [errorImage,      setErrorImage]      = useState<string | null>(null)
 
   // ── Activación de circuito ─────────────────────────────────────────────────
   // Si el usuario ya tiene circuito, no necesita el formulario de activación
@@ -136,7 +138,24 @@ export const useProfileViewModel = () => {
     setSelectedAvatar(path)
     localStorage.setItem('profile_image', path)
     setPickingAvatar(false)
-    // TODO: PUT /users/{id} con { profile_image: path }
+  }, [])
+
+  const handleUploadImage = useCallback(async (file: File) => {
+    setLoadingImage(true); setErrorImage(null)
+    try {
+      const { profile_image } = await repository.uploadProfileImage(file)
+      setSelectedAvatar(profile_image)
+      localStorage.setItem('profile_image', profile_image)
+      const stored = localStorage.getItem('user_data')
+      if (stored) {
+        localStorage.setItem('user_data', JSON.stringify({ ...JSON.parse(stored), profile_image }))
+      }
+      notifyUserUpdated()
+    } catch (err) {
+      setErrorImage(err instanceof Error ? err.message : 'Error al subir la imagen.')
+    } finally {
+      setLoadingImage(false)
+    }
   }, [])
 
   const handleActivateCircuit = useCallback(async () => {
@@ -188,12 +207,14 @@ export const useProfileViewModel = () => {
     loadingInfo,
     loadingPw,
     loadingActivation,
+    loadingImage,
     successInfo,
     successPw,
     successActivation,
     errorInfo,
     errorPw,
     errorActivation,
+    errorImage,
     // computed
     pwMismatch,
     pwValid,
@@ -209,6 +230,7 @@ export const useProfileViewModel = () => {
     handleCancelInfo,
     handleSavePw,
     handleSelectAvatar,
+    handleUploadImage,
     handleActivateCircuit,
   }
 }
