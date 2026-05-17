@@ -12,6 +12,10 @@ export class ProfileRepositoryImpl implements ProfileRepository {
     return profileApi.getUser(userId)
   }
 
+  async uploadProfileImage(file: File): Promise<{ profile_image: string }> {
+    return profileApi.uploadProfileImage(file)
+  }
+
   async updateUser(userId: number, data: UpdateUserRequest): Promise<UserProfile> {
     return profileApi.updateUser(userId, data)
   }
