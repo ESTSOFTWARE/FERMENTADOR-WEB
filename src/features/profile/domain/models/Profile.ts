@@ -4,6 +4,8 @@ export interface UpdateUserRequest {
   email?:         string
   password?:      string
   profile_image?: string
+  dial_code?:     string
+  phone_number?:  string
 }
 
 export interface ActivateCircuitRequest {
@@ -27,4 +29,6 @@ export interface UserProfile {
   created_by:    number | null
   created_at:    string | null
   profile_image: string | null
+  dial_code:     string | null
+  phone_number:  string | null
 }

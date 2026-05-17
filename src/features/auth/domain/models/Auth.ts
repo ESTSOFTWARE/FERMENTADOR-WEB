@@ -17,14 +17,16 @@ export interface RefreshTokenRequest {
 
 // ── Response types ────────────────────────────────────────────────────────────
 export interface AuthUser {
-  id:            number
-  name:          string
-  last_name:     string
-  email:         string
-  role:          string
-  circuit_id:    number | null
-  profile_image: string | null
+  id:              number
+  name:            string
+  last_name:       string
+  email:           string
+  role:            string
+  circuit_id:      number | null
+  profile_image:   string | null
   activation_code: string | null
+  dial_code?:      string
+  phone_number?:   string
 }
 
 export interface TokenResponse {

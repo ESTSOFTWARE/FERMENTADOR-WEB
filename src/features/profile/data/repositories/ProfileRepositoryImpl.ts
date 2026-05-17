@@ -8,6 +8,10 @@ import type {
 } from '../../domain/models/Profile'
 
 export class ProfileRepositoryImpl implements ProfileRepository {
+  async getUser(userId: number): Promise<UserProfile> {
+    return profileApi.getUser(userId)
+  }
+
   async updateUser(userId: number, data: UpdateUserRequest): Promise<UserProfile> {
     return profileApi.updateUser(userId, data)
   }
