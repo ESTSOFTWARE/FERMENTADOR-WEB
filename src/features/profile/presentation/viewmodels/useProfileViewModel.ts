@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { ProfileRepositoryImpl } from '../../data/repositories/ProfileRepositoryImpl'
 import { notifyUserUpdated, useUserAuth } from '../../../../core/hooks/userAuth'
 
 const repository = new ProfileRepositoryImpl()
 
-export type InfoForm = { name: string; last_name: string; email: string }
+export type InfoForm = { name: string; last_name: string; email: string; dial_code: string; phone_number: string }
 export type PasswordForm = { current: string; next: string; confirm: string }
 
 export const useProfileViewModel = () => {
@@ -12,9 +12,11 @@ export const useProfileViewModel = () => {
 
   // ── Info personal ──────────────────────────────────────────────────────────
   const [infoForm, setInfoForm] = useState<InfoForm>({
-    name: user?.name ?? '',
-    last_name: user?.last_name ?? '',
-    email: user?.email ?? '',
+    name:         user?.name         ?? '',
+    last_name:    user?.last_name    ?? '',
+    email:        user?.email        ?? '',
+    dial_code:    user?.dial_code    ?? '+52',
+    phone_number: user?.phone_number ?? '',
   })
   const [editingInfo, setEditingInfo] = useState(false)
   const [loadingInfo, setLoadingInfo] = useState(false)
@@ -41,10 +43,35 @@ export const useProfileViewModel = () => {
   const [successActivation, setSuccessActivation] = useState(false)
   const [errorActivation, setErrorActivation] = useState<string | null>(null)
 
+  // ── Cargar teléfono fresco desde el backend al montar ──────────────────────
+  useEffect(() => {
+    if (!user?.id) return
+    repository.getUser(user.id).then(profile => {
+      setInfoForm(prev => ({
+        ...prev,
+        dial_code:    profile.dial_code    ?? prev.dial_code,
+        phone_number: profile.phone_number ?? prev.phone_number,
+      }))
+      const stored = localStorage.getItem('user_data')
+      if (stored) {
+        localStorage.setItem('user_data', JSON.stringify({
+          ...JSON.parse(stored),
+          dial_code:    profile.dial_code,
+          phone_number: profile.phone_number,
+        }))
+      }
+    }).catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
   // ── Computed ───────────────────────────────────────────────────────────────
   const pwMismatch = pwForm.confirm !== '' && pwForm.next !== pwForm.confirm
   const pwValid = !!(pwForm.current && pwForm.next && pwForm.next === pwForm.confirm && pwForm.next.length >= 6)
-  const infoChanged = infoForm.name !== (user?.name ?? '') || infoForm.last_name !== (user?.last_name ?? '') || infoForm.email !== (user?.email ?? '')
+  const infoChanged =
+    infoForm.name         !== (user?.name      ?? '') ||
+    infoForm.last_name    !== (user?.last_name ?? '') ||
+    infoForm.email        !== (user?.email     ?? '') ||
+    infoForm.phone_number !== ''
   const hasCircuit = circuitId !== null   // ← controla si se muestra el formulario
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -56,18 +83,22 @@ export const useProfileViewModel = () => {
     setLoadingInfo(true); setErrorInfo(null)
     try {
       await repository.updateUser(user.id, {
-        name: infoForm.name,
-        last_name: infoForm.last_name,
-        email: infoForm.email,
+        name:         infoForm.name,
+        last_name:    infoForm.last_name,
+        email:        infoForm.email,
+        dial_code:    infoForm.dial_code,
+        phone_number: infoForm.phone_number,
       })
       // Actualizar user_data en localStorage
       const stored = localStorage.getItem('user_data')
       if (stored) {
         localStorage.setItem('user_data', JSON.stringify({
           ...JSON.parse(stored),
-          name: infoForm.name,
-          last_name: infoForm.last_name,
-          email: infoForm.email,
+          name:         infoForm.name,
+          last_name:    infoForm.last_name,
+          email:        infoForm.email,
+          dial_code:    infoForm.dial_code,
+          phone_number: infoForm.phone_number,
         }))
       }
       notifyUserUpdated()
@@ -82,7 +113,7 @@ export const useProfileViewModel = () => {
 
   const handleCancelInfo = useCallback(() => {
     setEditingInfo(false)
-    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '' })
+    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '' })
     setErrorInfo(null)
   }, [user])
 

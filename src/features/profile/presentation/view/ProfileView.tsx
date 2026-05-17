@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel'
 import { avatar as AVATARS } from '../../../../core/avatars/avatars'
 import { pageVariants, sectionVariants, gridVariants } from '../../../../shared/animations/variants'
+import { PhoneInput } from '../components/PhoneInput'
 
 const STYLES = `
   .profile-input:focus {
@@ -184,6 +185,16 @@ const ProfileView = () => {
               <div>
                 <label style={labelStyle}>Correo electrónico</label>
                 <input className="profile-input" type="email" value={infoForm.email} onChange={e => setInfo('email', e.target.value)} disabled={!editingInfo} style={editingInfo ? inputStyle : readonlyStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Teléfono</label>
+                <PhoneInput
+                  dialCode={infoForm.dial_code}
+                  phoneNumber={infoForm.phone_number}
+                  onChange={(dc, pn) => { setInfo('dial_code', dc); setInfo('phone_number', pn) }}
+                  disabled={!editingInfo}
+                />
+                <p style={{ color: '#3F3F46', fontSize: 10, marginTop: 6 }}>10 dígitos sin espacios</p>
               </div>
 
               {editingInfo && (

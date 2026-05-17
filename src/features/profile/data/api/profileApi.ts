@@ -24,6 +24,11 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export const profileApi = {
+  getUser: (userId: number): Promise<UserProfile> =>
+    fetch(`${BASE_URL}/users/${userId}`, {
+      headers: authHeaders(),
+    }).then(handleResponse<UserProfile>),
+
   updateUser: (userId: number, data: UpdateUserRequest): Promise<UserProfile> =>
     fetch(`${BASE_URL}/users/${userId}`, {
       method:  'PUT',
