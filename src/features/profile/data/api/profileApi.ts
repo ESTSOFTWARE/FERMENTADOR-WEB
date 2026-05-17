@@ -1,5 +1,7 @@
 import type {
   UpdateUserRequest,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   ActivateCircuitRequest,
   ActivateCircuitResponse,
   UserProfile,
@@ -52,6 +54,13 @@ export const profileApi = {
         throw err
       })
   },
+
+  changePassword: (data: ChangePasswordRequest): Promise<ChangePasswordResponse> =>
+    fetch(`${BASE_URL}/users/me/change-password`, {
+      method:  'POST',
+      headers: authHeaders(),
+      body:    JSON.stringify(data),
+    }).then(handleResponse<ChangePasswordResponse>),
 
   updateUser: (userId: number, data: UpdateUserRequest): Promise<UserProfile> =>
     fetch(`${BASE_URL}/users/${userId}`, {
