@@ -289,8 +289,8 @@ const ProfileView = () => {
                       style={{ ...inputStyle, paddingRight: 40 }} />
                     <EyeBtn show={showNext} onToggle={() => setShowNext(p => !p)} />
                   </div>
-                  {pwForm.next !== '' && pwForm.next.length < 6 && (
-                    <p style={{ color: '#F59E0B', fontSize: 11, margin: '6px 0 0 2px' }}>Mínimo 6 caracteres</p>
+                  {pwForm.next !== '' && pwForm.next.length < 8 && (
+                    <p style={{ color: '#F59E0B', fontSize: 11, margin: '6px 0 0 2px' }}>Mínimo 8 caracteres</p>
                   )}
                 </div>
                 <div>

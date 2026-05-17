@@ -68,7 +68,7 @@ export const useProfileViewModel = () => {
 
   // ── Computed ───────────────────────────────────────────────────────────────
   const pwMismatch = pwForm.confirm !== '' && pwForm.next !== pwForm.confirm
-  const pwValid = !!(pwForm.current && pwForm.next && pwForm.next === pwForm.confirm && pwForm.next.length >= 6)
+  const pwValid = !!(pwForm.current && pwForm.next && pwForm.next === pwForm.confirm && pwForm.next.length >= 8)
   const infoChanged =
     infoForm.name         !== (user?.name      ?? '') ||
     infoForm.last_name    !== (user?.last_name ?? '') ||
@@ -120,19 +120,23 @@ export const useProfileViewModel = () => {
   }, [user])
 
   const handleSavePw = useCallback(async () => {
-    if (!pwValid || !user) return
+    if (!pwValid) return
     setLoadingPw(true); setErrorPw(null)
     try {
-      // TODO: conectar endpoint de cambio de contraseña cuando esté disponible
-      await repository.updateUser(user.id, { password: pwForm.next })
-      setSuccessPw(true); setPwForm({ current: '', next: '', confirm: '' })
+      await repository.changePassword({
+        current_password: pwForm.current,
+        new_password:     pwForm.next,
+        confirm_password: pwForm.confirm,
+      })
+      setSuccessPw(true)
+      setPwForm({ current: '', next: '', confirm: '' })
       setTimeout(() => setSuccessPw(false), 3000)
     } catch (err) {
       setErrorPw(err instanceof Error ? err.message : 'Error al cambiar la contraseña.')
     } finally {
       setLoadingPw(false)
     }
-  }, [pwValid, pwForm, user])
+  }, [pwValid, pwForm])
 
   const handleSelectAvatar = useCallback((path: string) => {
     setSelectedAvatar(path)
