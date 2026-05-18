@@ -37,7 +37,7 @@ const Flash = ({ msg, ok }: { msg: string; ok: boolean }) => (
 
 const ProfilePanel = () => {
   const {
-    user, infoForm, pwForm, selectedAvatar,
+    user, infoForm, pwForm,
     circuitId, activationCode, hasCircuit,
     editingInfo, loadingInfo, loadingPw, loadingActivation, loadingImage,
     successInfo, successPw, successActivation,

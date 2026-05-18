@@ -118,8 +118,7 @@ const AnunciosPanel = () => {
   }
 
   const confirmDelete = (item: Announcement) => {
-    let toastId: string
-    toastId = sileo.action({
+    const toastId = sileo.action({
       title: 'Eliminar comunicado',
       description: (
         <div className="flex flex-col gap-2">

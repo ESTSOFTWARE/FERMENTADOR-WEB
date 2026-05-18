@@ -14,6 +14,18 @@ const getExpMs = (token: string): number | null => {
 }
 
 export const useTokenRefresh = (logout: () => void) => {
+  const doRefresh = useCallback(async (refreshToken: string) => {
+    try {
+      const { access_token } = await authApi.refreshToken({ refresh_token: refreshToken })
+      localStorage.setItem('access_token', access_token)
+      notifyUserUpdated()
+      scheduleRefresh()
+    } catch {
+      logout()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logout])
+
   const scheduleRefresh = useCallback(() => {
     const accessToken  = localStorage.getItem('access_token')
     const refreshToken = localStorage.getItem('refresh_token')
@@ -25,25 +37,13 @@ export const useTokenRefresh = (logout: () => void) => {
     const delay = expMs - Date.now() - REFRESH_BUFFER_MS
 
     if (delay <= 0) {
-      // Token ya expiró o está a punto de hacerlo — refrescar ahora
       doRefresh(refreshToken)
       return
     }
 
     const timer = setTimeout(() => doRefresh(refreshToken), delay)
     return () => clearTimeout(timer)
-  }, [])
-
-  const doRefresh = async (refreshToken: string) => {
-    try {
-      const { access_token } = await authApi.refreshToken({ refresh_token: refreshToken })
-      localStorage.setItem('access_token', access_token)
-      notifyUserUpdated()
-      scheduleRefresh() // reprogramar para el nuevo token
-    } catch {
-      logout()
-    }
-  }
+  }, [doRefresh])
 
   useEffect(() => {
     const cleanup = scheduleRefresh()
