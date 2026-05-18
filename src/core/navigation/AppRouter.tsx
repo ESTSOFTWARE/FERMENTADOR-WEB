@@ -27,6 +27,7 @@ import FermentationReportsView from '../../features/fermentation-reports/present
 import AddUserView from '../../features/users/presentation/view/AddUserView'
 import ManageUsersView from '../../features/users/presentation/view/ManageUsersView'
 import ProfileView from '../../features/profile/presentation/view/ProfileView'
+import AnnouncementsView from '../../features/announcements/presentation/view/AnnouncementsView'
 import SupportView from '../../features/support/presentation/view/SupportView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationContext'
 import PrivateRoute from './PrivateRoute'
@@ -64,6 +65,7 @@ const AppRouter = () => {
             <Route path="/efficiency-calculator" element={<EfficiencyCalculatorView />} />
             <Route path="/fermentation-reports"  element={<FermentationReportsView />} />
             <Route path="/chat"                  element={<ChatView />} />
+            <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
 
             {/* Solo admin y profesor */}

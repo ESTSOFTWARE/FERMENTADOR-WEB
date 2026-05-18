@@ -46,11 +46,21 @@ const mock = (name: string, email: string, message: string, status: TicketStatus
 }
 
 const MOCK_TICKETS: SupportTicket[] = [
-  mock('Luis Hernández', 'luis@cafetero.mx',  'No puedo iniciar sesión, me dice que las credenciales son incorrectas.', 'pending',  4),
-  mock('Ana García',     'ana@finca.com',     'Al subir el reporte de fermentación me aparece un error 500.',           'pending',  17),
-  mock('Roberto Jiménez','roberto@coop.org',  '¿Cómo configuro los umbrales de pH en los sensores?',                   'pending',  45),
-  mock('María López',    'maria@cafegourmet.mx','El código de activación que me dieron no funciona.',                  'answered', 120),
-  mock('Carlos Méndez',  'carlos@finca.mx',   'No veo la sección de gráficas en mi cuenta de estudiante.',             'answered', 300),
+  mock('Luis Hernández',   'luis@cafetero.mx',     'No puedo iniciar sesión, me dice que las credenciales son incorrectas.',    'pending',  4),
+  mock('Ana García',       'ana@finca.com',         'Al subir el reporte de fermentación me aparece un error 500.',              'pending',  17),
+  mock('Roberto Jiménez',  'roberto@coop.org',      '¿Cómo configuro los umbrales de pH en los sensores?',                      'pending',  45),
+  mock('María López',      'maria@cafegourmet.mx',  'El código de activación que me dieron no funciona.',                       'answered', 120),
+  mock('Carlos Méndez',    'carlos@finca.mx',       'No veo la sección de gráficas en mi cuenta de estudiante.',                'answered', 300),
+  mock('Sofía Ramírez',    'sofia@coop.com',        'La app se cierra sola al intentar ver los datos históricos.',               'pending',  90),
+  mock('Jorge Villanueva', 'jorge@hacienda.mx',     'El sensor de temperatura no aparece en el dashboard.',                     'answered', 480),
+  mock('Valentina Cruz',   'vcruz@fermenta.org',    '¿Cómo exporto los reportes en PDF?',                                       'pending',  200),
+  mock('Diego Salazar',    'diego@cafetalen.mx',    'Tengo problemas para conectar el fermentador al WiFi.',                    'answered', 600),
+  mock('Gabriela Moreno',  'gmoreno@finca.com',     'El gráfico de pH no actualiza en tiempo real.',                            'pending',  35),
+  mock('Andrés Fuentes',   'afuentes@coop.mx',      'Olvidé mi contraseña y el correo de recuperación no llega.',               'pending',  10),
+  mock('Lucía Espinoza',   'lucia@labcafe.mx',      '¿Es posible tener más de un fermentador en la misma cuenta?',              'answered', 720),
+  mock('Héctor Paredes',   'hparedes@cafetos.mx',   'No entiendo cómo interpretar los datos de densidad.',                      'pending',  55),
+  mock('Natalia Vega',     'nvega@fincapura.com',   'El sistema me marca error al intentar cambiar el nombre del fermentador.', 'answered', 980),
+  mock('Emilio Castillo',  'ecastillo@coop.org',    '¿Cuándo estará disponible la app móvil?',                                  'pending',  15),
 ]
 
 export const useSupportStore = create<SupportStore>((set) => ({
