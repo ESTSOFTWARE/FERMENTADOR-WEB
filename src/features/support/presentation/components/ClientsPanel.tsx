@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { sileo } from 'sileo'
 import { useSupportClientsStore, type SupportClient } from '../../../../core/store/useSupportClientsStore'
 import { useSupportStore } from '../../../../core/store/useSupportStore'
 import { cn } from '../../../../lib/utils'
+import PaginationBar from '../../../../shared/components/PaginationBar'
+
+const PAGE_SIZE = 10
 
 const roleLabel: Record<string, string> = {
   admin: 'Admin', profesor: 'Profesor', estudiante: 'Estudiante', soporte: 'Soporte',
@@ -17,10 +21,13 @@ const ClientsPanel = () => {
   const [selected, setSelected] = useState<SupportClient | null>(null)
   const [search, setSearch]     = useState('')
   const [copied, setCopied]     = useState(false)
+  const [page, setPage]         = useState(1)
 
-  const filtered = clients.filter(c =>
+  const filtered   = clients.filter(c =>
     `${c.name} ${c.last_name} ${c.email}`.toLowerCase().includes(search.toLowerCase())
   )
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const paged      = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   const clientTickets    = selected ? tickets.filter(t => t.email === selected.email) : []
   const pendingTickets   = clientTickets.filter(t => t.status === 'pending').length
@@ -50,7 +57,7 @@ const ClientsPanel = () => {
     <div className="relative h-full flex flex-col overflow-hidden">
 
       {/* ── Header ── */}
-      <div className="flex-shrink-0 px-8 pt-6 pb-4 border-b border-neutral-900 flex items-center gap-4">
+      <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Usuarios registrados</h2>
           <div className="flex items-center gap-4 mt-1.5">
@@ -66,19 +73,27 @@ const ClientsPanel = () => {
           <svg className="w-3.5 h-3.5 text-neutral-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar usuario..."
+          <input value={search} onChange={e => { setSearch(e.target.value); setPage(1) }} placeholder="Buscar usuario..."
             className="bg-transparent text-xs text-white placeholder:text-neutral-600 outline-none w-44" />
         </div>
       </div>
 
       {/* ── Table ── */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-6 py-5">
+        <div className="border border-neutral-800/60 rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="sticky top-0 z-10 bg-[#0A0A0B] border-b border-neutral-900">
-              {['Usuario', 'Correo', 'Rol', 'Estado', 'Código', ''].map(h => (
-                <th key={h} className="px-8 py-2.5 text-left text-[11px] font-semibold text-neutral-600 uppercase tracking-wider">
-                  {h}
+            <tr className="bg-[#0d0d0e] border-b border-neutral-800/60">
+              {[
+                { label: 'Usuario', accent: false },
+                { label: 'Correo',  accent: false },
+                { label: 'Rol',     accent: false },
+                { label: 'Estado',  accent: true  },
+                { label: 'Código',  accent: true  },
+                { label: '',        accent: false },
+              ].map(h => (
+                <th key={h.label} className={cn('px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider', h.accent ? 'text-green-500' : 'text-neutral-600')}>
+                  {h.label}
                 </th>
               ))}
             </tr>
@@ -87,7 +102,7 @@ const ClientsPanel = () => {
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={6}>
-                  <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+                  <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                     <svg className="w-10 h-10 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
@@ -95,37 +110,44 @@ const ClientsPanel = () => {
                   </div>
                 </td>
               </tr>
-            ) : filtered.map(client => (
-              <tr key={client.id} className="border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors group">
-                <td className="px-8 py-4">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0 text-xs font-semibold text-neutral-400">
+            ) : paged.map(client => (
+              <tr key={client.id} className="border-b border-neutral-900/60 hover:bg-white/[0.02] transition-colors group">
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0 text-xs font-bold text-neutral-300">
                       {client.name[0]}{client.last_name[0]}
                     </div>
-                    <span className="text-sm text-white font-medium truncate">{client.name} {client.last_name}</span>
+                    <span className="text-sm text-white font-semibold truncate">{client.name} {client.last_name}</span>
                   </div>
                 </td>
-                <td className="px-8 py-4">
-                  <span className="text-sm text-neutral-400 truncate block">{client.email}</span>
+                <td className="px-6 py-5">
+                  <span className="text-sm text-neutral-500 truncate block">{client.email}</span>
                 </td>
-                <td className="px-8 py-4">
-                  <span className="text-sm text-neutral-500">{roleLabel[client.role] ?? client.role}</span>
+                <td className="px-6 py-5">
+                  <span className="text-sm text-neutral-400">{roleLabel[client.role] ?? client.role}</span>
                 </td>
-                <td className="px-8 py-4">
-                  <span className={cn('text-[11px] px-2.5 py-1 rounded-full border whitespace-nowrap',
-                    client.status === 'active' ? 'text-green-400 bg-neutral-950 border-green-500/60' : 'text-red-400 bg-neutral-950 border-red-500/60')}>
+                <td className="px-6 py-5">
+                  <span className={cn('inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border whitespace-nowrap',
+                    client.status === 'active'
+                      ? 'text-green-400 bg-green-400/10 border-green-400/30'
+                      : 'text-red-400 bg-red-400/10 border-red-400/30')}>
+                    {client.status === 'active'
+                      ? <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                      : <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    }
                     {client.status === 'active' ? 'Activo' : 'Suspendido'}
                   </span>
                 </td>
-                <td className="px-8 py-4">
-                  <span className={cn('text-xs font-mono',
-                    client.activationCode ? 'text-green-400 font-bold tracking-wider' : 'text-neutral-700')}>
+                <td className="px-6 py-5">
+                  <span className={cn('text-xs font-mono font-bold tracking-wider',
+                    client.activationCode ? 'text-green-400' : 'text-neutral-700')}>
                     {client.activationCode ?? '—'}
                   </span>
                 </td>
-                <td className="px-8 py-4 text-right">
+                <td className="px-8 py-5 text-right">
                   <button onClick={() => openClient(client)}
-                    className="text-xs px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                    className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z"/></svg>
                     Ver detalle
                   </button>
                 </td>
@@ -133,7 +155,35 @@ const ClientsPanel = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
+
+      <PaginationBar
+        page={page} totalPages={totalPages} total={filtered.length} pageSize={PAGE_SIZE}
+        onPrev={() => setPage(p => p - 1)} onNext={() => setPage(p => p + 1)}
+        actions={<>
+          <button onClick={() => { setSearch(''); setPage(1) }}
+            className="group flex items-center gap-1.5 px-2 py-2 rounded-full bg-neutral-700 hover:bg-neutral-600 text-white transition-all duration-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+            <span className="max-w-0 group-hover:max-w-[56px] overflow-hidden whitespace-nowrap text-[11px] font-semibold transition-all duration-200">Limpiar</span>
+          </button>
+          <button onClick={() => sileo.success({ title: 'Suspendidos', description: 'Usuarios inactivos suspendidos.', fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })}
+            className="group flex items-center gap-1.5 px-2 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white transition-all duration-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <span className="max-w-0 group-hover:max-w-[72px] overflow-hidden whitespace-nowrap text-[11px] font-semibold transition-all duration-200">Suspender</span>
+          </button>
+          <button onClick={() => sileo.success({ title: 'Códigos generados', description: 'Códigos asignados a usuarios sin activar.', fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })}
+            className="group flex items-center gap-1.5 px-2 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-white transition-all duration-200">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v4M10 14h4"/></svg>
+            <span className="max-w-0 group-hover:max-w-[80px] overflow-hidden whitespace-nowrap text-[11px] font-semibold transition-all duration-200">Generar</span>
+          </button>
+          <button onClick={() => sileo.success({ title: 'Exportando', description: 'Lista de usuarios exportada.', fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })}
+            className="flex items-center gap-2 pl-3 pr-2 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold transition-colors whitespace-nowrap">
+            Exportar usuarios
+            <span className="bg-blue-800/50 text-blue-100 text-[10px] font-bold px-1.5 py-0.5 rounded-md tracking-wide">⌘E</span>
+          </button>
+        </>}
+      />
 
       {/* ── Drawer overlay ── */}
       <AnimatePresence>

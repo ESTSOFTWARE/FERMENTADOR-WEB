@@ -11,7 +11,7 @@ const ProfileNav = () => {
     .join('')
     .toUpperCase() ?? '?'
 
-  const profileImage = localStorage.getItem('profile_image')
+  const profileImage = user?.profile_image ?? null
 
   return (
     <button
