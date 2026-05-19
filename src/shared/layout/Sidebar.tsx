@@ -1,9 +1,27 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useExperimentStore } from '../../core/store/useExperimentStore'
 import { nav } from '../../core/navigation/navItems'
 import { useUserAuth } from '../../core/hooks/userAuth'
 import { cn } from '../../lib/utils'
+
+const TOUR_IDS: Record<string, string> = {
+  '/overview':                           'tour-step-inicio',
+  '/dashboard':                          'tour-step-dashboard',
+  '/results/:id':                        'tour-step-results',
+  '/experiment/:id':                     'tour-step-generaciones',
+  '/experiment/:id/best-per-generation': 'tour-step-mejor',
+  '/experiment/:id/charts':              'tour-step-graficas',
+  '/simulation/:id':                     'tour-step-simulacion',
+  '/grafics':                            'tour-step-grafics',
+  '/efficiency-calculator':              'tour-step-efficiency',
+  '/users/add':                          'tour-step-users-add',
+  '/users/manage':                       'tour-step-users-manage',
+  '/fermentation':                       'tour-step-fermentation',
+  '/fermentation-reports':               'tour-step-reports',
+  '/announcements':                      'tour-step-announcements',
+  '/chat':                               'tour-step-chat',
+}
 
 const Sidebar = () => {
   const { experimentId, individualId } = useExperimentStore()
@@ -11,6 +29,17 @@ const Sidebar = () => {
   const navigate           = useNavigate()
   const location           = useLocation()
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({ 'Experimentar con IA': true })
+  const [tourActive, setTourActive] = useState(() =>
+    document.body.classList.contains('tour-active')
+  )
+
+  useEffect(() => {
+    const obs = new MutationObserver(() =>
+      setTourActive(document.body.classList.contains('tour-active'))
+    )
+    obs.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
 
   const role       = user?.role?.toLowerCase() ?? 'estudiante'
   const visibleNav = nav.filter(item => item.allowedRoles.includes(role))
@@ -30,21 +59,23 @@ const Sidebar = () => {
     }, [])
 
   const renderItem = (item: typeof nav[0], indented = false) => {
-    const resolved  = resolvePath(item.path)
-    const isActive  = !!(resolved && location.pathname === resolved)
+    const resolved   = resolvePath(item.path)
+    const isActive   = !!(resolved && location.pathname === resolved)
     const isDisabled = !resolved
 
     return (
       <button
         key={item.label}
+        id={TOUR_IDS[item.path]}
         onClick={() => resolved && navigate(resolved)}
-        disabled={isDisabled}
+        disabled={isDisabled && !tourActive}
         className={cn(
           'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors text-left',
           indented && 'ml-3 w-[calc(100%-12px)]',
           isActive   && 'bg-neutral-800 text-white',
           !isActive  && !isDisabled && 'text-neutral-500 hover:text-white hover:bg-neutral-900',
-          isDisabled && 'text-neutral-700 cursor-not-allowed opacity-40',
+          isDisabled && !tourActive && 'text-neutral-700 cursor-not-allowed opacity-40',
+          isDisabled && tourActive  && 'text-neutral-600 opacity-50 pointer-events-none',
         )}
       >
         <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none"
@@ -59,9 +90,9 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-60 flex flex-col bg-[#0A0A0B] border-r border-neutral-900">
+    <aside id="tour-step-sidebar" className="fixed left-0 top-0 h-full w-60 flex flex-col bg-[#0A0A0B] border-r border-neutral-900">
       {/* Logo */}
-      <div className="px-5 py-6 border-b border-neutral-900 flex items-center gap-3">
+      <div id="tour-step-logo" className="px-5 py-6 border-b border-neutral-900 flex items-center gap-3">
         <img src="/assets/logo.svg" alt="Nich-Ká" className="w-8 h-8 object-contain" />
         <div>
           <p className="text-white text-sm font-semibold leading-none">Nich-Ká</p>
@@ -76,7 +107,7 @@ const Sidebar = () => {
         {groups.map(group => {
           const groupItems  = visibleNav.filter(item => item.group === group)
           const firstItem   = groupItems[0]
-          const isOpen      = openGroups[group] ?? false
+          const isOpen      = tourActive || (openGroups[group] ?? false)
           const isAnyActive = groupItems.some(item => {
             const r = resolvePath(item.path)
             return r && location.pathname === r
@@ -85,6 +116,7 @@ const Sidebar = () => {
           return (
             <div key={group}>
               <button
+                id={group === 'Experimentar con IA' ? 'tour-step-experimento' : group === 'Gestión de Usuarios' ? 'tour-step-usuarios-group' : undefined}
                 onClick={() => setOpenGroups(prev => ({ ...prev, [group]: !prev[group] }))}
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors text-left',
@@ -107,7 +139,7 @@ const Sidebar = () => {
 
               <div
                 className="overflow-hidden transition-all duration-200 ml-3 border-l border-neutral-900"
-                style={{ maxHeight: isOpen ? `${groupItems.length * 44}px` : '0px' }}
+                style={{ maxHeight: isOpen ? (tourActive ? '600px' : `${groupItems.length * 44}px`) : '0px' }}
               >
                 <div className="py-1 flex flex-col gap-0.5">
                   {groupItems.map(item => renderItem(item, true))}

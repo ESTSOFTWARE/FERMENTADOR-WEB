@@ -3,8 +3,11 @@ import { Outlet } from 'react-router-dom'
 import Lenis from 'lenis'
 import Sidebar from './Sidebar'
 import ProfileNav from '../components/ProfileNav'
+import { useTour } from '../../core/hooks/useTour'
 
 const Layout = () => {
+  useTour()
+
   useEffect(() => {
     const lenis = new Lenis({
       duration:    1.2,

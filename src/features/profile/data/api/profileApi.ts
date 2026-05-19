@@ -76,4 +76,10 @@ export const profileApi = {
       headers: authHeaders(),
       body:    JSON.stringify(data),
     }).then(handleResponse<ActivateCircuitResponse>),
+
+  markTourCompleted: (): Promise<{ message: string }> =>
+    fetch(`${BASE_URL}/users/me/tour`, {
+      method:  'PATCH',
+      headers: authHeaders(),
+    }).then(handleResponse<{ message: string }>),
 }

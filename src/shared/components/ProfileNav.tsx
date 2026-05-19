@@ -62,7 +62,7 @@ const ProfileNav = () => {
 
   return (
     <>
-      <div className="fixed top-5 right-6 z-40 flex items-center gap-2">
+      <div id="tour-step-profile" className="fixed top-5 right-6 z-40 flex items-center gap-2">
 
         {/* Campana */}
         <button
