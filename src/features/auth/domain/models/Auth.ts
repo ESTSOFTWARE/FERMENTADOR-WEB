@@ -27,6 +27,7 @@ export interface AuthUser {
   activation_code: string | null
   dial_code?:      string
   phone_number?:   string
+  tour_completed?: boolean
 }
 
 export interface TokenResponse {
