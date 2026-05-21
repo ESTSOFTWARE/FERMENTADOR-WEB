@@ -4,7 +4,7 @@ import type { ExperimentResult } from '../../domain/models/Experiment'
 import type { Simulation } from '../../domain/models/Simulation'
 import type { BestPerGenerationResult } from '../../domain/models/BestPerGeneration'
 
-const BASE_URL = import.meta.env.VITE_API_URL
+const BASE_URL = import.meta.env.VITE_AI_API_URL
 
 const HEADERS = {
   'Content-Type': 'application/json',

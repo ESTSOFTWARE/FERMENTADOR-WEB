@@ -1,8 +1,10 @@
+import { motion }              from 'motion/react'
 import { useSensorsViewModel } from '../viewmodels/useSensorsViewModel'
 import { useFermentation }     from '../../../fermentation/presentation/context/FermentationContext'
 import { useUserAuth }            from '../../../../core/hooks/userAuth'
 import { SENSOR_META }         from '../../domain/models/Sensor'
 import SensorCard              from '../components/SensorCard'
+import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
 // ── Status dot ───────────────────────────────────────────────────────────────
 const statusConfig = {
@@ -34,14 +36,19 @@ const SensorsView = () => {
   const secondarySensors = SENSOR_META.slice(2)      // resto
 
   return (
-    <div style={{
-      minHeight:       '100vh',
-      backgroundColor: '#0A0A0B',
-      padding:         '48px',
-      display:         'flex',
-      flexDirection:   'column',
-      gap:             32,
-    }}>
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      style={{
+        minHeight:       '100vh',
+        backgroundColor: '#0A0A0B',
+        padding:         '48px',
+        display:         'flex',
+        flexDirection:   'column',
+        gap:             32,
+      }}
+    >
       <style>{`
         @keyframes pulse-ring {
           0%   { transform: scale(1);   opacity: 0.8; }
@@ -63,61 +70,18 @@ const SensorsView = () => {
       `}</style>
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-        <div>
-          <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
-            Monitoreo
-          </p>
-          <h1 style={{ color: '#F4F4F5', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-            Sensores en Tiempo Real
-          </h1>
-          <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
-        </div>
-
-        {/* Status pill — reemplaza el botón de conectar */}
-        <div style={{
-          display:         'flex',
-          alignItems:      'center',
-          gap:             10,
-          padding:         '10px 18px',
-          borderRadius:    999,
-          backgroundColor: '#111113',
-          border:          `1px solid ${status.color}30`,
-        }}>
-          {/* Dot con pulse animado */}
-          <div style={{ position: 'relative', width: 8, height: 8 }}>
-            {status.pulse && (
-              <div style={{
-                position:        'absolute',
-                inset:           0,
-                borderRadius:    '50%',
-                backgroundColor: status.color,
-                animation:       'pulse-ring 1.4s ease-out infinite',
-              }} />
-            )}
-            <div style={{
-              position:        'absolute',
-              inset:           0,
-              borderRadius:    '50%',
-              backgroundColor: status.color,
-            }} />
-          </div>
-          <span style={{ color: status.color, fontSize: 12, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
-            {status.label}
-          </span>
-          {session && wsStatus === 'connected' && (
-            <>
-              <div style={{ width: 1, height: 14, backgroundColor: '#2A2A2D' }} />
-              <span style={{ color: '#52525B', fontSize: 11, fontFamily: 'monospace' }}>
-                sesión #{session.id}
-              </span>
-            </>
-          )}
-        </div>
-      </div>
+      <motion.div variants={sectionVariants}>
+        <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
+          Monitoreo
+        </p>
+        <h1 style={{ color: '#F4F4F5', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+          Sensores en Tiempo Real
+        </h1>
+        <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
+      </motion.div>
 
       {/* ── Info bar — circuito activo ── */}
-      <div style={{
+      <motion.div variants={sectionVariants} style={{
         display:         'flex',
         alignItems:      'center',
         gap:             24,
@@ -164,7 +128,28 @@ const SensorsView = () => {
             </div>
           </>
         )}
-      </div>
+
+        {/* Status pill — lado derecho */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10, padding: '6px 14px', borderRadius: 999, backgroundColor: '#111113', border: `1px solid ${status.color}30` }}>
+          <div style={{ position: 'relative', width: 7, height: 7 }}>
+            {status.pulse && (
+              <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: status.color, animation: 'pulse-ring 1.4s ease-out infinite' }} />
+            )}
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: status.color }} />
+          </div>
+          <span style={{ color: status.color, fontSize: 11, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>
+            {status.label}
+          </span>
+          {session && wsStatus === 'connected' && (
+            <>
+              <div style={{ width: 1, height: 12, backgroundColor: '#2A2A2D' }} />
+              <span style={{ color: '#52525B', fontSize: 10, fontFamily: 'monospace' }}>
+                sesión #{session.id}
+              </span>
+            </>
+          )}
+        </div>
+      </motion.div>
 
       {/* ── Error ── */}
       {error && (
@@ -177,9 +162,9 @@ const SensorsView = () => {
       )}
 
       {/* ── Sensores primarios — full width cards ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         {primarySensors.map((sensor, i) => (
-          <div key={sensor.key} className="sensor-card-wrap" style={{ animationDelay: `${i * 0.05}s` }}>
+          <motion.div key={sensor.key} variants={cardVariants} className="sensor-card-wrap" style={{ animationDelay: `${i * 0.05}s` }}>
             <SensorCard
               label={sensor.label}
               unit={sensor.unit}
@@ -188,9 +173,9 @@ const SensorsView = () => {
               data={chartData[sensor.key]}
               latestValue={latestValues[sensor.key]}
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Separador con label ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -202,9 +187,9 @@ const SensorsView = () => {
       </div>
 
       {/* ── Sensores secundarios — grid 3 columnas ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
         {secondarySensors.map((sensor, i) => (
-          <div key={sensor.key} className="sensor-card-wrap" style={{ animationDelay: `${(i + 2) * 0.05}s` }}>
+          <motion.div key={sensor.key} variants={cardVariants} className="sensor-card-wrap" style={{ animationDelay: `${(i + 2) * 0.05}s` }}>
             <SensorCard
               label={sensor.label}
               unit={sensor.unit}
@@ -213,9 +198,9 @@ const SensorsView = () => {
               data={chartData[sensor.key]}
               latestValue={latestValues[sensor.key]}
             />
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Estado vacío — sin datos aún ── */}
       {!loading && wsStatus === 'connecting' && (
@@ -224,7 +209,7 @@ const SensorsView = () => {
           <div style={{ fontSize: 11, color: '#2A2A2D' }}>Los datos aparecerán automáticamente</div>
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
 

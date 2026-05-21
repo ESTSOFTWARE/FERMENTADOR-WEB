@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { ProfileRepositoryImpl } from '../../data/repositories/ProfileRepositoryImpl'
 import { notifyUserUpdated, useUserAuth } from '../../../../core/hooks/userAuth'
 
 const repository = new ProfileRepositoryImpl()
 
-export type InfoForm = { name: string; last_name: string; email: string }
+export type InfoForm = { name: string; last_name: string; email: string; dial_code: string; phone_number: string }
 export type PasswordForm = { current: string; next: string; confirm: string }
 
 export const useProfileViewModel = () => {
@@ -12,9 +12,11 @@ export const useProfileViewModel = () => {
 
   // ── Info personal ──────────────────────────────────────────────────────────
   const [infoForm, setInfoForm] = useState<InfoForm>({
-    name: user?.name ?? '',
-    last_name: user?.last_name ?? '',
-    email: user?.email ?? '',
+    name:         user?.name         ?? '',
+    last_name:    user?.last_name    ?? '',
+    email:        user?.email        ?? '',
+    dial_code:    user?.dial_code    ?? '+52',
+    phone_number: user?.phone_number ?? '',
   })
   const [editingInfo, setEditingInfo] = useState(false)
   const [loadingInfo, setLoadingInfo] = useState(false)
@@ -29,9 +31,11 @@ export const useProfileViewModel = () => {
 
   // ── Avatar ─────────────────────────────────────────────────────────────────
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(
-    localStorage.getItem('profile_image') ?? null
+    user?.profile_image ?? localStorage.getItem('profile_image') ?? null
   )
-  const [pickingAvatar, setPickingAvatar] = useState(false)
+  const [pickingAvatar,   setPickingAvatar]   = useState(false)
+  const [loadingImage,    setLoadingImage]    = useState(false)
+  const [errorImage,      setErrorImage]      = useState<string | null>(null)
 
   // ── Activación de circuito ─────────────────────────────────────────────────
   // Si el usuario ya tiene circuito, no necesita el formulario de activación
@@ -41,10 +45,35 @@ export const useProfileViewModel = () => {
   const [successActivation, setSuccessActivation] = useState(false)
   const [errorActivation, setErrorActivation] = useState<string | null>(null)
 
+  // ── Cargar teléfono fresco desde el backend al montar ──────────────────────
+  useEffect(() => {
+    if (!user?.id) return
+    repository.getUser(user.id).then(profile => {
+      setInfoForm(prev => ({
+        ...prev,
+        dial_code:    profile.dial_code    ?? prev.dial_code,
+        phone_number: profile.phone_number ?? prev.phone_number,
+      }))
+      const stored = localStorage.getItem('user_data')
+      if (stored) {
+        localStorage.setItem('user_data', JSON.stringify({
+          ...JSON.parse(stored),
+          dial_code:    profile.dial_code,
+          phone_number: profile.phone_number,
+        }))
+      }
+    }).catch(() => {})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
   // ── Computed ───────────────────────────────────────────────────────────────
   const pwMismatch = pwForm.confirm !== '' && pwForm.next !== pwForm.confirm
-  const pwValid = !!(pwForm.current && pwForm.next && pwForm.next === pwForm.confirm && pwForm.next.length >= 6)
-  const infoChanged = infoForm.name !== (user?.name ?? '') || infoForm.last_name !== (user?.last_name ?? '') || infoForm.email !== (user?.email ?? '')
+  const pwValid = !!(pwForm.current && pwForm.next && pwForm.next === pwForm.confirm && pwForm.next.length >= 8)
+  const infoChanged =
+    infoForm.name         !== (user?.name      ?? '') ||
+    infoForm.last_name    !== (user?.last_name ?? '') ||
+    infoForm.email        !== (user?.email     ?? '') ||
+    infoForm.phone_number !== ''
   const hasCircuit = circuitId !== null   // ← controla si se muestra el formulario
 
   // ── Handlers ───────────────────────────────────────────────────────────────
@@ -56,18 +85,22 @@ export const useProfileViewModel = () => {
     setLoadingInfo(true); setErrorInfo(null)
     try {
       await repository.updateUser(user.id, {
-        name: infoForm.name,
-        last_name: infoForm.last_name,
-        email: infoForm.email,
+        name:         infoForm.name,
+        last_name:    infoForm.last_name,
+        email:        infoForm.email,
+        dial_code:    infoForm.dial_code,
+        phone_number: infoForm.phone_number,
       })
       // Actualizar user_data en localStorage
       const stored = localStorage.getItem('user_data')
       if (stored) {
         localStorage.setItem('user_data', JSON.stringify({
           ...JSON.parse(stored),
-          name: infoForm.name,
-          last_name: infoForm.last_name,
-          email: infoForm.email,
+          name:         infoForm.name,
+          last_name:    infoForm.last_name,
+          email:        infoForm.email,
+          dial_code:    infoForm.dial_code,
+          phone_number: infoForm.phone_number,
         }))
       }
       notifyUserUpdated()
@@ -82,30 +115,51 @@ export const useProfileViewModel = () => {
 
   const handleCancelInfo = useCallback(() => {
     setEditingInfo(false)
-    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '' })
+    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '' })
     setErrorInfo(null)
   }, [user])
 
   const handleSavePw = useCallback(async () => {
-    if (!pwValid || !user) return
+    if (!pwValid) return
     setLoadingPw(true); setErrorPw(null)
     try {
-      // TODO: conectar endpoint de cambio de contraseña cuando esté disponible
-      await repository.updateUser(user.id, { password: pwForm.next })
-      setSuccessPw(true); setPwForm({ current: '', next: '', confirm: '' })
+      await repository.changePassword({
+        current_password: pwForm.current,
+        new_password:     pwForm.next,
+        confirm_password: pwForm.confirm,
+      })
+      setSuccessPw(true)
+      setPwForm({ current: '', next: '', confirm: '' })
       setTimeout(() => setSuccessPw(false), 3000)
     } catch (err) {
       setErrorPw(err instanceof Error ? err.message : 'Error al cambiar la contraseña.')
     } finally {
       setLoadingPw(false)
     }
-  }, [pwValid, pwForm, user])
+  }, [pwValid, pwForm])
 
   const handleSelectAvatar = useCallback((path: string) => {
     setSelectedAvatar(path)
     localStorage.setItem('profile_image', path)
     setPickingAvatar(false)
-    // TODO: PUT /users/{id} con { profile_image: path }
+  }, [])
+
+  const handleUploadImage = useCallback(async (file: File) => {
+    setLoadingImage(true); setErrorImage(null)
+    try {
+      const { profile_image } = await repository.uploadProfileImage(file)
+      setSelectedAvatar(profile_image)
+      localStorage.setItem('profile_image', profile_image)
+      const stored = localStorage.getItem('user_data')
+      if (stored) {
+        localStorage.setItem('user_data', JSON.stringify({ ...JSON.parse(stored), profile_image }))
+      }
+      notifyUserUpdated()
+    } catch (err) {
+      setErrorImage(err instanceof Error ? err.message : 'Error al subir la imagen.')
+    } finally {
+      setLoadingImage(false)
+    }
   }, [])
 
   const handleActivateCircuit = useCallback(async () => {
@@ -157,12 +211,14 @@ export const useProfileViewModel = () => {
     loadingInfo,
     loadingPw,
     loadingActivation,
+    loadingImage,
     successInfo,
     successPw,
     successActivation,
     errorInfo,
     errorPw,
     errorActivation,
+    errorImage,
     // computed
     pwMismatch,
     pwValid,
@@ -178,6 +234,7 @@ export const useProfileViewModel = () => {
     handleCancelInfo,
     handleSavePw,
     handleSelectAvatar,
+    handleUploadImage,
     handleActivateCircuit,
   }
 }

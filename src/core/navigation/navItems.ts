@@ -70,7 +70,7 @@ export const nav = [
     path: '/efficiency-calculator',
     group: null,
     allowedRoles: ['admin', 'profesor', 'estudiante'],
-    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    icon: 'M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zM8 7h8v3H8V7zM8 13h2v2H8v-2zm4 0h2v2h-2v-2zm4 0h2v6h-2v-6zM8 17h2v2H8v-2zm4 0h2v2h-2v-2z',
     description: 'Calcular eficiencia'
   },
   {
@@ -79,7 +79,7 @@ export const nav = [
     group: 'Gestión de Usuarios',
     allowedRoles: ['admin', 'profesor'],
     groupDescription: 'Administrar usuarios',
-    icon: 'M18 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z',
+    icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
     description: 'Registrar nuevos usuarios'
   },
   {
@@ -87,7 +87,7 @@ export const nav = [
     path: '/users/manage',
     group: 'Gestión de Usuarios',
     allowedRoles: ['admin', 'profesor'],
-    icon: 'M18 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z',
+    icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75',
     description: 'Gestionar usuarios existentes'
   },
   {
@@ -95,7 +95,7 @@ export const nav = [
     path: '/fermentation',
     group: null,
     allowedRoles: ['admin', 'profesor'],
-    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    icon: 'M9 3h6M10 3v7.5L5 18a1 1 0 00.9 1.5h12.2A1 1 0 0019 18l-5-7.5V3',
     description: 'Iniciar proceso de fermentación'
   },
   {
@@ -103,8 +103,16 @@ export const nav = [
     path: '/fermentation-reports',
     group: null,
     allowedRoles: ['admin', 'profesor', 'estudiante'],
-    icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    icon: 'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8',
     description: 'Reportes de fermentación'
+  },
+  {
+    label: 'Comunicados',
+    path: '/announcements',
+    group: null,
+    allowedRoles: ['admin', 'profesor', 'estudiante'],
+    icon: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.952 9.168-5v10.5c-1.543-3.048-5.068-5-9.168-5H7a3.988 3.988 0 01-1.564-.317z',
+    description: 'Avisos y novedades de la plataforma'
   },
   {
     label: 'Chat IA',

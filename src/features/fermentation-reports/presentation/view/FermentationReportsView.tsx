@@ -1,8 +1,10 @@
 import { useState }     from 'react'
+import { motion }       from 'motion/react'
 import type { Status }  from '../types/Status'
 import { FILTERS }      from '../constants/filters'
 import StatusPill       from '../components/StatusPill'
 import { useFermentationReportsViewModel } from '../viewmodels/useFermentationReportsViewModel'
+import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
 /* Filtros sin "running" */
 const VISIBLE_FILTERS = FILTERS.filter(f => f.value !== 'running')
@@ -22,7 +24,10 @@ const FermentationReportsView = () => {
   const selectedReport = reports.find(r => r.id === selected) ?? null
 
   return (
-    <div
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
       style={{
         minHeight:       '100vh',
         backgroundColor: '#0A0A0B',
@@ -41,7 +46,7 @@ const FermentationReportsView = () => {
       `}</style>
 
       {/* ── Header ── */}
-      <div style={{ marginBottom: 40 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Historial
         </p>
@@ -83,7 +88,7 @@ const FermentationReportsView = () => {
             {loading ? 'Cargando...' : 'Actualizar'}
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Error ── */}
       {error && (
@@ -119,15 +124,16 @@ const FermentationReportsView = () => {
       )}
 
       {/* ── Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }}>
+      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }}>
         {([
           { label: 'Total sesiones', value: reports.length,  color: '#F4F4F5',  accent: '#27272A' },
           { label: 'Completadas',    value: completadas,     color: '#22C55E',  accent: '#22C55E15' },
           { label: 'Interrumpidas',  value: interrumpidas,   color: '#F59E0B',  accent: '#F59E0B15' },
           { label: 'En curso',       value: enCurso,         color: '#3B82F6',  accent: '#3B82F615' },
         ] as const).map(stat => (
-          <div
+          <motion.div
             key={stat.label}
+            variants={cardVariants}
             style={{
               padding:         '20px 22px',
               borderRadius:    14,
@@ -157,12 +163,12 @@ const FermentationReportsView = () => {
                 </p>
             }
             <p style={{ color: '#52525B', fontSize: 11, margin: 0, letterSpacing: '0.02em' }}>{stat.label}</p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* ── Filtros ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+      <motion.div variants={sectionVariants} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 8px 0 0' }}>
           Filtrar
         </p>
@@ -188,10 +194,11 @@ const FermentationReportsView = () => {
         <span style={{ marginLeft: 'auto', color: '#3F3F46', fontSize: 12 }}>
           {loading ? '—' : `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}`}
         </span>
-      </div>
+      </motion.div>
 
       {/* ── Tabla + panel lateral ── */}
-      <div
+      <motion.div
+        variants={sectionVariants}
         style={{
           flex:                1,
           display:             'grid',
@@ -406,8 +413,8 @@ const FermentationReportsView = () => {
             )}
           </div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

@@ -100,9 +100,18 @@ const Hero = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </button>
-            <button className="flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-semibold text-white/70 transition-all duration-200 hover:border-white/20 hover:text-white">
-              Ver demo
-            </button>
+            <a
+              href="https://play.google.com/store"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-black px-4 py-2.5"
+            >
+              <img src="/assets/icons/googleplay.svg" alt="" aria-hidden="true" className="h-5 w-5 shrink-0" />
+              <span className="flex flex-col leading-none">
+                <span className="text-[9px] font-medium uppercase tracking-wider text-white/50">Get it on</span>
+                <span className="text-sm font-semibold text-white">Google Play</span>
+              </span>
+            </a>
           </div>
 
           <div className="flex items-center gap-8 pt-2 border-t border-white/5">

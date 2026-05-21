@@ -1,6 +1,8 @@
+import { motion } from 'motion/react'
 import { useAddUserViewModel } from '../viewmodels/useAddUserViewModel'
 import { ROLES }               from '../constants/roles'
 import { ADD_USER_STYLES, inputStyle, labelStyle } from '../constants/addUserStyles'
+import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 
 const EyeIcon = ({ open }: { open: boolean }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -39,12 +41,12 @@ const AddUserView = () => {
   const iconColor = '#FFF'
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{ADD_USER_STYLES}</style>
       <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
 
       {/* ── Header ── */}
-      <div style={{ marginBottom: 40 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Gestión de Usuarios
         </p>
@@ -52,7 +54,7 @@ const AddUserView = () => {
           {isProfesor ? 'Agregar Estudiante' : 'Agregar Usuario'}
         </h1>
         <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
       {/* ── Alertas ── */}
       {success && (
@@ -275,7 +277,7 @@ const AddUserView = () => {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

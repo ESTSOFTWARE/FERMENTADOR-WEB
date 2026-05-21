@@ -1,6 +1,8 @@
 import { useState }             from 'react'
+import { motion }               from 'motion/react'
 import { EFFICIENCY_STYLES }    from '../constants/styles'
 import { getEfficiencyColor, getEfficiencyLabel } from '../utils/efficiencyUtils'
+import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
 const EfficiencyCalculatorView = () => {
   const [azucarInicial,   setAzucarInicial]   = useState('')
@@ -32,10 +34,15 @@ const EfficiencyCalculatorView = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '48px', display: 'flex', flexDirection: 'column' }}>
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '48px', display: 'flex', flexDirection: 'column' }}
+    >
       <style>{EFFICIENCY_STYLES}</style>
 
-      <div style={{ marginBottom: 40 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Herramienta
         </p>
@@ -43,12 +50,12 @@ const EfficiencyCalculatorView = () => {
           Calculadora de Eficiencia
         </h1>
         <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, flex: 1 }}>
+      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, flex: 1 }}>
 
         {/* columna izquierda */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <motion.div variants={cardVariants} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div
             className="efficiency-card"
             style={{ padding: 28, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', flex: 1 }}
@@ -128,10 +135,11 @@ const EfficiencyCalculatorView = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* columna derecha */}
-        <div
+        <motion.div
+          variants={cardVariants}
           className="efficiency-card"
           style={{
             padding:         28,
@@ -203,9 +211,9 @@ const EfficiencyCalculatorView = () => {
           <p style={{ color: '#2A2A2D', fontSize: 10, margin: '20px 0 0 0', textAlign: 'center', lineHeight: 1.6 }}>
             Fórmula: (Etanol detectado / Etanol teórico) × 100<br />Etanol teórico = Azúcar × 0.511
           </p>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   )
 }
 

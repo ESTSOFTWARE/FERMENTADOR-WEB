@@ -1,9 +1,21 @@
+export interface ChangePasswordRequest {
+  current_password: string
+  new_password:     string
+  confirm_password: string
+}
+
+export interface ChangePasswordResponse {
+  message: string
+}
+
 export interface UpdateUserRequest {
   name?:          string
   last_name?:     string
   email?:         string
   password?:      string
   profile_image?: string
+  dial_code?:     string
+  phone_number?:  string
 }
 
 export interface ActivateCircuitRequest {
@@ -26,5 +38,8 @@ export interface UserProfile {
   circuit_id:    number | null
   created_by:    number | null
   created_at:    string | null
-  profile_image: string | null
+  profile_image:  string | null
+  dial_code:      string | null
+  phone_number:   string | null
+  tour_completed: boolean
 }

@@ -1,7 +1,9 @@
+import { motion } from 'motion/react'
 import { useFermentation } from '../context/FermentationContext'
 import type { SensorKey } from '../../../sensors/domain/models/Sensor'
 import MainControlSection from '../components/MainControlSection'
 import SensorControlSection from '../components/SensorControlSection'
+import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 
 const FermentationView = () => {
   const {
@@ -28,7 +30,10 @@ const FermentationView = () => {
   }
 
   return (
-    <div
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
       style={{
         minHeight:       '100vh',
         backgroundColor: '#0A0A0B',
@@ -38,7 +43,7 @@ const FermentationView = () => {
       }}
     >
       {/* ── Header ── */}
-      <div style={{ marginBottom: 40 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 12 }}>
           Control
         </p>
@@ -46,7 +51,7 @@ const FermentationView = () => {
           Iniciar Fermentación
         </h1>
         <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
       {/* ── Alerts ── */}
       {error && (
@@ -93,6 +98,7 @@ const FermentationView = () => {
         </div>
       )}
 
+      <motion.div variants={sectionVariants}>
       <MainControlSection
         isRunning={isRunning}
         loading={loading}
@@ -103,13 +109,16 @@ const FermentationView = () => {
         onSubmit={startFermentation}
         onCancelForm={() => setShowForm(false)}
       />
+      </motion.div>
 
+      <motion.div variants={sectionVariants}>
       <SensorControlSection
         sensorStates={sensorStates}
         loading={loading}
         onToggle={(key: SensorKey) => toggleSensor(key)}
       />
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

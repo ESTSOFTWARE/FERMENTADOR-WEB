@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { motion } from 'motion/react'
 import { useProfileViewModel } from '../viewmodels/useProfileViewModel'
-import { avatar as AVATARS } from '../../../../core/avatars/avatars'
+import { pageVariants, sectionVariants, gridVariants } from '../../../../shared/animations/variants'
+import { PhoneInput } from '../components/PhoneInput'
 
 const STYLES = `
   .profile-input:focus {
@@ -32,7 +34,6 @@ const ROLE_LABELS: Record<string, string> = {
   admin: 'Administrador', profesor: 'Profesor', estudiante: 'Estudiante',
 }
 
-const avatarList = Object.values(AVATARS)
 
 const EyeBtn = ({ show, onToggle }: { show: boolean; onToggle: () => void }) => (
   <button type="button" onClick={onToggle}
@@ -59,16 +60,18 @@ const Flash = ({ msg, type }: { msg: string; type: 'success' | 'error' }) => {
 
 const ProfileView = () => {
   const {
-    user, infoForm, pwForm, selectedAvatar, pickingAvatar,
+    user, infoForm, pwForm, selectedAvatar,
     circuitId, activationCode, hasCircuit,
-    editingInfo, loadingInfo, loadingPw, loadingActivation,
+    editingInfo, loadingInfo, loadingPw, loadingActivation, loadingImage,
     successInfo, successPw, successActivation,
-    errorInfo, errorPw, errorActivation,
+    errorInfo, errorPw, errorActivation, errorImage,
     pwMismatch, pwValid, infoChanged,
-    setInfo, setPw, setEditingInfo, setPickingAvatar, setActivationCode,
+    setInfo, setPw, setEditingInfo, setActivationCode,
     handleSaveInfo, handleCancelInfo, handleSavePw,
-    handleSelectAvatar, handleActivateCircuit,
+    handleUploadImage, handleActivateCircuit,
   } = useProfileViewModel()
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [showCurrent, setShowCurrent] = useState(false)
   const [showNext,    setShowNext]    = useState(false)
@@ -79,34 +82,52 @@ const ProfileView = () => {
   const roleColor = user?.role === 'admin' ? '#A78BFA' : user?.role === 'profesor' ? '#3B82F6' : '#22C55E'
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{STYLES}</style>
 
-      <div style={{ marginBottom: 32 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>Cuenta</p>
         <h1 style={{ color: '#F4F4F5', fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>Mi Perfil</h1>
         <div style={{ marginTop: 10, height: 1, width: 80, backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start' }}>
+      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ padding: 32, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
             <div style={{ position: 'relative' }}>
               {selectedAvatar ? (
-                <img src={selectedAvatar} alt="Avatar" style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'contain', border: '2px solid #22C55E40', backgroundColor: '#FFFFFF' }} />
+                <img src={selectedAvatar} alt="Avatar" style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', border: '2px solid #22C55E40', backgroundColor: '#FFFFFF' }} />
               ) : (
                 <div style={{ width: 100, height: 100, borderRadius: '50%', backgroundColor: '#16A34A22', border: '2px solid #22C55E30', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, fontWeight: 700, color: '#22C55E' }}>
                   {initials}
                 </div>
               )}
-              <button onClick={() => setPickingAvatar(!pickingAvatar)} title="Cambiar avatar"
-                style={{ position: 'absolute', bottom: 2, right: 2, width: 28, height: 28, borderRadius: '50%', backgroundColor: '#22C55E', border: '2px solid #111113', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0B" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
-                </svg>
+
+              {/* input oculto para subir foto */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={e => { const f = e.target.files?.[0]; if (f) handleUploadImage(f); e.target.value = '' }}
+              />
+
+              {/* botón cámara → abre file picker */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loadingImage}
+                title="Subir foto de perfil"
+                style={{ position: 'absolute', bottom: 2, right: 2, width: 28, height: 28, borderRadius: '50%', backgroundColor: loadingImage ? '#16A34A80' : '#22C55E', border: '2px solid #111113', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: loadingImage ? 'not-allowed' : 'pointer', padding: 0 }}>
+                {loadingImage
+                  ? <svg className="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#0A0A0B" strokeWidth="4" opacity=".25"/><path fill="#0A0A0B" d="M4 12a8 8 0 018-8v8z"/></svg>
+                  : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0A0A0B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                }
               </button>
             </div>
+
+            {errorImage && (
+              <p style={{ color: '#F43F5E', fontSize: 11, textAlign: 'center', margin: '-8px 0 0 0' }}>{errorImage}</p>
+            )}
 
             <div style={{ textAlign: 'center' }}>
               <p style={{ color: '#F4F4F5', fontSize: 16, fontWeight: 600, margin: '0 0 4px 0' }}>{infoForm.name} {infoForm.last_name}</p>
@@ -116,19 +137,6 @@ const ProfileView = () => {
               </span>
             </div>
 
-            {pickingAvatar && (
-              <div style={{ width: '100%', borderTop: '1px solid #1F1F22', paddingTop: 16 }}>
-                <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>Elige un avatar</p>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-                  {avatarList.map(path => (
-                    <button key={path} className="avatar-option" onClick={() => handleSelectAvatar(path)}
-                      style={{ padding: 0, background: 'none', border: `2px solid ${selectedAvatar === path ? '#22C55E' : '#1F1F22'}`, borderRadius: '50%', cursor: 'pointer', boxShadow: selectedAvatar === path ? '0 0 0 3px rgba(34,197,94,0.2)' : 'none' }}>
-                      <img src={path} alt="avatar" style={{ width: '100%', aspectRatio: '1', borderRadius: '50%', objectFit: 'contain', display: 'block', backgroundColor: '#FFFFFF' }} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           <div style={{ padding: 24, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22' }}>
@@ -182,6 +190,16 @@ const ProfileView = () => {
               <div>
                 <label style={labelStyle}>Correo electrónico</label>
                 <input className="profile-input" type="email" value={infoForm.email} onChange={e => setInfo('email', e.target.value)} disabled={!editingInfo} style={editingInfo ? inputStyle : readonlyStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Teléfono</label>
+                <PhoneInput
+                  dialCode={infoForm.dial_code}
+                  phoneNumber={infoForm.phone_number}
+                  onChange={(dc, pn) => { setInfo('dial_code', dc); setInfo('phone_number', pn) }}
+                  disabled={!editingInfo}
+                />
+                <p style={{ color: '#3F3F46', fontSize: 10, marginTop: 6 }}>10 dígitos sin espacios</p>
               </div>
 
               {editingInfo && (
@@ -271,8 +289,8 @@ const ProfileView = () => {
                       style={{ ...inputStyle, paddingRight: 40 }} />
                     <EyeBtn show={showNext} onToggle={() => setShowNext(p => !p)} />
                   </div>
-                  {pwForm.next !== '' && pwForm.next.length < 6 && (
-                    <p style={{ color: '#F59E0B', fontSize: 11, margin: '6px 0 0 2px' }}>Mínimo 6 caracteres</p>
+                  {pwForm.next !== '' && pwForm.next.length < 8 && (
+                    <p style={{ color: '#F59E0B', fontSize: 11, margin: '6px 0 0 2px' }}>Mínimo 8 caracteres</p>
                   )}
                 </div>
                 <div>
@@ -296,8 +314,8 @@ const ProfileView = () => {
           </div>
 
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 

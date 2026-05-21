@@ -11,7 +11,12 @@ const PrivateRoute = ({ allowedRoles }: PrivateRouteProps) => {
   if (!user) return <Navigate to="/login" replace />
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/overview" replace />
+    return <Navigate to={user.role?.toLowerCase() === 'soporte' ? '/support' : '/overview'} replace />
+  }
+
+  // Soporte no tiene acceso al Layout general
+  if (!allowedRoles && user.role?.toLowerCase() === 'soporte') {
+    return <Navigate to="/support" replace />
   }
 
   return <Outlet />

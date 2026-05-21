@@ -188,6 +188,83 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
             </div>
           )
         })}
+
+        {/* Read-only Motor card */}
+        {([
+          { key: 'motor', label: 'Motor',  description: 'Velocidad de agitación', unit: 'rpm',    color: '#06B6D4' },
+          { key: 'pump',  label: 'Bomba',  description: 'Control de flujo',       unit: 'ON/OFF', color: '#FB923C' },
+        ] as const).map(device => (
+          <div
+            key={device.key}
+            style={{
+              position:        'relative',
+              padding:         '18px 20px',
+              borderRadius:    14,
+              backgroundColor: '#0D0D0F',
+              border:          '1px solid #1F1F22',
+              display:         'flex',
+              flexDirection:   'column',
+              gap:             14,
+              overflow:        'hidden',
+            }}
+          >
+            {/* Row 1: icon + name + info badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width:           38,
+                height:          38,
+                borderRadius:    10,
+                backgroundColor: `${device.color}12`,
+                border:          `1px solid ${device.color}28`,
+                display:         'flex',
+                alignItems:      'center',
+                justifyContent:  'center',
+                flexShrink:      0,
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={device.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={getIcon(device.key)} />
+                </svg>
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ color: '#71717A', fontSize: 13, fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {device.label}
+                </p>
+                <p style={{ color: '#3F3F46', fontSize: 11, margin: '2px 0 0 0' }}>
+                  {device.unit}
+                </p>
+              </div>
+
+              <span style={{
+                padding:         '3px 8px',
+                borderRadius:    6,
+                backgroundColor: `${device.color}10`,
+                border:          `1px solid ${device.color}25`,
+                color:           device.color,
+                fontSize:        9,
+                letterSpacing:   '0.12em',
+                textTransform:   'uppercase',
+                fontWeight:      700,
+                flexShrink:      0,
+              }}>
+                Solo lectura
+              </span>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, backgroundColor: '#1A1A1D' }} />
+
+            {/* Row 2: description */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
+              <p style={{ color: '#52525B', fontSize: 11, margin: 0, lineHeight: 1.55, flex: 1 }}>
+                {device.description}
+              </p>
+              <span style={{ fontSize: 9, fontWeight: 700, color: '#3F3F46', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                HW
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   )

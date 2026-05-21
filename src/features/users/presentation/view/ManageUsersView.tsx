@@ -1,6 +1,8 @@
+import { motion } from 'motion/react'
 import { useManageUsersViewModel } from '../viewmodels/useManageUsersViewModel'
 import { MANAGE_USERS_STYLES, ROLE_CONFIG } from '../constants/manageUsersStyles'
 import type { Role } from '../../models/entities/User'
+import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 
 const inputStyle: React.CSSProperties = {
   width:           '100%',
@@ -50,11 +52,11 @@ const ManageUsersView = () => {
       : users.filter(u => u.role_name === value).length
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{MANAGE_USERS_STYLES}</style>
 
       {/* ── Header ── */}
-      <div style={{ marginBottom: 32 }}>
+      <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Gestión de Usuarios
         </p>
@@ -62,7 +64,7 @@ const ManageUsersView = () => {
           {isProfesor ? 'Mis Estudiantes' : 'Administrar Usuarios'}
         </h1>
         <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
       {/* ── Alertas ── */}
       {success && (
@@ -370,7 +372,7 @@ const ManageUsersView = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   )
 }
 

@@ -8,6 +8,8 @@ import LoadingScreen from '../components/LoadingScreen'
 import ParameterSlider from '../components/ParameterSlider'
 import MicroorganismSelector from '../components/MicroorganismSelector'
 import ExperimentSummary from '../components/ExperimentSummary'
+import { motion } from 'motion/react'
+import { pageVariants, sectionVariants, gridVariants, cardVariants } from '../../../../shared/animations/variants'
 
 const DashboardView = () => {
   const navigate                        = useNavigate()
@@ -66,9 +68,15 @@ const DashboardView = () => {
   if (loading) return <LoadingScreen elapsed={elapsed} />
 
   return (
-    <div className="min-h-screen flex flex-col px-12 py-12" style={{ backgroundColor: '#0A0A0B' }}>
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-screen flex flex-col px-12 py-12"
+      style={{ backgroundColor: '#0A0A0B' }}
+    >
 
-      <div className="mb-10">
+      <motion.div variants={sectionVariants} className="mb-10">
         <p className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: '#22C55E' }}>
           Algoritmo Genético
         </p>
@@ -76,10 +84,10 @@ const DashboardView = () => {
           Nuevo Experimento
         </h1>
         <div className="mt-3 h-px w-24" style={{ backgroundColor: '#22C55E', opacity: 0.4 }} />
-      </div>
+      </motion.div>
 
-      <div className="flex-1 grid grid-cols-3 gap-6">
-        <div className="col-span-2 flex flex-col gap-4">
+      <motion.div variants={gridVariants} className="flex-1 grid grid-cols-3 gap-6">
+        <motion.div variants={cardVariants} className="col-span-2 flex flex-col gap-4">
           {fields.map(field => (
             <ParameterSlider
               key={field.name}
@@ -90,9 +98,9 @@ const DashboardView = () => {
               onStopStep={stopStep}
             />
           ))}
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col gap-4">
+        <motion.div variants={cardVariants} className="flex flex-col gap-4">
           <MicroorganismSelector
             selected={form.microorganism}
             onSelect={value => setForm(prev => ({ ...prev, microorganism: value }))}
@@ -102,8 +110,8 @@ const DashboardView = () => {
             error={error}
             onSubmit={handleSubmit}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       <style>{`
         input[type=range]::-webkit-slider-thumb {
@@ -116,7 +124,7 @@ const DashboardView = () => {
           box-shadow: 0 0 0 2px #22C55E;
         }
       `}</style>
-    </div>
+    </motion.div>
   )
 }
 

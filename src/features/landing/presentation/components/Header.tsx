@@ -2,12 +2,16 @@ import { useState } from "react";
 import { cn } from "../../../../lib/utils";
 
 const navLinks = [
-  { label: "Inicio", href: "/" },
-  { label: "Características", href: "/#features" },
-  //{ label: "Precios", href: "/#pricing" },
-  { label: "¿Como funciona?", href: "/#how-it-works" },
-  { label: "Blog", href: "/#blog" },
-  { label: "Equipo", href: "/#team" },
+  { label: "Inicio",       href: "/" },
+  { label: "Problema",    href: "/#planteamiento" },
+  { label: "Justificación", href: "/#justificacion" },
+  { label: "Objetivos",   href: "/#objetivos" },
+  { label: "Alcances",    href: "/#alcances" },
+  { label: "Negocio",     href: "/#negocio" },
+  // { label: "Características", href: "/#features" },
+  // { label: "¿Cómo funciona?", href: "/#how-it-works" },
+  // { label: "Blog",            href: "/#blog" },
+  // { label: "Equipo",          href: "/#equipo" },
 ];
 
 const Header = () => {

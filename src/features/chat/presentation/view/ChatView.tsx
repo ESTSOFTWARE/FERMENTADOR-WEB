@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
+import { motion } from 'motion/react'
+import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 
 const API_KEY  = import.meta.env.VITE_API_KEY_CHATBOT
 const BOT_NAME = import.meta.env.VITE_NAME_CHATBOT ?? 'Nich-káBot'
@@ -94,9 +96,15 @@ const ChatView = () => {
   }
 
   return (
-    <div className="flex flex-col bg-[#0A0A0B]" style={{height:'calc(100vh - 0px)'}}>
+    <motion.div
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col bg-[#0A0A0B]"
+      style={{height:'calc(100vh - 0px)'}}
+    >
 
-      <div className="shrink-0 px-8 pt-7 pb-4 border-b border-neutral-900">
+      <motion.div variants={sectionVariants} className="shrink-0 px-8 pt-7 pb-4 border-b border-neutral-900">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 flex items-center justify-center overflow-hidden">
             <img src="/assets/logo.svg" alt={BOT_NAME} className="w-9 h-9 object-contain" />
@@ -110,7 +118,7 @@ const ChatView = () => {
             <span className="text-green-400/70 text-xs">En línea</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-4 min-h-0">
         {messages.length === 0 && (
@@ -188,7 +196,7 @@ const ChatView = () => {
         <p className="text-neutral-700 text-[10px] mt-2 text-center">Shift+Enter para salto de línea · Solo responde temas de fermentación de café</p>
       </div>
 
-    </div>
+    </motion.div>
   )
 }
 
