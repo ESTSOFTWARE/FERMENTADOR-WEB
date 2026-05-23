@@ -20,7 +20,8 @@ const readUserFromStorage = (): AuthUser | null => {
       const payload = parseJwt(token)
       return {
         ...parsed,
-        circuit_id: payload?.circuit_id ?? parsed.circuit_id ?? null,
+        circuit_id:    payload?.circuit_id ?? parsed.circuit_id ?? null,
+        profile_image: parsed.profile_image ?? localStorage.getItem('profile_image') ?? null,
       }
     } catch { /* fallback */ }
   }

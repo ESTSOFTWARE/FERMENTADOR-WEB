@@ -21,6 +21,8 @@ const TOUR_IDS: Record<string, string> = {
   '/fermentation-reports':               'tour-step-reports',
   '/announcements':                      'tour-step-announcements',
   '/chat':                               'tour-step-chat',
+  '/groups':                             'tour-step-groups',
+  '/admin/groups':                       'tour-step-admin-groups',
 }
 
 const Sidebar = () => {

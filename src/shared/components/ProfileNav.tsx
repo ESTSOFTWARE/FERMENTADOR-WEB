@@ -3,61 +3,118 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { CheckCheck } from 'lucide-react'
 import { useUserAuth } from '../../core/hooks/userAuth'
+import { useNotifications, type AppNotification } from '../../core/hooks/useNotifications'
 
-type NotifTab = 'sinleer' | 'comentarios' | 'lanzamientos'
+type NotifTab = 'sinleer' | 'todas'
 
-interface Notification {
-  id:      number
-  title:   string
-  body:    string
-  time:    string
-  read:    boolean
-  type:    'success' | 'info'
-  tab:     NotifTab
+// ── Configuración visual por tipo ─────────────────────────────────────────────
+interface NotifConfig { label: string; color: string; bg: string; icon: React.ReactNode }
+
+const NOTIF_CONFIG: Record<string, NotifConfig> = {
+  fermentation_complete: {
+    label: 'Fermentación', color: '#22C55E', bg: '#16A34A22',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>,
+  },
+  fermentation_interrupted: {
+    label: 'Fermentación', color: '#F97316', bg: '#F9731622',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+  },
+  high_temperature: {
+    label: 'Temperatura', color: '#EF4444', bg: '#EF444422',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>,
+  },
+  sensor_failure: {
+    label: 'Sensor', color: '#EF4444', bg: '#EF444422',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  },
+  new_announcement: {
+    label: 'Comunicado', color: '#3B82F6', bg: '#3B82F622',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>,
+  },
+  member_added: {
+    label: 'Grupo', color: '#22C55E', bg: '#16A34A22',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
+  },
+  member_removed: {
+    label: 'Grupo', color: '#F97316', bg: '#F9731622',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
+  },
+  user_registered: {
+    label: 'Usuario', color: '#A78BFA', bg: '#A78BFA22',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>,
+  },
+  experiment_complete: {
+    label: 'Experimento', color: '#A78BFA', bg: '#A78BFA22',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  },
+  general: {
+    label: 'General', color: '#71717A', bg: '#71717A22',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#71717A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  },
 }
 
-const MOCK_NOTIFICATIONS: Notification[] = [
-  { id: 1, title: 'Nueva sesión iniciada',    body: 'Se inició una fermentación en el circuito #12.',          time: 'Hace 5 min',  read: false, type: 'success', tab: 'sinleer'      },
-  { id: 2, title: 'Alerta de temperatura',    body: 'La temperatura superó el umbral en el circuito #7.',      time: 'Hace 18 min', read: false, type: 'info',    tab: 'comentarios'  },
-  { id: 3, title: 'Nuevo usuario registrado', body: 'María López se registró y está pendiente de activación.', time: 'Hace 1 h',    read: false, type: 'success', tab: 'sinleer'      },
-  { id: 4, title: 'Versión beta 2026',        body: 'Se publicó la primera versión de la plataforma Nich-Ká.', time: 'Hace 3 h',    read: true,  type: 'info',    tab: 'lanzamientos' },
-  { id: 5, title: 'Reporte generado',         body: 'El reporte de la sesión #44 ya está disponible.',         time: 'Ayer',        read: true,  type: 'success', tab: 'sinleer'      },
-]
+const cfg = (type: string): NotifConfig => NOTIF_CONFIG[type] ?? NOTIF_CONFIG.general
+
+const formatTime = (iso: string) => {
+  const diff = Date.now() - new Date(iso).getTime()
+  const min  = Math.floor(diff / 60000)
+  if (min < 1)   return 'Ahora'
+  if (min < 60)  return `Hace ${min} min`
+  const h = Math.floor(min / 60)
+  if (h < 24)    return `Hace ${h} h`
+  const d = Math.floor(h / 24)
+  if (d === 1)   return 'Ayer'
+  return `Hace ${d} días`
+}
+
+const NotifRow = ({ n, onRead }: { n: AppNotification; onRead: (id: number) => void }) => {
+  const c = cfg(n.type)
+  return (
+    <button
+      onClick={() => onRead(n.id)}
+      className="w-full text-left px-4 py-4 flex items-start gap-3 transition-colors hover:bg-neutral-900/60"
+      style={{ borderBottom: '1px solid #1A1A1C' }}
+    >
+      <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: c.bg }}>
+        {c.icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: `${c.color}20`, color: c.color, border: `1px solid ${c.color}30` }}>
+            {c.label}
+          </span>
+          {n.status === 'unread' && (
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+          )}
+        </div>
+        <p className="text-xs leading-relaxed" style={{ color: n.status === 'unread' ? '#E4E4E7' : '#71717A' }}>
+          {n.message}
+        </p>
+        <p className="text-[10px] mt-1.5" style={{ color: '#3F3F46' }}>{formatTime(n.created_at)}</p>
+      </div>
+    </button>
+  )
+}
 
 const ProfileNav = () => {
-  const { user } = useUserAuth()
-  const navigate  = useNavigate()
-  const [open, setOpen]                   = useState(false)
-  const [view, setView]                   = useState<'list' | 'settings'>('list')
-  const [tab, setTab]                     = useState<NotifTab>('sinleer')
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS)
-  const [settings, setSettings]           = useState({
-    alertas:     true,
-    reportes:    true,
-    usuarios:    true,
-    comunicados: true,
-    sonido:      false,
+  const { user }    = useUserAuth()
+  const navigate    = useNavigate()
+  const { notifications, markOneRead, markAllRead } = useNotifications()
+
+  const [open, setOpen] = useState(false)
+  const [view, setView] = useState<'list' | 'settings'>('list')
+  const [tab,  setTab]  = useState<NotifTab>('sinleer')
+  const [settings, setSettings] = useState({
+    alertas: true, reportes: true, usuarios: true, comunicados: true, sonido: false,
   })
 
-  const unread = notifications.filter(n => !n.read).length
-
-  const markAllRead = () =>
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
-
-  const markRead = (id: number) =>
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
-
+  const unread  = notifications.filter(n => n.status === 'unread').length
   const visible = tab === 'sinleer'
-    ? notifications.filter(n => !n.read)
-    : notifications.filter(n => n.tab === tab)
+    ? notifications.filter(n => n.status === 'unread')
+    : notifications
 
-  const initials = user?.name
-    .split(' ')
-    .map((n: string) => n[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase() ?? '?'
-
+  const initials     = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? '?'
   const profileImage = user?.profile_image ?? null
 
   return (
@@ -110,14 +167,12 @@ const ProfileNav = () => {
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop */}
             <motion.div
               className="fixed inset-0 z-50 bg-black/30"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
             />
 
-            {/* Panel */}
             <motion.div
               className="fixed top-0 right-0 bottom-0 z-50 w-96 flex flex-col"
               style={{ backgroundColor: '#0f0f10', borderLeft: '1px solid #1F1F22' }}
@@ -134,10 +189,12 @@ const ProfileNav = () => {
                     </svg>
                   </button>
                   <p className="flex-1 text-white text-base font-bold">Notificaciones</p>
-                  <button onClick={markAllRead} title="Marcar todas como leídas"
-                    className="p-1.5 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors">
-                    <CheckCheck size={16} />
-                  </button>
+                  {unread > 0 && (
+                    <button onClick={markAllRead} title="Marcar todas como leídas"
+                      className="p-1.5 rounded-lg text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors">
+                      <CheckCheck size={16} />
+                    </button>
+                  )}
                   <button
                     onClick={() => setView(v => v === 'settings' ? 'list' : 'settings')}
                     className="p-1.5 rounded-lg transition-colors"
@@ -152,20 +209,19 @@ const ProfileNav = () => {
                 {/* Tabs */}
                 <div className="flex items-center gap-1 mt-4 p-1 rounded-xl" style={{ backgroundColor: '#1A1A1C' }}>
                   {([
-                    { id: 'sinleer',      label: 'Sin leer'     },
-                    { id: 'comentarios',  label: 'Comentarios'  },
-                    { id: 'lanzamientos', label: 'Lanzamientos' },
-                  ] as { id: NotifTab; label: string }[]).map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => setTab(t.id)}
-                      className="flex-1 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
-                      style={{
-                        backgroundColor: tab === t.id ? '#2A2A2D' : 'transparent',
-                        color:           tab === t.id ? '#F4F4F5' : '#52525B',
-                      }}
-                    >
+                    { id: 'sinleer' as NotifTab, label: 'Sin leer', count: unread },
+                    { id: 'todas'   as NotifTab, label: 'Todas',    count: notifications.length },
+                  ]).map(t => (
+                    <button key={t.id} onClick={() => setTab(t.id)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+                      style={{ backgroundColor: tab === t.id ? '#2A2A2D' : 'transparent', color: tab === t.id ? '#F4F4F5' : '#52525B' }}>
                       {t.label}
+                      {t.count > 0 && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: tab === t.id ? '#3F3F46' : '#2A2A2D', color: '#A1A1AA' }}>
+                          {t.count}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -178,9 +234,9 @@ const ProfileNav = () => {
                     <p className="text-neutral-500 text-[10px] uppercase tracking-widest mb-3">Tipos de notificación</p>
                     <div className="flex flex-col gap-1">
                       {([
-                        { key: 'alertas',     label: 'Alertas de sensores',  desc: 'Temperatura, pH y otros umbrales' },
-                        { key: 'reportes',    label: 'Reportes generados',   desc: 'Cuando un reporte esté listo'     },
-                        { key: 'usuarios',    label: 'Nuevos usuarios',      desc: 'Registros pendientes de activar'  },
+                        { key: 'alertas',     label: 'Alertas de sensores',  desc: 'Temperatura, pH y otros umbrales'   },
+                        { key: 'reportes',    label: 'Fermentaciones',       desc: 'Inicio, fin e interrupciones'       },
+                        { key: 'usuarios',    label: 'Usuarios y grupos',    desc: 'Registros y cambios en grupos'      },
                         { key: 'comunicados', label: 'Comunicados',          desc: 'Avisos publicados en la plataforma' },
                       ] as { key: keyof typeof settings; label: string; desc: string }[]).map(item => (
                         <div key={item.key} className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-neutral-900/60 transition-colors">
@@ -193,16 +249,13 @@ const ProfileNav = () => {
                             className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
                             style={{ backgroundColor: settings[item.key] ? '#22C55E' : '#2A2A2D' }}
                           >
-                            <span
-                              className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all"
-                              style={{ left: settings[item.key] ? '18px' : '2px' }}
-                            />
+                            <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all"
+                              style={{ left: settings[item.key] ? '18px' : '2px' }} />
                           </button>
                         </div>
                       ))}
                     </div>
                   </div>
-
                   <div>
                     <p className="text-neutral-500 text-[10px] uppercase tracking-widest mb-3">Preferencias</p>
                     <div className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-neutral-900/60 transition-colors">
@@ -210,15 +263,11 @@ const ProfileNav = () => {
                         <p className="text-white text-xs font-medium">Sonido</p>
                         <p className="text-neutral-600 text-[11px] mt-0.5">Reproducir sonido al recibir notificaciones</p>
                       </div>
-                      <button
-                        onClick={() => setSettings(s => ({ ...s, sonido: !s.sonido }))}
+                      <button onClick={() => setSettings(s => ({ ...s, sonido: !s.sonido }))}
                         className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-                        style={{ backgroundColor: settings.sonido ? '#22C55E' : '#2A2A2D' }}
-                      >
-                        <span
-                          className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all"
-                          style={{ left: settings.sonido ? '18px' : '2px' }}
-                        />
+                        style={{ backgroundColor: settings.sonido ? '#22C55E' : '#2A2A2D' }}>
+                        <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all"
+                          style={{ left: settings.sonido ? '18px' : '2px' }} />
                       </button>
                     </div>
                   </div>
@@ -226,49 +275,20 @@ const ProfileNav = () => {
               )}
 
               {/* Lista */}
-              {view === 'list' && <div className="flex-1 overflow-y-auto">
-                {visible.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-neutral-600 pb-16">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
-                    </svg>
-                    <p className="text-sm">Sin notificaciones</p>
-                  </div>
-                ) : (
-                  visible.map(n => (
-                    <button
-                      key={n.id}
-                      onClick={() => markRead(n.id)}
-                      className="w-full text-left px-4 py-4 flex items-start gap-3 transition-colors hover:bg-neutral-900/60"
-                      style={{ borderBottom: '1px solid #1A1A1C' }}
-                    >
-                      {/* Ícono circular */}
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: n.type === 'success' ? '#16A34A22' : '#3B82F622' }}>
-                        {n.type === 'success' ? (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M20 6L9 17l-5-5"/>
-                          </svg>
-                        ) : (
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                          </svg>
-                        )}
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"
-                          style={{ backgroundColor: '#22C55E20', color: '#22C55E', border: '1px solid #22C55E30' }}>
-                          NUEVO
-                        </span>
-                        <p className="text-xs font-bold leading-snug mb-1 text-white">{n.title}</p>
-                        <p className="text-[11px] leading-relaxed" style={{ color: '#71717A' }}>{n.body}</p>
-                        <p className="text-[10px] mt-1.5" style={{ color: '#3F3F46' }}>{n.time}</p>
-                      </div>
-                    </button>
-                  ))
-                )}
-              </div>}
+              {view === 'list' && (
+                <div className="flex-1 overflow-y-auto" data-lenis-prevent>
+                  {visible.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full gap-3 text-neutral-600 pb-16">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                      </svg>
+                      <p className="text-sm">{tab === 'sinleer' ? 'Sin notificaciones pendientes' : 'Sin notificaciones'}</p>
+                    </div>
+                  ) : (
+                    visible.map(n => <NotifRow key={n.id} n={n} onRead={markOneRead} />)
+                  )}
+                </div>
+              )}
             </motion.div>
           </>
         )}

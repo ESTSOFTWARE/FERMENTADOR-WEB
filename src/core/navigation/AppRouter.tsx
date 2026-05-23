@@ -28,6 +28,9 @@ import AddUserView from '../../features/users/presentation/view/AddUserView'
 import ManageUsersView from '../../features/users/presentation/view/ManageUsersView'
 import ProfileView from '../../features/profile/presentation/view/ProfileView'
 import AnnouncementsView from '../../features/announcements/presentation/view/AnnouncementsView'
+import GroupsView from '../../features/groups/presentation/view/GroupsView'
+import GroupDetailView from '../../features/groups/presentation/view/GroupDetailView'
+import AdminGroupsView from '../../features/groups/presentation/view/AdminGroupsView'
 import SupportView from '../../features/support/presentation/view/SupportView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationContext'
 import PrivateRoute from './PrivateRoute'
@@ -80,6 +83,9 @@ const AppRouter = () => {
               <Route path="/fermentation"          element={<FermentationView />} />
               <Route path="/users/add"             element={<AddUserView />} />
               <Route path="/users/manage"          element={<ManageUsersView />} />
+              <Route path="/groups"                element={<GroupsView />} />
+              <Route path="/groups/:id"           element={<GroupDetailView />} />
+              <Route path="/admin/groups"         element={<AdminGroupsView />} />
             </Route>
 
           </Route>
