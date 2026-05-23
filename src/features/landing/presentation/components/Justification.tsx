@@ -18,7 +18,7 @@ const REASONS = [
   {
     num: "02",
     title: "Eje tecnológico",
-    description: "ML y NLP aplicados sobre datos propios del proceso (pH, temperatura, alcohol, turbidez, conductividad) sin dependencia de servicios en la nube de terceros — privacidad, disponibilidad offline y cumplimiento normativo garantizados.",
+    description: "ML y NLP aplicados sobre datos propios del proceso (pH, temperatura, alcohol, turbidez, conductividad) con servicios en la nube — privacidad y cumplimiento normativo garantizados.",
     accent: "#60a5fa",
     stat: { value: "5", label: "variables IoT en tiempo real" },
     icon: (
