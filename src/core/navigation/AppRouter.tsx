@@ -35,6 +35,7 @@ import SupportView from '../../features/support/presentation/view/SupportView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationContext'
 import PrivateRoute from './PrivateRoute'
 import ScrollToTop from './ScrollToTop'
+import NotFoundView from '../../shared/presentation/NotFoundView'
 
 const AppRouter = () => {
   return (
@@ -89,6 +90,9 @@ const AppRouter = () => {
 
           </Route>
         </Route>
+
+        {/* 404 — Ruta comodín */}
+        <Route path="*" element={<NotFoundView />} />
       </Routes>
     </BrowserRouter>
   )
