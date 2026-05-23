@@ -65,7 +65,6 @@ export const useProfileViewModel = () => {
         }))
       }
     }).catch(() => {})
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
   // ── Computed ───────────────────────────────────────────────────────────────

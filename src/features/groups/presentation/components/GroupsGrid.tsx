@@ -28,7 +28,7 @@ export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
       variants={gridVariants}
       style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: 16 }}
     >
-      {groups.map((group, index) => {
+      {groups.map((group) => {
         const cover = group.cover_image ?? '/assets/classrooms/banner.png'
 
         return (
