@@ -50,6 +50,14 @@ const Login = () => {
       sileo.error({ title: 'Error al iniciar sesión', description: error, fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
     }
   }, [error])
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const oauthError = params.get('oauth_error')
+    if (oauthError) {
+      sileo.error({ title: 'Error al iniciar sesión con OAuth', description: decodeURIComponent(oauthError), fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
+    }
+  }, [location.search])
   const registeredEmail = location.state?.email as string | undefined
 
   return (

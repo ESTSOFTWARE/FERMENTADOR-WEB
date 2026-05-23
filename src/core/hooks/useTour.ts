@@ -66,6 +66,18 @@ const STEPS: TourStep[] = [
     title:   'Chat IA — FermestBot',
     desc:    'Habla con FermestBot, el asistente de inteligencia artificial. Puedes preguntarle sobre fermentación, experimentos o el uso de la plataforma.',
   },
+  {
+    path:    '/groups',
+    element: '#tour-step-groups',
+    title:   'Mis Grupos',
+    desc:    'Crea grupos o clases, define la materia y sube una imagen de portada. Añade alumnos buscando por nombre o correo. Cada grupo genera un código QR único para que los estudiantes se unan desde la app móvil.',
+  },
+  {
+    path:    '/admin/groups',
+    element: '#tour-step-admin-groups',
+    title:   'Ver Grupos',
+    desc:    'Como administrador puedes ver todos los grupos creados por los profesores: nombre, materia, código, docente a cargo y alumnos inscritos.',
+  },
   // ── Grupo: Experimentar con IA ──────────────────────────────────────
   {
     path:    '/dashboard',

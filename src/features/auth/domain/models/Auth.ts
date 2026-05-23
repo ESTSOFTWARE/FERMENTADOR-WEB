@@ -28,6 +28,7 @@ export interface AuthUser {
   dial_code?:      string
   phone_number?:   string
   tour_completed?: boolean
+  oauth_provider?: 'google' | 'github' | 'email'
 }
 
 export interface TokenResponse {

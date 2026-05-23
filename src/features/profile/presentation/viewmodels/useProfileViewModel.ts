@@ -40,6 +40,7 @@ export const useProfileViewModel = () => {
   // ── Activación de circuito ─────────────────────────────────────────────────
   // Si el usuario ya tiene circuito, no necesita el formulario de activación
   const [circuitId, setCircuitId] = useState<number | null>(user?.circuit_id ?? null)
+  const [createdBy, setCreatedBy] = useState<number | null>(null)
   const [activationCode, setActivationCode] = useState('')
   const [loadingActivation, setLoadingActivation] = useState(false)
   const [successActivation, setSuccessActivation] = useState(false)
@@ -54,6 +55,7 @@ export const useProfileViewModel = () => {
         dial_code:    profile.dial_code    ?? prev.dial_code,
         phone_number: profile.phone_number ?? prev.phone_number,
       }))
+      setCreatedBy(profile.created_by)
       const stored = localStorage.getItem('user_data')
       if (stored) {
         localStorage.setItem('user_data', JSON.stringify({
@@ -74,7 +76,10 @@ export const useProfileViewModel = () => {
     infoForm.last_name    !== (user?.last_name ?? '') ||
     infoForm.email        !== (user?.email     ?? '') ||
     infoForm.phone_number !== ''
-  const hasCircuit = circuitId !== null   // ← controla si se muestra el formulario
+  const hasCircuit  = circuitId !== null
+  const isVerified  =
+    (user?.role === 'admin'   && circuitId !== null) ||
+    (user?.role === 'profesor' && createdBy !== null)
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const setInfo = (key: keyof InfoForm, val: string) => setInfoForm(prev => ({ ...prev, [key]: val }))
@@ -206,6 +211,7 @@ export const useProfileViewModel = () => {
     circuitId,
     activationCode,
     hasCircuit,
+    isVerified,
     // estados de UI
     editingInfo,
     loadingInfo,
