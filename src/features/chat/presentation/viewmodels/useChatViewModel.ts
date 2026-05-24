@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
-import type { Message } from '../../domain/models/Message'
-import { ChatRepositoryImpl } from '../../data/repositories/ChatRepositoryImpl'
+import { ChatRepositoryImpl }          from '../../data/repositories/ChatRepositoryImpl'
+import { SendMessageUseCase }          from '../../domain/usecases/send-message.usecase'
+import type { Message }                from '../../domain/models/Message'
 
-const repository = new ChatRepositoryImpl()
+const repository        = new ChatRepositoryImpl()
+const sendMessageUseCase = new SendMessageUseCase(repository)
 
 export const useChatViewModel = () => {
   const [messages, setMessages] = useState<Message[]>([])
@@ -34,7 +36,7 @@ export const useChatViewModel = () => {
     setLoading(true)
 
     try {
-      const reply = await repository.sendMessage(messages, text)
+      const reply = await sendMessageUseCase.execute(messages, text)
       setMessages(prev => [...prev, { role: 'model', text: reply }])
     } catch (err) {
       const isRateLimit = err instanceof Error && err.message === 'rate_limit'

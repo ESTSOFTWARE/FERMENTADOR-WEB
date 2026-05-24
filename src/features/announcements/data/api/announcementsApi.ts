@@ -1,5 +1,5 @@
 import type { Announcement }     from '../../domain/models/Announcement'
-import type { AnnouncementBody } from '../models/AnnouncementBody'
+import type { AnnouncementBody } from '../../domain/dtos/announcement-body.dto'
 import { authHeaders, handleResponse } from '../../../../core/api/http'
 
 const BASE_URL = import.meta.env.VITE_API_URL

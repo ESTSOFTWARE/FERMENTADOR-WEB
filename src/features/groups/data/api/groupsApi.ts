@@ -1,33 +1,10 @@
-import type { CreateGroupRequest } from '../../domain/dtos/request/create-group.request'
-import type { AddMemberRequest }   from '../../domain/dtos/request/add-member.request'
-import type { Group }              from '../../domain/models/Group'
-import type { SimpleUser }         from '../../domain/models/SimpleUser'
+import type { CreateGroupRequest }              from '../../domain/dtos/request/create-group.request'
+import type { AddMemberRequest }               from '../../domain/dtos/request/add-member.request'
+import type { Group }                          from '../../domain/models/Group'
+import type { SimpleUser }                     from '../../domain/models/SimpleUser'
+import { authHeaders, authHeadersMultipart, handleResponse } from '../../../../core/api/http'
 
 const BASE_URL = import.meta.env.VITE_API_URL
-
-const authHeaders = (): Record<string, string> => ({
-  'Content-Type':               'application/json',
-  'ngrok-skip-browser-warning': 'true',
-  ...(localStorage.getItem('access_token')
-    ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-    : {}),
-})
-
-const authHeadersMultipart = (): Record<string, string> => ({
-  'ngrok-skip-browser-warning': 'true',
-  ...(localStorage.getItem('access_token')
-    ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-    : {}),
-})
-
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.detail ?? `HTTP ${res.status}`)
-  }
-  if (res.status === 204) return undefined as T
-  return res.json()
-}
 
 export const groupsApi = {
   getAll: (): Promise<Group[]> =>

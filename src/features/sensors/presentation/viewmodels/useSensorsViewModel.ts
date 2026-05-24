@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback }  from 'react'
 import { SensorRepositoryImpl }                      from '../../data/repositories/SensorRepositoryImpl'
+import { GetSensorHistoryUseCase }                   from '../../domain/usecases/get-sensor-history.usecase'
 import { createSensorWebSocket }                     from '../../data/api/sensorApi'
 import { SENSOR_META }                               from '../../domain/constants/sensor-meta.constants'
 import { emptyChartData }                            from '../utils/empty-chart-data'
@@ -14,7 +15,8 @@ import type { SensorsViewModelOptions }              from '../types/sensors-view
 
 export type { WsStatus }
 
-const repository = new SensorRepositoryImpl()
+const repository      = new SensorRepositoryImpl()
+const getSensorHistory = new GetSensorHistoryUseCase(repository)
 
 export const useSensorsViewModel = (options?: SensorsViewModelOptions) => {
   const [circuitId,    setCircuitId]    = useState<number>(options?.autoCircuitId ?? 1)
@@ -40,7 +42,7 @@ export const useSensorsViewModel = (options?: SensorsViewModelOptions) => {
     setError(null)
     try {
       const results = await Promise.allSettled(
-        SENSOR_META.map(s => repository.getHistory(id, s.key, sessionId))
+        SENSOR_META.map(s => getSensorHistory.execute(id, s.key, sessionId))
       )
       const next = emptyChartData()
       results.forEach((result, i) => {

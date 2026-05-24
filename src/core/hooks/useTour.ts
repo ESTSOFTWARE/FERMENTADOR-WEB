@@ -2,7 +2,13 @@ import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
-import { profileApi } from '../../features/profile/data/api/profileApi'
+import { ProfileRepositoryImpl }      from '../../features/profile/data/repositories/ProfileRepositoryImpl'
+import { GetUserProfileUseCase }      from '../../features/profile/domain/usecases/get-user-profile.usecase'
+import { MarkTourCompletedUseCase }   from '../../features/profile/domain/usecases/mark-tour-completed.usecase'
+
+const profileRepo    = new ProfileRepositoryImpl()
+const getUserProfile = new GetUserProfileUseCase(profileRepo)
+const markTour       = new MarkTourCompletedUseCase(profileRepo)
 import { useUserAuth } from './userAuth'
 
 interface TourStep {
@@ -145,7 +151,7 @@ export const useTour = () => {
   useEffect(() => {
     if (!user?.id || started.current) return
 
-    profileApi.getUser(user.id).then(profile => {
+    getUserProfile.execute(user.id).then(profile => {
       if (profile.tour_completed) return
 
       started.current = true
@@ -197,7 +203,7 @@ export const useTour = () => {
         },
         onDestroyed: () => {
           document.body.classList.remove('tour-active')
-          profileApi.markTourCompleted().catch(() => {})
+          markTour.execute().catch(() => {})
         },
       })
 

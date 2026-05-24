@@ -1,9 +1,9 @@
-import { useState, useEffect }              from 'react'
-import { AnnouncementsRepositoryImpl }       from '../../data/repositories/AnnouncementsRepositoryImpl'
-import { labelColor }                        from '../utils/label-color'
-import type { Announcement }                 from '../../domain/models/Announcement'
+import { useState, useEffect }        from 'react'
+import { AnnouncementsRepositoryImpl } from '../../data/repositories/AnnouncementsRepositoryImpl'
+import { GetAnnouncementsUseCase }     from '../../domain/usecases/get-announcements.usecase'
+import type { Announcement }           from '../../domain/models/Announcement'
 
-const repository = new AnnouncementsRepositoryImpl()
+const getAnnouncements = new GetAnnouncementsUseCase(new AnnouncementsRepositoryImpl())
 
 export const useAnnouncementsViewModel = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -11,11 +11,11 @@ export const useAnnouncementsViewModel = () => {
   const [error, setError]                 = useState<string | null>(null)
 
   useEffect(() => {
-    repository.getAll()
+    getAnnouncements.execute()
       .then(setAnnouncements)
       .catch(err => setError(err instanceof Error ? err.message : 'Error al cargar los comunicados.'))
       .finally(() => setLoading(false))
   }, [])
 
-  return { announcements, loading, error, labelColor }
+  return { announcements, loading, error }
 }

@@ -1,10 +1,16 @@
-import { useState, useEffect }  from 'react'
-import { UserRepositoryImpl }   from '../../data/repositories/UserRepositoryImpl'
-import { useUserAuth }             from '../../../../core/hooks/userAuth'
-import type { User, Role }      from '../../models/entities/User'
-import type { EditUserForm }    from '../types/edit-user-form.types'
+import { useState, useEffect }    from 'react'
+import { UserRepositoryImpl }     from '../../data/repositories/UserRepositoryImpl'
+import { GetAllUsersUseCase }     from '../../domain/usecases/get-all-users.usecase'
+import { UpdateUserUseCase }      from '../../domain/usecases/update-user.usecase'
+import { DeleteUserUseCase }      from '../../domain/usecases/delete-user.usecase'
+import { useUserAuth }            from '../../../../core/hooks/userAuth'
+import type { User, Role }        from '../../models/entities/User'
+import type { EditUserForm }      from '../types/edit-user-form.types'
 
-const repo = new UserRepositoryImpl()
+const repo       = new UserRepositoryImpl()
+const getAll     = new GetAllUsersUseCase(repo)
+const updateUser = new UpdateUserUseCase(repo)
+const deleteUser = new DeleteUserUseCase(repo)
 
 export const useManageUsersViewModel = () => {
   const { user } = useUserAuth()
@@ -23,7 +29,7 @@ export const useManageUsersViewModel = () => {
   const [deleting,   setDeleting]   = useState(false)
 
   useEffect(() => {
-    repo.getAll()
+    getAll.execute()
       .then(setUsers)
       .catch(() => setError('Error al cargar usuarios.'))
       .finally(() => setLoading(false))
@@ -37,7 +43,6 @@ export const useManageUsersViewModel = () => {
       u.email.toLowerCase().includes(q)     ||
       u.role_name?.toLowerCase().includes(q)
     )
-    // Profesor solo ve estudiantes
     const matchRole = isProfesor
       ? u.role_name === 'Estudiante'
       : roleFilter === '' || u.role_name === roleFilter
@@ -66,12 +71,7 @@ export const useManageUsersViewModel = () => {
     if (!editForm || editing === null) return
     setSaving(true)
     try {
-      const updated = await repo.update(editing, {
-        name:      editForm.name,
-        last_name: editForm.last_name,
-        email:     editForm.email,
-        role:      editForm.role_name.toLowerCase(),
-      })
+      const updated = await updateUser.execute(editing, editForm)
       setUsers(prev => prev.map(u =>
         u.id === editing ? { ...u, ...updated, role_name: updated.role_name ?? u.role_name } : u
       ))
@@ -89,7 +89,7 @@ export const useManageUsersViewModel = () => {
     if (deleteId === null) return
     setDeleting(true)
     try {
-      await repo.delete(deleteId)
+      await deleteUser.execute(deleteId)
       setUsers(prev => prev.filter(u => u.id !== deleteId))
       setDeleteId(null)
       flash('Usuario eliminado.')

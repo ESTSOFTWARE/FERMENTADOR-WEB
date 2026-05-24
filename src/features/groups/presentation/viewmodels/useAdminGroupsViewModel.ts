@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { GroupsRepositoryImpl }             from '../../data/repositories/GroupsRepositoryImpl'
+import { GetAllGroupsAdminUseCase }         from '../../domain/usecases/get-all-groups-admin.usecase'
 import type { Group }                       from '../../domain/models/Group'
 
-const repo = new GroupsRepositoryImpl()
+const getAllAdmin = new GetAllGroupsAdminUseCase(new GroupsRepositoryImpl())
 
 export const useAdminGroupsViewModel = () => {
   const [groups,  setGroups]  = useState<Group[]>([])
@@ -12,7 +13,7 @@ export const useAdminGroupsViewModel = () => {
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      setGroups(await repo.getAllAdmin())
+      setGroups(await getAllAdmin.execute())
     } finally {
       setLoading(false)
     }

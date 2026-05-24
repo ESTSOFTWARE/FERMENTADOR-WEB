@@ -1,7 +1,13 @@
-import { useState, useEffect, useCallback }  from 'react'
-import { fermentationApi }                   from '../../../fermentation/data/api/fermentationApi'
-import type { ReportWithEfficiency }         from '../types/report-with-efficiency.types'
-import { mergeReport }                       from '../utils/merge-report'
+import { useState, useEffect, useCallback }           from 'react'
+import { FermentationRepositoryImpl }                 from '../../../fermentation/data/repositories/FermentationRepositoryImpl'
+import { GetSessionsHistoryUseCase }                  from '../../domain/usecases/get-sessions-history.usecase'
+import { GetReportBySessionUseCase }                  from '../../domain/usecases/get-report-by-session.usecase'
+import type { ReportWithEfficiency }                  from '../types/report-with-efficiency.types'
+import { mergeReport }                                from '../utils/merge-report'
+
+const repo               = new FermentationRepositoryImpl()
+const getSessionsHistory = new GetSessionsHistoryUseCase(repo)
+const getReportBySession = new GetReportBySessionUseCase(repo)
 
 export const useFermentationReportsViewModel = () => {
   const [reports, setReports] = useState<ReportWithEfficiency[]>([])
@@ -12,12 +18,10 @@ export const useFermentationReportsViewModel = () => {
     setLoading(true)
     setError(null)
     try {
-      const sessions = await fermentationApi.getSessionsHistory()
+      const sessions = await getSessionsHistory.execute()
 
       const reportResults = await Promise.allSettled(
-        sessions.map(s =>
-          fermentationApi.getReportBySessionId(s.id).catch(() => null)
-        )
+        sessions.map(s => getReportBySession.execute(s.id).catch(() => null))
       )
 
       const merged: ReportWithEfficiency[] = sessions.map((session, i) => {

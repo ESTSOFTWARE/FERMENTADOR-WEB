@@ -1,9 +1,10 @@
 import { useState, useEffect }  from 'react'
 import { UserRepositoryImpl }   from '../../data/repositories/UserRepositoryImpl'
-import { useUserAuth }             from '../../../../core/hooks/userAuth'
+import { CreateUserUseCase }    from '../../domain/usecases/create-user.usecase'
+import { useUserAuth }          from '../../../../core/hooks/userAuth'
 import type { AddUserForm }     from '../types/add-user-form.types'
 
-const repo = new UserRepositoryImpl()
+const createUser = new CreateUserUseCase(new UserRepositoryImpl())
 
 const initialForm: AddUserForm = {
   name:      '',
@@ -17,9 +18,7 @@ const initialForm: AddUserForm = {
 export const useAddUserViewModel = () => {
   const { user } = useUserAuth()
 
-  // Si es profesor, el rol queda fijo en 'estudiante'
-  const userRole    = user?.role ?? ''
-  const isProfesor  = userRole === 'profesor'
+  const isProfesor = (user?.role ?? '') === 'profesor'
 
   const [form,           setForm]           = useState<AddUserForm>(initialForm)
   const [activationCode, setActivationCode] = useState<string | null>(null)
@@ -53,7 +52,7 @@ export const useAddUserViewModel = () => {
     setLoading(true)
     setError(null)
     try {
-      await repo.create({
+      await createUser.execute({
         name:            form.name,
         last_name:       form.last_name,
         email:           form.email,

@@ -1,19 +1,20 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState }           from 'react'
+import { useNavigate }        from 'react-router-dom'
 import { AuthRepositoryImpl } from '../../data/repositories/AuthRepositoryImpl'
+import { RegisterUseCase }    from '../../domain/usecases/register.usecase'
 
-const repository = new AuthRepositoryImpl()
+const register = new RegisterUseCase(new AuthRepositoryImpl())
 
 export const useRegisterViewModel = () => {
   const navigate = useNavigate()
 
-  const [name, setName]           = useState('')
-  const [lastName, setLastName]   = useState('')
-  const [email, setEmail]         = useState('')
-  const [password, setPassword]   = useState('')
-  const [confirm, setConfirm]     = useState('')
-  const [loading, setLoading]     = useState(false)
-  const [error, setError]         = useState<string | null>(null)
+  const [name, setName]         = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail]       = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,18 +27,8 @@ export const useRegisterViewModel = () => {
 
     setLoading(true)
     try {
-      // El endpoint /register devuelve RegisterResponse (sin token).
-      // Tras registrarse, el usuario inicia sesión con sus credenciales.
-      await repository.register({
-        name,
-        last_name: lastName,
-        email,
-        password,
-      })
-
-      navigate('/login', {
-        state: { registered: true, email },
-      })
+      const registeredEmail = await register.execute(name, lastName, email, password)
+      navigate('/login', { state: { registered: true, email: registeredEmail } })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear la cuenta')
     } finally {

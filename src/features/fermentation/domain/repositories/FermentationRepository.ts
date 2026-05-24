@@ -5,9 +5,11 @@ import type { FermentationReport }           from '../models/FermentationReport'
 import type { ReportHistory }                from '../models/ReportHistory'
 
 export interface FermentationRepository {
-  scheduleFermentation(data: ScheduleFermentationRequest): Promise<FermentationSession>
-  startFermentation(sessionId: number): Promise<FermentationSession>
+  getActiveSession():                                              Promise<FermentationSession | null>
+  scheduleFermentation(data: ScheduleFermentationRequest):        Promise<FermentationSession>
+  startFermentation(sessionId: number):                           Promise<FermentationSession>
   stopFermentation(sessionId: number, data: StopFermentationRequest): Promise<FermentationSession>
-  getReport(sessionId: number): Promise<FermentationReport>
-  getReportHistory(): Promise<ReportHistory[]>
+  getSessionsHistory():                                            Promise<FermentationSession[]>
+  getReport(sessionId: number):                                   Promise<FermentationReport>
+  getReportHistory():                                             Promise<ReportHistory[]>
 }

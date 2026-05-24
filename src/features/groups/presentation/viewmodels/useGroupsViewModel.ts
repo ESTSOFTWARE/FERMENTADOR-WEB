@@ -1,10 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
 import { sileo }                            from 'sileo'
 import { GroupsRepositoryImpl }             from '../../data/repositories/GroupsRepositoryImpl'
+import { GetGroupsUseCase }                 from '../../domain/usecases/get-groups.usecase'
+import { CreateGroupUseCase }               from '../../domain/usecases/create-group.usecase'
+import { DeleteGroupUseCase }               from '../../domain/usecases/delete-group.usecase'
+import { UploadGroupCoverUseCase }          from '../../domain/usecases/upload-group-cover.usecase'
 import type { Group }                       from '../../domain/models/Group'
 import { TOAST_STYLE }                      from '../constants/toast-style.constants'
 
-const repo = new GroupsRepositoryImpl()
+const repo        = new GroupsRepositoryImpl()
+const getGroups   = new GetGroupsUseCase(repo)
+const createGroup = new CreateGroupUseCase(repo)
+const deleteGroup = new DeleteGroupUseCase(repo)
+const uploadCover = new UploadGroupCoverUseCase(repo)
 
 export const useGroupsViewModel = () => {
   const [groups,  setGroups]  = useState<Group[]>([])
@@ -20,7 +28,7 @@ export const useGroupsViewModel = () => {
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      setGroups(await repo.getAll())
+      setGroups(await getGroups.execute())
     } catch (e) {
       sileo.error({ title: 'Error al cargar grupos', description: (e as Error).message, ...TOAST_STYLE })
     } finally {
@@ -42,12 +50,12 @@ export const useGroupsViewModel = () => {
     setCoverPreview(null)
   }
 
-  const createGroup = async () => {
+  const handleCreateGroup = async () => {
     if (!createName.trim() || !createSubject.trim()) return
     try {
       setSaving(true)
-      let group = await repo.create({ name: createName.trim(), subject: createSubject.trim() })
-      if (coverFile) group = await repo.uploadCover(group.id, coverFile)
+      let group = await createGroup.execute({ name: createName.trim(), subject: createSubject.trim() })
+      if (coverFile) group = await uploadCover.execute(group.id, coverFile)
       setGroups(prev => [group, ...prev])
       resetCreate()
       setShowCreate(false)
@@ -59,10 +67,10 @@ export const useGroupsViewModel = () => {
     }
   }
 
-  const deleteGroup = async (id: number) => {
+  const handleDeleteGroup = async (id: number) => {
     try {
       const name = groups.find(g => g.id === id)?.name ?? 'Grupo'
-      await repo.delete(id)
+      await deleteGroup.execute(id)
       setGroups(prev => prev.filter(g => g.id !== id))
       sileo.success({ title: 'Grupo eliminado', description: `"${name}" fue eliminado.`, ...TOAST_STYLE })
     } catch (e) {
@@ -77,7 +85,8 @@ export const useGroupsViewModel = () => {
     createSubject, setCreateSubject,
     coverPreview, pickCover,
     saving,
-    createGroup, deleteGroup,
+    createGroup: handleCreateGroup,
+    deleteGroup: handleDeleteGroup,
     resetCreate,
   }
 }
