@@ -1,7 +1,7 @@
 import { useNavigate }          from 'react-router-dom'
 import { motion }               from 'motion/react'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
-import { labelColor }           from '../../../announcements/presentation/viewmodels/useAnnouncementsViewModel'
+import { labelColor }           from '../../../announcements/presentation/utils/label-color'
 import { linkify }              from '../../../../shared/utils/linkify'
 import { OVERVIEW_STYLES }      from '../constants/overview-styles.constants'
 import { useOverviewViewModel } from '../viewmodels/useOverviewViewModel'
