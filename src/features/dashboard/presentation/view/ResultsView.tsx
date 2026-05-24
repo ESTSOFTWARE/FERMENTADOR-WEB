@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { useExperimentStore } from '../../../../core/store/useExperimentStore'
 import { useState } from 'react'
+import { tooltipStyle } from '../constants/chart.constants'
 
 const ResultsView = () => {
   const { id } = useParams<{ id: string }>()
@@ -16,21 +17,12 @@ const ResultsView = () => {
     </div>
   )
 
-  const historyData = result.history.map((fitness, i) => ({
+  const historyData = result.history.map((fitness: number, i: number) => ({
     generacion: i,
     mejor: parseFloat(fitness.toFixed(4)),
     peor: parseFloat((result.history_worst?.[i] ?? 0).toFixed(4)),
     promedio: parseFloat((result.history_avg?.[i] ?? 0).toFixed(4)),
   }))
-
-  const tooltipStyle = {
-    backgroundColor: '#111113',
-    border: '1px solid #1F1F22',
-    borderRadius: '8px',
-    color: '#F4F4F5',
-    fontSize: '12px',
-    fontFamily: 'Poppins, sans-serif',
-  }
 
   const metrics = [
     { label: 'RPM', value: result.best_individual.rpm.toFixed(1), unit: '', description: 'Velocidad de agitación óptima' },

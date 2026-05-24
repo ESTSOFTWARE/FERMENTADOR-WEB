@@ -1,12 +1,5 @@
-import type { FermentationStatus } from '../../domain/models/Fermentation'
-import type { StatusPillProps } from '../types/StatusPillProps'
-
-const STATUS_CONFIG: Record<FermentationStatus, { label: string; color: string }> = {
-  running:     { label: 'En curso',      color: '#22C55E' },
-  scheduled:   { label: 'Programada',   color: '#3B82F6' },
-  completed:   { label: 'Completada',   color: '#A78BFA' },
-  interrupted: { label: 'Interrumpida', color: '#F59E0B' },
-}
+import { STATUS_CONFIG }         from '../constants/status-config.constants'
+import type { StatusPillProps }  from '../types/StatusPillProps'
 
 const StatusPill = ({ status }: StatusPillProps) => {
   const { label, color } = STATUS_CONFIG[status] ?? { label: status, color: '#71717A' }

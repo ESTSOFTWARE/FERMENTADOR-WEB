@@ -1,38 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'motion/react'
-import { Users } from 'lucide-react'
+import { useNavigate }                from 'react-router-dom'
+import { motion }                     from 'motion/react'
+import { Users }                      from 'lucide-react'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
-import { GroupsRepositoryImpl } from '../../data/repositories/GroupsRepositoryImpl'
-import type { Group } from '../../domain/models/Group'
-
-const repo = new GroupsRepositoryImpl()
-
-const formatDate = (d: string | null) =>
-  d ? new Date(d).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+import { useAdminGroupsViewModel }    from '../viewmodels/useAdminGroupsViewModel'
+import { formatDate }                 from '../utils/format-date'
 
 const AdminGroupsView = () => {
-  const navigate           = useNavigate()
-  const [groups, setGroups] = useState<Group[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch]   = useState('')
-
-  const load = useCallback(async () => {
-    try {
-      setLoading(true)
-      setGroups(await repo.getAllAdmin())
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => { load() }, [load])
-
-  const filtered = groups.filter(g =>
-    g.name.toLowerCase().includes(search.toLowerCase()) ||
-    g.subject.toLowerCase().includes(search.toLowerCase()) ||
-    g.code.toLowerCase().includes(search.toLowerCase())
-  )
+  const navigate                     = useNavigate()
+  const { loading, search, setSearch, filtered } = useAdminGroupsViewModel()
 
   return (
     <motion.div variants={pageVariants} initial="hidden" animate="visible"
@@ -124,7 +99,7 @@ const AdminGroupsView = () => {
                       {g.members.length}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 20px', color: '#52525B', fontSize: 12 }}>{formatDate(g.created_at)}</td>
+                  <td style={{ padding: '14px 20px', color: '#52525B', fontSize: 12 }}>{formatDate(g.created_at, true)}</td>
                 </tr>
               ))}
             </tbody>

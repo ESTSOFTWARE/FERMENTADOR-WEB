@@ -2,7 +2,7 @@ import { useState, useEffect }  from 'react'
 import { UserRepositoryImpl }   from '../../data/repositories/UserRepositoryImpl'
 import { useUserAuth }             from '../../../../core/hooks/userAuth'
 import type { User, Role }      from '../../models/entities/User'
-import type { EditUserForm }    from '../types/EditUserForm'
+import type { EditUserForm }    from '../types/edit-user-form.types'
 
 const repo = new UserRepositoryImpl()
 

@@ -1,22 +1,15 @@
-import { fermentationApi } from '../api/fermentationApi'
-import type { FermentationRepository } from '../../domain/repositories/FermentationRepository'
-import type {
-  ScheduleFermentationRequest,
-  StopFermentationRequest,
-  FermentationSession,
-  FermentationReport,
-  ReportHistory,
-} from '../../domain/models/Fermentation'
+import { fermentationApi }                   from '../api/fermentationApi'
+import type { FermentationRepository }        from '../../domain/repositories/FermentationRepository'
+import type { ScheduleFermentationRequest }   from '../../domain/dtos/request/schedule-fermentation.request'
+import type { StopFermentationRequest }       from '../../domain/dtos/request/stop-fermentation.request'
+import type { FermentationSession }           from '../../domain/models/FermentationSession'
+import type { FermentationReport }            from '../../domain/models/FermentationReport'
+import type { ReportHistory }                 from '../../domain/models/ReportHistory'
 
 export class FermentationRepositoryImpl implements FermentationRepository {
 
   async scheduleFermentation(data: ScheduleFermentationRequest): Promise<FermentationSession> {
-    return fermentationApi.scheduleFermentation({
-      circuit_id:      data.circuit_id,
-      scheduled_start: data.scheduled_start,
-      scheduled_end:   data.scheduled_end,
-      initial_sugar:   data.initial_sugar,
-    }) as Promise<FermentationSession>
+    return fermentationApi.scheduleFermentation(data) as Promise<FermentationSession>
   }
 
   async startFermentation(sessionId: number): Promise<FermentationSession> {

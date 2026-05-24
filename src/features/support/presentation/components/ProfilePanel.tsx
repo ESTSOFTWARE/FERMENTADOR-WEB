@@ -1,39 +1,12 @@
-import { useRef, useState } from 'react'
-import { useProfileViewModel } from '../../../profile/presentation/viewmodels/useProfileViewModel'
-import { PhoneInput } from '../../../profile/presentation/components/PhoneInput'
-import { cn } from '../../../../lib/utils'
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Administrador', soporte: 'Soporte', profesor: 'Profesor', estudiante: 'Estudiante',
-}
-const ROLE_COLOR: Record<string, string> = {
-  admin: '#A78BFA', soporte: '#3B82F6', profesor: '#3B82F6', estudiante: '#22C55E',
-}
-
-const EyeBtn = ({ show, onToggle }: { show: boolean; onToggle: () => void }) => (
-  <button type="button" onClick={onToggle}
-    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-neutral-400 transition-colors">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      {show
-        ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></>
-        : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>}
-    </svg>
-  </button>
-)
-
-const inputCls = 'w-full bg-neutral-950 border border-neutral-800 rounded-xl text-white text-sm px-4 py-2.5 outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20 transition-all placeholder:text-neutral-700'
-const readonlyCls = 'w-full bg-neutral-900/50 border border-neutral-900 rounded-xl text-neutral-600 text-sm px-4 py-2.5 cursor-default'
-const labelCls = 'block text-[10px] font-semibold uppercase tracking-widest text-neutral-600 mb-2'
-
-const Flash = ({ msg, ok }: { msg: string; ok: boolean }) => (
-  <div className={cn('flex items-center gap-2 px-4 py-3 rounded-xl border text-sm mb-4',
-    ok ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400')}>
-    {ok
-      ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>}
-    {msg}
-  </div>
-)
+import { useRef, useState }     from 'react'
+import { useProfileViewModel }  from '../../../profile/presentation/viewmodels/useProfileViewModel'
+import { PhoneInput }           from '../../../profile/presentation/components/PhoneInput'
+import { EyeBtn }               from '../../../profile/presentation/components/EyeBtn'
+import { Flash }                from '../../../profile/presentation/components/Flash'
+import { cn }                   from '../../../../lib/utils'
+import { ROLE_LABELS }          from '../constants/role-labels.constants'
+import { ROLE_COLOR }           from '../constants/role-color.constants'
+import { PROFILE_INPUT_CLS, PROFILE_READONLY_CLS, PROFILE_LABEL_CLS } from '../constants/profile-panel-cls.constants'
 
 const ProfilePanel = () => {
   const {
@@ -53,19 +26,17 @@ const ProfilePanel = () => {
   const [showNext,    setShowNext]    = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  // Si el usuario no tiene foto en BD, limpiar el cache de localStorage
   if (user && !user.profile_image) localStorage.removeItem('profile_image')
   const avatar = user?.profile_image ?? null
 
-  const initials   = [infoForm.name, infoForm.last_name].filter(Boolean).map(s => s[0]).join('').toUpperCase() || '?'
-  const roleLabel  = ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—'
-  const roleColor  = ROLE_COLOR[user?.role ?? ''] ?? '#22C55E'
-  const isSoporte  = user?.role === 'soporte'
+  const initials  = [infoForm.name, infoForm.last_name].filter(Boolean).map(s => s[0]).join('').toUpperCase() || '?'
+  const roleLabel = ROLE_LABELS[user?.role ?? ''] ?? user?.role ?? '—'
+  const roleColor = ROLE_COLOR[user?.role ?? ''] ?? '#22C55E'
+  const isSoporte = user?.role === 'soporte'
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
 
-      {/* Header */}
       <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Mi perfil</h2>
@@ -73,14 +44,11 @@ const ProfilePanel = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-y-auto px-8 pb-8">
         <div className="grid grid-cols-[280px_1fr] gap-6 items-start">
 
-          {/* ── Left column ── */}
           <div className="flex flex-col gap-4">
 
-            {/* Avatar card */}
             <div className="bg-neutral-900/50 border border-neutral-800/60 rounded-2xl p-6 flex flex-col items-center gap-5">
               <div className="relative">
                 {avatar ? (
@@ -116,7 +84,6 @@ const ProfilePanel = () => {
               </div>
             </div>
 
-            {/* Account info */}
             <div className="bg-neutral-900/50 border border-neutral-800/60 rounded-2xl p-5">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-neutral-600 mb-4">Cuenta</p>
               {[
@@ -132,10 +99,8 @@ const ProfilePanel = () => {
             </div>
           </div>
 
-          {/* ── Right column ── */}
           <div className="flex flex-col gap-5">
 
-            {/* Personal info */}
             <div className="bg-neutral-900/50 border border-neutral-800/60 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -151,29 +116,29 @@ const ProfilePanel = () => {
                 )}
               </div>
 
-              {successInfo && <Flash msg="Información actualizada correctamente." ok />}
-              {errorInfo   && <Flash msg={errorInfo} ok={false} />}
+              {successInfo && <Flash msg="Información actualizada correctamente." type="success" />}
+              {errorInfo   && <Flash msg={errorInfo} type="error" />}
 
               <div className="flex flex-col gap-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Nombre</label>
+                    <label className={PROFILE_LABEL_CLS}>Nombre</label>
                     <input value={infoForm.name} onChange={e => setInfo('name', e.target.value)}
-                      disabled={!editingInfo} className={editingInfo ? inputCls : readonlyCls} />
+                      disabled={!editingInfo} className={editingInfo ? PROFILE_INPUT_CLS : PROFILE_READONLY_CLS} />
                   </div>
                   <div>
-                    <label className={labelCls}>Apellido</label>
+                    <label className={PROFILE_LABEL_CLS}>Apellido</label>
                     <input value={infoForm.last_name} onChange={e => setInfo('last_name', e.target.value)}
-                      disabled={!editingInfo} className={editingInfo ? inputCls : readonlyCls} />
+                      disabled={!editingInfo} className={editingInfo ? PROFILE_INPUT_CLS : PROFILE_READONLY_CLS} />
                   </div>
                 </div>
                 <div>
-                  <label className={labelCls}>Correo electrónico</label>
+                  <label className={PROFILE_LABEL_CLS}>Correo electrónico</label>
                   <input type="email" value={infoForm.email} onChange={e => setInfo('email', e.target.value)}
-                    disabled={!editingInfo} className={editingInfo ? inputCls : readonlyCls} />
+                    disabled={!editingInfo} className={editingInfo ? PROFILE_INPUT_CLS : PROFILE_READONLY_CLS} />
                 </div>
                 <div>
-                  <label className={labelCls}>Teléfono</label>
+                  <label className={PROFILE_LABEL_CLS}>Teléfono</label>
                   <PhoneInput
                     dialCode={infoForm.dial_code} phoneNumber={infoForm.phone_number}
                     onChange={(dc, pn) => { setInfo('dial_code', dc); setInfo('phone_number', pn) }}
@@ -195,7 +160,6 @@ const ProfilePanel = () => {
               </div>
             </div>
 
-            {/* Activation code — solo roles que usan fermentador */}
             {!hasCircuit && !isSoporte && (
               <div className="bg-neutral-900/50 border border-green-500/20 rounded-2xl p-6">
                 <div className="flex items-start gap-4 mb-5">
@@ -208,17 +172,17 @@ const ProfilePanel = () => {
                   </div>
                 </div>
 
-                {successActivation && <Flash msg={`Circuito #${circuitId} vinculado correctamente.`} ok />}
-                {errorActivation   && <Flash msg={errorActivation} ok={false} />}
+                {successActivation && <Flash msg={`Circuito #${circuitId} vinculado correctamente.`} type="success" />}
+                {errorActivation   && <Flash msg={errorActivation} type="error" />}
 
                 <div className="flex gap-3 items-end">
                   <div className="flex-1">
-                    <label className={labelCls}>Código del dispositivo</label>
+                    <label className={PROFILE_LABEL_CLS}>Código del dispositivo</label>
                     <input value={activationCode}
                       onChange={e => setActivationCode(e.target.value.toUpperCase().slice(0, 8))}
                       onKeyDown={e => e.key === 'Enter' && handleActivateCircuit()}
                       placeholder="Ej: A1B2C3D4" maxLength={8}
-                      className={cn(inputCls, 'font-mono tracking-widest text-sm', activationCode.length === 8 && 'border-green-500/40')} />
+                      className={cn(PROFILE_INPUT_CLS, 'font-mono tracking-widest text-sm', activationCode.length === 8 && 'border-green-500/40')} />
                     <div className="flex justify-between mt-1.5">
                       <span className="text-neutral-700 text-[10px]">Código impreso en tu dispositivo</span>
                       <span className={cn('text-[10px] font-mono', activationCode.length === 8 ? 'text-green-400' : 'text-neutral-700')}>{activationCode.length}/8</span>
@@ -233,33 +197,32 @@ const ProfilePanel = () => {
               </div>
             )}
 
-            {/* Change password */}
             <div className="bg-neutral-900/50 border border-neutral-800/60 rounded-2xl p-6">
               <div className="mb-6">
                 <p className="text-white font-semibold text-sm">Cambiar contraseña</p>
                 <p className="text-neutral-500 text-xs mt-0.5">Mínimo 8 caracteres</p>
               </div>
 
-              {successPw && <Flash msg="Contraseña actualizada correctamente." ok />}
-              {errorPw   && <Flash msg={errorPw} ok={false} />}
+              {successPw && <Flash msg="Contraseña actualizada correctamente." type="success" />}
+              {errorPw   && <Flash msg={errorPw} type="error" />}
 
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className={labelCls}>Contraseña actual</label>
+                  <label className={PROFILE_LABEL_CLS}>Contraseña actual</label>
                   <div className="relative">
                     <input type={showCurrent ? 'text' : 'password'} placeholder="••••••••"
                       value={pwForm.current} onChange={e => setPw('current', e.target.value)}
-                      className={cn(inputCls, 'pr-10')} />
+                      className={cn(PROFILE_INPUT_CLS, 'pr-10')} />
                     <EyeBtn show={showCurrent} onToggle={() => setShowCurrent(p => !p)} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className={labelCls}>Nueva contraseña</label>
+                    <label className={PROFILE_LABEL_CLS}>Nueva contraseña</label>
                     <div className="relative">
                       <input type={showNext ? 'text' : 'password'} placeholder="••••••••"
                         value={pwForm.next} onChange={e => setPw('next', e.target.value)}
-                        className={cn(inputCls, 'pr-10')} />
+                        className={cn(PROFILE_INPUT_CLS, 'pr-10')} />
                       <EyeBtn show={showNext} onToggle={() => setShowNext(p => !p)} />
                     </div>
                     {pwForm.next !== '' && pwForm.next.length < 8 && (
@@ -267,11 +230,11 @@ const ProfilePanel = () => {
                     )}
                   </div>
                   <div>
-                    <label className={cn(labelCls, pwMismatch && '!text-red-400')}>Confirmar nueva</label>
+                    <label className={cn(PROFILE_LABEL_CLS, pwMismatch && '!text-red-400')}>Confirmar nueva</label>
                     <div className="relative">
                       <input type={showConfirm ? 'text' : 'password'} placeholder="••••••••"
                         value={pwForm.confirm} onChange={e => setPw('confirm', e.target.value)}
-                        className={cn(inputCls, 'pr-10', pwMismatch && '!border-red-500/40')} />
+                        className={cn(PROFILE_INPUT_CLS, 'pr-10', pwMismatch && '!border-red-500/40')} />
                       <EyeBtn show={showConfirm} onToggle={() => setShowConfirm(p => !p)} />
                     </div>
                     {pwMismatch && <p className="text-red-400 text-[11px] mt-1.5">Las contraseñas no coinciden</p>}

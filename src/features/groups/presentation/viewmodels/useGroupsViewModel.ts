@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from 'react'
-import { sileo } from 'sileo'
-import { GroupsRepositoryImpl } from '../../data/repositories/GroupsRepositoryImpl'
-import type { Group } from '../../domain/models/Group'
+import { sileo }                            from 'sileo'
+import { GroupsRepositoryImpl }             from '../../data/repositories/GroupsRepositoryImpl'
+import type { Group }                       from '../../domain/models/Group'
+import { TOAST_STYLE }                      from '../constants/toast-style.constants'
 
 const repo = new GroupsRepositoryImpl()
-const TOAST_STYLE = { fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } }
 
 export const useGroupsViewModel = () => {
   const [groups,  setGroups]  = useState<Group[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [showCreate,   setShowCreate]   = useState(false)
-  const [createName,   setCreateName]   = useState('')
+  const [showCreate,    setShowCreate]    = useState(false)
+  const [createName,    setCreateName]    = useState('')
   const [createSubject, setCreateSubject] = useState('')
-  const [coverFile,    setCoverFile]    = useState<File | null>(null)
-  const [coverPreview, setCoverPreview] = useState<string | null>(null)
-  const [saving,       setSaving]       = useState(false)
+  const [coverFile,     setCoverFile]     = useState<File | null>(null)
+  const [coverPreview,  setCoverPreview]  = useState<string | null>(null)
+  const [saving,        setSaving]        = useState(false)
 
   const load = useCallback(async () => {
     try {

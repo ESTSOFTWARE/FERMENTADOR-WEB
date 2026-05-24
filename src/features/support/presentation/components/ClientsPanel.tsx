@@ -1,19 +1,13 @@
-import { useState } from 'react'
+import { useState }              from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { sileo } from 'sileo'
+import { sileo }                  from 'sileo'
 import { useSupportClientsStore, type SupportClient } from '../../../../core/store/useSupportClientsStore'
-import { useSupportStore } from '../../../../core/store/useSupportStore'
-import { cn } from '../../../../lib/utils'
-import PaginationBar from '../../../../shared/components/PaginationBar'
-
-const PAGE_SIZE = 10
-
-const roleLabel: Record<string, string> = {
-  admin: 'Admin', profesor: 'Profesor', estudiante: 'Estudiante', soporte: 'Soporte',
-}
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
+import { useSupportStore }        from '../../../../core/store/useSupportStore'
+import { cn }                     from '../../../../lib/utils'
+import PaginationBar              from '../../../../shared/components/PaginationBar'
+import { PAGE_SIZE }              from '../constants/pagination.constants'
+import { ROLE_LABELS }            from '../constants/role-labels.constants'
+import { formatDate }             from '../utils/format-date'
 
 const ClientsPanel = () => {
   const { clients, generateCode, toggleStatus } = useSupportClientsStore()
@@ -56,7 +50,6 @@ const ClientsPanel = () => {
   return (
     <div className="relative h-full flex flex-col overflow-hidden">
 
-      {/* ── Header ── */}
       <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Usuarios registrados</h2>
@@ -78,7 +71,6 @@ const ClientsPanel = () => {
         </div>
       </div>
 
-      {/* ── Table ── */}
       <div className="flex-1 overflow-y-auto px-6 py-5">
         <div className="border border-neutral-800/60 rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
@@ -124,7 +116,7 @@ const ClientsPanel = () => {
                   <span className="text-sm text-neutral-500 truncate block">{client.email}</span>
                 </td>
                 <td className="px-6 py-5">
-                  <span className="text-sm text-neutral-400">{roleLabel[client.role] ?? client.role}</span>
+                  <span className="text-sm text-neutral-400">{ROLE_LABELS[client.role] ?? client.role}</span>
                 </td>
                 <td className="px-6 py-5">
                   <span className={cn('inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border whitespace-nowrap',
@@ -185,7 +177,6 @@ const ClientsPanel = () => {
         </>}
       />
 
-      {/* ── Drawer overlay ── */}
       <AnimatePresence>
         {selected && (
           <>
@@ -198,7 +189,6 @@ const ClientsPanel = () => {
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 35 }}>
 
-              {/* Drawer header */}
               <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center font-bold text-neutral-300">
                   {selected.name[0]}{selected.last_name[0]}
@@ -216,10 +206,9 @@ const ClientsPanel = () => {
               </div>
 
               <div className="flex flex-col gap-5 px-5 py-5">
-                {/* Badges */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs text-neutral-500 bg-neutral-900 border border-neutral-800 px-2.5 py-1 rounded-full">
-                    {roleLabel[selected.role] ?? selected.role}
+                    {ROLE_LABELS[selected.role] ?? selected.role}
                   </span>
                   <span className={cn('text-xs px-2.5 py-1 rounded-full border',
                     selected.status === 'active' ? 'text-green-400 bg-neutral-950 border-green-500/60' : 'text-red-400 bg-neutral-950 border-red-500/60')}>
@@ -234,12 +223,11 @@ const ClientsPanel = () => {
                   </button>
                 </div>
 
-                {/* Stats */}
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { label: 'Registro', value: formatDate(selected.createdAt) },
-                    { label: 'Chats', value: clientTickets.length.toString() },
-                    { label: 'Pendientes', value: pendingTickets.toString() },
+                    { label: 'Registro',    value: formatDate(selected.createdAt) },
+                    { label: 'Chats',       value: clientTickets.length.toString() },
+                    { label: 'Pendientes',  value: pendingTickets.toString() },
                   ].map(s => (
                     <div key={s.label} className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2.5 text-center">
                       <p className="text-white font-bold text-base leading-none">{s.value}</p>
@@ -248,7 +236,6 @@ const ClientsPanel = () => {
                   ))}
                 </div>
 
-                {/* Activation code */}
                 <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-white text-sm font-semibold">Código de activación</p>
@@ -274,14 +261,13 @@ const ClientsPanel = () => {
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
                   <p className="text-white text-sm font-semibold mb-3">Información personal</p>
                   <div className="flex flex-col gap-2.5">
                     {[
-                      { label: 'Nombre', value: `${selected.name} ${selected.last_name}` },
-                      { label: 'Correo', value: selected.email },
-                      { label: 'Rol', value: roleLabel[selected.role] ?? selected.role },
+                      { label: 'Nombre',   value: `${selected.name} ${selected.last_name}` },
+                      { label: 'Correo',   value: selected.email },
+                      { label: 'Rol',      value: ROLE_LABELS[selected.role] ?? selected.role },
                       { label: 'Registro', value: formatDate(selected.createdAt) },
                     ].map(f => (
                       <div key={f.label} className="flex items-center justify-between py-1.5 border-b border-neutral-800 last:border-0">

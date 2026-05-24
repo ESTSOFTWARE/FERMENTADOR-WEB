@@ -1,19 +1,11 @@
-import { useState } from 'react'
+import { useState }              from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { sileo } from 'sileo'
+import { sileo }                  from 'sileo'
 import { useSupportStore, type SupportTicket } from '../../../../core/store/useSupportStore'
-import { cn } from '../../../../lib/utils'
-import PaginationBar from '../../../../shared/components/PaginationBar'
-
-const PAGE_SIZE = 10
-
-const timeAgo = (iso: string) => {
-  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
-  if (diff < 60)    return 'ahora'
-  if (diff < 3600)  return `hace ${Math.floor(diff / 60)} min`
-  if (diff < 86400) return `hace ${Math.floor(diff / 3600)} hr`
-  return `hace ${Math.floor(diff / 86400)} d`
-}
+import { cn }                     from '../../../../lib/utils'
+import PaginationBar              from '../../../../shared/components/PaginationBar'
+import { PAGE_SIZE }              from '../constants/pagination.constants'
+import { timeAgo }                from '../utils/time-ago'
 
 const TicketsPanel = () => {
   const { tickets, addReply } = useSupportStore()
@@ -48,7 +40,6 @@ const TicketsPanel = () => {
   return (
     <div className="relative h-full flex flex-col overflow-hidden">
 
-      {/* ── Header ── */}
       <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Chats de soporte</h2>
@@ -79,7 +70,6 @@ const TicketsPanel = () => {
         </div>
       </div>
 
-      {/* ── Table ── */}
       <div className="flex-1 overflow-y-auto px-6 py-5">
         <div className="border border-neutral-800/60 rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
@@ -188,7 +178,6 @@ const TicketsPanel = () => {
         </>}
       />
 
-      {/* ── Drawer overlay ── */}
       <AnimatePresence>
         {selected && (
           <>
@@ -201,7 +190,6 @@ const TicketsPanel = () => {
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 35 }}>
 
-              {/* Drawer header */}
               <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-semibold text-sm">{selected.name}</p>
@@ -219,7 +207,6 @@ const TicketsPanel = () => {
                 </button>
               </div>
 
-              {/* Messages */}
               <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3">
                 {selected.messages.map((msg, i) => (
                   <div key={i} className={cn('flex gap-2', msg.from !== 'bot' ? 'justify-end' : 'justify-start')}>
@@ -236,7 +223,6 @@ const TicketsPanel = () => {
                 ))}
               </div>
 
-              {/* Reply input */}
               <div className="flex-shrink-0 px-5 pb-5 pt-3 border-t border-neutral-800">
                 <div className="flex gap-2 items-end rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-2.5 focus-within:border-blue-500/40 transition-all">
                   <textarea value={reply} onChange={e => setReply(e.target.value)}

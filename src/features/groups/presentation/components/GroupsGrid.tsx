@@ -1,21 +1,9 @@
-import { motion } from 'motion/react'
-import { Users } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { motion }                    from 'motion/react'
+import { Users }                     from 'lucide-react'
+import { useNavigate }               from 'react-router-dom'
 import { gridVariants, cardVariants } from '../../../../shared/animations/variants'
-import type { Group } from '../../domain/models/Group'
-import type { AuthUser } from '../../../auth/domain/models/Auth'
-
-
-const formatDate = (dateStr: string | null) => {
-  if (!dateStr) return 'Sin fecha'
-  return new Date(dateStr).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-interface Props {
-  groups:          Group[]
-  user:            AuthUser | null
-  onConfirmDelete: (id: number, name: string) => void
-}
+import type { GroupsGridProps as Props } from '../types/groups-grid.types'
+import { formatDate }                from '../utils/format-date'
 
 export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
   const navigate = useNavigate()
@@ -42,7 +30,6 @@ export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
               className="group relative h-full overflow-hidden rounded-2xl flex flex-col transition-all duration-500"
               style={{ backgroundColor: '#111113', border: '1px solid #1F1F22' }}
             >
-              {/* Imagen portada */}
               <div className="relative h-44 overflow-hidden flex-shrink-0">
                 <img
                   src={cover}
@@ -51,8 +38,6 @@ export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
                   draggable={false}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#111113] via-[#111113]/30 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-300" />
-
-                {/* Badge código */}
                 <div className="absolute top-3 left-3">
                   <span
                     className="text-[10px] font-bold tracking-widest px-2.5 py-1 rounded-md"
@@ -63,7 +48,6 @@ export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
                 </div>
               </div>
 
-              {/* Contenido */}
               <div className="p-5 flex flex-col flex-1 justify-between">
                 <div className="space-y-2">
                   <h3
@@ -81,11 +65,7 @@ export const GroupsGrid = ({ groups, user, onConfirmDelete }: Props) => {
                   </div>
                 </div>
 
-                {/* Footer */}
-                <div
-                  className="pt-4 mt-auto flex items-center justify-between"
-                  style={{ borderTop: '1px solid #1F1F22' }}
-                >
+                <div className="pt-4 mt-auto flex items-center justify-between" style={{ borderTop: '1px solid #1F1F22' }}>
                   <div className="flex items-center gap-2 min-w-0">
                     <div
                       className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 overflow-hidden"

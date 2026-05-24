@@ -1,19 +1,9 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { SlidingNumber } from '@/components/animate-ui/primitives/texts/sliding-number'
 import { cn } from '@/lib/utils'
+import type { PaginationBarProps } from '../types/pagination-bar-props.types'
 
-interface Props {
-  page:       number
-  totalPages: number
-  total:      number
-  pageSize:   number
-  onPrev:     () => void
-  onNext:     () => void
-  actions?:   React.ReactNode
-  className?: string
-}
-
-const PaginationBar = ({ page, totalPages, onPrev, onNext, actions, className }: Props) => (
+const PaginationBar = ({ page, totalPages, onPrev, onNext, actions, className }: PaginationBarProps) => (
   <div className={cn('flex-shrink-0 flex justify-center py-4', className)}>
     <div className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-800 rounded-full px-2 py-2 shadow-lg">
       <button

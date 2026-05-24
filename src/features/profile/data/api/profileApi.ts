@@ -1,11 +1,9 @@
-import type {
-  UpdateUserRequest,
-  ChangePasswordRequest,
-  ChangePasswordResponse,
-  ActivateCircuitRequest,
-  ActivateCircuitResponse,
-  UserProfile,
-} from '../../domain/models/Profile'
+import type { UpdateUserRequest }       from '../../domain/dtos/request/update-user.request'
+import type { ChangePasswordRequest }   from '../../domain/dtos/request/change-password.request'
+import type { ActivateCircuitRequest }  from '../../domain/dtos/request/activate-circuit.request'
+import type { ChangePasswordResponse }  from '../../domain/dtos/response/change-password.response'
+import type { ActivateCircuitResponse } from '../../domain/dtos/response/activate-circuit.response'
+import type { UserProfile }             from '../../domain/models/UserProfile'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
@@ -69,7 +67,6 @@ export const profileApi = {
       body:    JSON.stringify(data),
     }).then(handleResponse<UserProfile>),
 
-  // POST /users/me/activate → { access_token, token_type, circuit_id }
   activateCircuit: (data: ActivateCircuitRequest): Promise<ActivateCircuitResponse> =>
     fetch(`${BASE_URL}/users/me/activate`, {
       method:  'POST',

@@ -4,40 +4,10 @@ import { motion, AnimatePresence } from 'motion/react'
 import { cn } from '../../../../lib/utils'
 import { PointerHighlight } from '../../../../components/ui/pointer-highlight'
 import Text3DFlip from '../../../../components/ui/text-3d-flip'
-
-const panel = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
-const item = {
-  hidden:  { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] } },
-}
-
-const COL1 = [
-  'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',
-  'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=600&q=80',
-  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',
-]
-const COL2 = [
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80',
-  'https://images.unsplash.com/photo-1559525839-8c4c01c1dee2?w=600&q=80',
-  'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=600&q=80',
-  'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=600&q=80',
-]
-const COL3 = [
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',
-  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',
-  'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',
-  'https://images.unsplash.com/photo-1559525839-8c4c01c1dee2?w=600&q=80',
-]
-
-const EyeIcon = ({ open }: { open: boolean }) => open
-  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-
-type Step = 'email' | 'code' | 'done'
+import { COL1, COL2, COL3 } from '../constants/auth-gallery.constants'
+import { authPanelVariants, authItemVariants } from '../constants/auth.variants'
+import { EyeIcon } from '../components/EyeIcon'
+import type { Step } from '../types/forgot-password.types'
 
 const ForgotPassword = () => {
   const [step, setStep]         = useState<Step>('email')
@@ -74,9 +44,9 @@ const ForgotPassword = () => {
       {/* ── Left panel ── */}
       <motion.div
         className="flex-1 flex flex-col justify-center px-12 py-16 max-w-xl"
-        variants={panel} initial="hidden" animate="visible"
+        variants={authPanelVariants} initial="hidden" animate="visible"
       >
-        <motion.div variants={item}>
+        <motion.div variants={authItemVariants}>
           <Link to="/" className="flex items-center gap-2.5 mb-12">
             <img src="/assets/logo.svg" alt="Nich-Ká" className="w-8 h-8 object-contain" />
             <span className="text-white font-bold text-lg tracking-tight">Nich-Ká</span>

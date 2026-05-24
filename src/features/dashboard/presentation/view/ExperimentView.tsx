@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useExperimentViewModel } from '../viewmodels/useExperimentViewModel'
 import { useState } from 'react'
 import { useExperimentStore } from '../../../../core/store/useExperimentStore'
-import type { Individual } from '../../domain/models/Experiment'
+import type { Individual } from '../../domain/models/Individual'
 
 const ExperimentView = () => {
   const { id } = useParams<{ id: string }>()

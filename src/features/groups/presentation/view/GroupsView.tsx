@@ -1,15 +1,10 @@
-import { motion, AnimatePresence } from 'motion/react'
-import { sileo } from 'sileo'
-import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
-import { useGroupsViewModel } from '../viewmodels/useGroupsViewModel'
-import { GroupsGrid } from '../components/GroupsGrid'
-import { useUserAuth } from '../../../../core/hooks/userAuth'
-
-const modalVariants = {
-  hidden:  { opacity: 0, scale: 0.95, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] } },
-  exit:    { opacity: 0, scale: 0.95, y: 8, transition: { duration: 0.15 } },
-}
+import { motion, AnimatePresence }          from 'motion/react'
+import { sileo }                            from 'sileo'
+import { pageVariants, sectionVariants }    from '../../../../shared/animations/variants'
+import { useGroupsViewModel }               from '../viewmodels/useGroupsViewModel'
+import { GroupsGrid }                       from '../components/GroupsGrid'
+import { useUserAuth }                      from '../../../../core/hooks/userAuth'
+import { modalVariants }                    from '../constants/modal-variants.constants'
 
 const GroupsView = () => {
   const vm       = useGroupsViewModel()
@@ -48,7 +43,6 @@ const GroupsView = () => {
       animate="visible"
       style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}
     >
-      {/* Header */}
       <motion.div variants={sectionVariants} style={{ marginBottom: 32, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
         <div>
           <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>
@@ -75,7 +69,6 @@ const GroupsView = () => {
         </button>
       </motion.div>
 
-      {/* Loading */}
       {vm.loading && (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80 }}>
           <svg className="animate-spin" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -85,25 +78,18 @@ const GroupsView = () => {
         </div>
       )}
 
-      {/* Empty */}
       {!vm.loading && vm.groups.length === 0 && (
         <div style={{ textAlign: 'center', paddingTop: 80, color: '#3F3F46', fontSize: 13 }}>
           Aún no tienes grupos. Crea el primero.
         </div>
       )}
 
-      {/* Grid */}
       {!vm.loading && vm.groups.length > 0 && (
         <motion.div variants={sectionVariants}>
-          <GroupsGrid
-            groups={vm.groups}
-            user={user}
-            onConfirmDelete={confirmDelete}
-          />
+          <GroupsGrid groups={vm.groups} user={user} onConfirmDelete={confirmDelete} />
         </motion.div>
       )}
 
-      {/* Modal crear grupo */}
       <AnimatePresence>
         {vm.showCreate && (
           <>
@@ -115,22 +101,15 @@ const GroupsView = () => {
             <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 51, pointerEvents: 'none' }}>
               <motion.div
                 variants={modalVariants} initial="hidden" animate="visible" exit="exit"
-                style={{
-                  width: 420, padding: '28px 28px 24px', borderRadius: 16,
-                  backgroundColor: '#111113', border: '1px solid #2A2A2D', pointerEvents: 'auto',
-                }}
+                style={{ width: 420, padding: '28px 28px 24px', borderRadius: 16, backgroundColor: '#111113', border: '1px solid #2A2A2D', pointerEvents: 'auto' }}
               >
                 <h3 style={{ color: '#F4F4F5', fontSize: 16, fontWeight: 600, margin: '0 0 20px 0' }}>Nuevo grupo</h3>
 
-                {/* Imagen de portada */}
                 <label style={{ color: '#71717A', fontSize: 12, display: 'block', marginBottom: 6 }}>Portada (opcional)</label>
                 <label style={{ display: 'block', cursor: 'pointer', marginBottom: 16 }}>
                   <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }}
                     onChange={e => { const f = e.target.files?.[0]; if (f) vm.pickCover(f) }} />
-                  <div style={{
-                    width: '100%', height: 120, borderRadius: 10, border: '1px dashed #2A2A2D',
-                    backgroundColor: '#0A0A0B', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
+                  <div style={{ width: '100%', height: 120, borderRadius: 10, border: '1px dashed #2A2A2D', backgroundColor: '#0A0A0B', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {vm.coverPreview
                       ? <img src={vm.coverPreview} alt="portada" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <div style={{ textAlign: 'center', color: '#3F3F46' }}>
@@ -141,32 +120,22 @@ const GroupsView = () => {
                   </div>
                 </label>
 
-                {/* Nombre */}
                 <label style={{ color: '#71717A', fontSize: 12, display: 'block', marginBottom: 6 }}>Nombre del grupo</label>
                 <input
                   autoFocus
                   value={vm.createName}
                   onChange={e => vm.setCreateName(e.target.value)}
                   placeholder="Ej. 5A Biotecnología"
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 14,
-                    backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D',
-                    color: '#F4F4F5', outline: 'none', boxSizing: 'border-box',
-                  }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 14, backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D', color: '#F4F4F5', outline: 'none', boxSizing: 'border-box' }}
                 />
 
-                {/* Materia */}
                 <label style={{ color: '#71717A', fontSize: 12, display: 'block', marginBottom: 6 }}>Materia</label>
                 <input
                   value={vm.createSubject}
                   onChange={e => vm.setCreateSubject(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && vm.createGroup()}
                   placeholder="Ej. Biotecnología Industrial"
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 13,
-                    backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D',
-                    color: '#F4F4F5', outline: 'none', boxSizing: 'border-box',
-                  }}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, fontSize: 13, backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D', color: '#F4F4F5', outline: 'none', boxSizing: 'border-box' }}
                 />
 
                 <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>

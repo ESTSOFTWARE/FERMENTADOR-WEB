@@ -6,36 +6,12 @@ import { cn } from '../../../../lib/utils'
 import Text3DFlip from '../../../../components/ui/text-3d-flip'
 import { Checkbox } from '../../../../components/ui/checkbox'
 import { sileo } from 'sileo'
-
-const COL1 = [
-  'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',
-  'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=600&q=80',
-  'https://images.unsplash.com/photo-1611077543764-4b6a1fe68b25?w=600&q=80',
-]
-const COL2 = [
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80',
-  'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=600&q=80',
-  'https://images.unsplash.com/photo-1559525839-8c4c01c1dee2?w=600&q=80',
-  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',
-]
-
-const panel = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
-const item = {
-  hidden:  { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] } },
-}
-
-const EyeIcon = ({ open }: { open: boolean }) => open
-  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+import { REGISTER_COL1, REGISTER_COL2 } from '../constants/auth-gallery.constants'
+import { authPanelVariants, authItemVariants } from '../constants/auth.variants'
+import { EyeIcon } from '../components/EyeIcon'
+import type { Field } from '../types/register.types'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-type Field = 'name' | 'lastName' | 'email' | 'password' | 'confirm'
 
 const Register = () => {
   const {
@@ -97,25 +73,25 @@ const Register = () => {
 
       <motion.div
         className="flex-1 flex flex-col justify-center px-12 py-12 max-w-xl overflow-y-auto"
-        variants={panel}
+        variants={authPanelVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={item}>
+        <motion.div variants={authItemVariants}>
           <Link to="/" className="flex items-center gap-2.5 mb-12">
             <img src="/assets/logo.svg" alt="Fermest" className="w-8 h-8 object-contain cursor-pointer" />
             <span className="text-white font-bold text-lg tracking-tight">Nich-Ká</span>
           </Link>
         </motion.div>
 
-        <motion.div variants={item} className="flex flex-col gap-2 mb-8">
+        <motion.div variants={authItemVariants} className="flex flex-col gap-2 mb-8">
           <h1 className="text-4xl font-black text-white tracking-tight">Crea tu cuenta</h1>
           <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
             Empieza a monitorear y optimizar la fermentación de tu café con IA.
           </p>
         </motion.div>
 
-        <motion.form variants={item} noValidate onSubmit={onSubmit} className="flex flex-col gap-4">
+        <motion.form variants={authItemVariants} noValidate onSubmit={onSubmit} className="flex flex-col gap-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <label className={labelBase}>Nombre</label>
@@ -232,13 +208,13 @@ const Register = () => {
           </button>
         </motion.form>
 
-        <motion.div variants={item} className="flex items-center gap-3 my-5">
+        <motion.div variants={authItemVariants} className="flex items-center gap-3 my-5">
           <div className="flex-1 h-px bg-neutral-800" />
           <span className="text-neutral-600 text-xs">o regístrate con</span>
           <div className="flex-1 h-px bg-neutral-800" />
         </motion.div>
 
-        <motion.div variants={item} className="grid grid-cols-2 gap-3">
+        <motion.div variants={authItemVariants} className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL}/auth/google` }}
@@ -264,7 +240,7 @@ const Register = () => {
           </button>
         </motion.div>
 
-        <motion.p variants={item} className="text-center text-sm text-neutral-600 mt-5">
+        <motion.p variants={authItemVariants} className="text-center text-sm text-neutral-600 mt-5">
           ¿Ya tienes cuenta?{' '}
           <Link to="/login" className="text-white hover:text-neutral-200 font-medium transition-colors">
             Inicia sesión
@@ -284,7 +260,7 @@ const Register = () => {
         <div className="absolute inset-0 flex gap-3 px-6 overflow-hidden">
           <div className="flex-1 overflow-hidden">
             <div style={{ animation: 'scrollDown 11s linear infinite' }}>
-              {[...COL1, ...COL1].map((src, i) => (
+              {[...REGISTER_COL1, ...REGISTER_COL1].map((src, i) => (
                 <div key={i} className="mb-3 rounded-xl overflow-hidden">
                   <img src={src} alt="" className="w-full object-cover rounded-xl" style={{ filter: 'brightness(0.65) saturate(0.8)' }} />
                 </div>
@@ -293,7 +269,7 @@ const Register = () => {
           </div>
           <div className="flex-1 overflow-hidden">
             <div style={{ animation: 'scrollUp 13s linear infinite' }}>
-              {[...COL2, ...COL2].map((src, i) => (
+              {[...REGISTER_COL2, ...REGISTER_COL2].map((src, i) => (
                 <div key={i} className="mb-3 rounded-xl overflow-hidden">
                   <img src={src} alt="" className="w-full object-cover rounded-xl" style={{ filter: 'brightness(0.65) saturate(0.8)' }} />
                 </div>

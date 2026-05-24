@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useSimulationViewModel } from '../viewmodels/useSimulationViewModel'
+import { tooltipStyle } from '../constants/chart.constants'
 import {
   LineChart,
   Line,
@@ -39,15 +40,6 @@ const SimulationView = () => {
     sustrato: parseFloat(simulation.substrate[i].toFixed(4)),
     etanol: parseFloat(simulation.ethanol[i].toFixed(4)),
   }))
-
-  const tooltipStyle = {
-    backgroundColor: '#111113',
-    border: '1px solid #1F1F22',
-    borderRadius: '8px',
-    color: '#F4F4F5',
-    fontSize: '12px',
-    fontFamily: 'Poppins, sans-serif',
-  }
 
   const finalBiomass = simulation?.biomass?.at(-1)?.toFixed(3)
   const finalEthanol = simulation?.ethanol?.at(-1)?.toFixed(3)

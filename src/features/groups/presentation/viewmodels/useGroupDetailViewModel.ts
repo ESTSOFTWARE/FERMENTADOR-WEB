@@ -1,27 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { sileo } from 'sileo'
-import { GroupsRepositoryImpl } from '../../data/repositories/GroupsRepositoryImpl'
-import type { Group } from '../../domain/models/Group'
+import { sileo }                                     from 'sileo'
+import { GroupsRepositoryImpl }                      from '../../data/repositories/GroupsRepositoryImpl'
+import type { Group }                                from '../../domain/models/Group'
+import type { SimpleUser }                           from '../../domain/models/SimpleUser'
+import { TOAST_STYLE }                               from '../constants/toast-style.constants'
 
 const repo = new GroupsRepositoryImpl()
-const TOAST_STYLE = { fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } }
-
-const BASE_URL = import.meta.env.VITE_API_URL
-const authHeaders = (): Record<string, string> => ({
-  'Content-Type': 'application/json',
-  'ngrok-skip-browser-warning': 'true',
-  ...(localStorage.getItem('access_token')
-    ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-    : {}),
-})
-
-export interface SimpleUser {
-  id:            number
-  name:          string
-  last_name:     string
-  email:         string
-  profile_image: string | null
-}
 
 export const useGroupDetailViewModel = (id: number) => {
   const [group,         setGroup]         = useState<Group | null>(null)
@@ -30,16 +14,15 @@ export const useGroupDetailViewModel = (id: number) => {
   const [showQr,        setShowQr]        = useState(false)
   const [saving,        setSaving]        = useState(false)
 
-  const [allUsers,      setAllUsers]      = useState<SimpleUser[]>([])
-  const [loadingUsers,  setLoadingUsers]  = useState(false)
-  const [userSearch,    setUserSearch]    = useState('')
-  const [selectedUser,  setSelectedUser]  = useState<SimpleUser | null>(null)
+  const [allUsers,     setAllUsers]     = useState<SimpleUser[]>([])
+  const [loadingUsers, setLoadingUsers] = useState(false)
+  const [userSearch,   setUserSearch]   = useState('')
+  const [selectedUser, setSelectedUser] = useState<SimpleUser | null>(null)
 
   const load = useCallback(async () => {
     try {
       setLoading(true)
-      const fetched = await repo.getById(id)
-      setGroup(fetched)
+      setGroup(await repo.getById(id))
     } catch (e) {
       sileo.error({ title: 'No se pudo cargar el grupo', description: (e as Error).message, ...TOAST_STYLE })
     } finally {
@@ -52,8 +35,7 @@ export const useGroupDetailViewModel = (id: number) => {
   const fetchUsers = useCallback(async () => {
     try {
       setLoadingUsers(true)
-      const res  = await fetch(`${BASE_URL}/users/students`, { headers: authHeaders() })
-      const data = await res.json()
+      const data = await repo.getStudents()
       setAllUsers(Array.isArray(data) ? data : [])
     } catch {
       setAllUsers([])

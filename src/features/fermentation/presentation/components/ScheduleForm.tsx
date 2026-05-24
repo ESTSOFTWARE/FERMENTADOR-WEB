@@ -1,13 +1,9 @@
-import { useState } from 'react'
-import type { FermentationFormData } from '../types/FermentationFormData'
+import { useState }                                    from 'react'
+import { INPUT_BASE_STYLE, LABEL_BASE_STYLE }          from '../constants/schedule-form-styles.constants'
+import type { ScheduleFormProps as Props }             from '../types/ScheduleFormProps'
+import type { FermentationFormData }                   from '../types/FermentationFormData'
 
-export interface ScheduleFormProps {
-  onSubmit: (data: FermentationFormData) => void
-  onCancel: () => void
-  loading:  boolean
-}
-
-const ScheduleForm = ({ onSubmit, onCancel, loading }: ScheduleFormProps) => {
+const ScheduleForm = ({ onSubmit, onCancel, loading }: Props) => {
   const now   = new Date()
   const later = new Date(now.getTime() + 2 * 60 * 60 * 1000)
   const toLocal = (d: Date) =>
@@ -27,33 +23,10 @@ const ScheduleForm = ({ onSubmit, onCancel, loading }: ScheduleFormProps) => {
       scheduled_start: new Date(form.scheduled_start).toISOString(),
       scheduled_end:   new Date(form.scheduled_end).toISOString(),
       initial_sugar:   Number(form.initial_sugar),
-    })
+    } as FermentationFormData)
   }
 
   const isValid = Number(form.initial_sugar) > 0
-
-  const inputBase: React.CSSProperties = {
-    width:           '100%',
-    backgroundColor: '#0A0A0B',
-    border:          '1px solid #2A2A2D',
-    borderRadius:    8,
-    color:           '#F4F4F5',
-    fontSize:        13,
-    padding:         '10px 12px',
-    outline:         'none',
-    fontFamily:      'Poppins, sans-serif',
-    colorScheme:     'dark',
-    boxSizing:       'border-box',
-  }
-
-  const labelBase: React.CSSProperties = {
-    display:        'block',
-    color:          '#71717A',
-    fontSize:       10,
-    letterSpacing:  '0.1em',
-    textTransform:  'uppercase',
-    marginBottom:   6,
-  }
 
   return (
     <div
@@ -71,34 +44,34 @@ const ScheduleForm = ({ onSubmit, onCancel, loading }: ScheduleFormProps) => {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 16 }}>
         <div>
-          <label style={labelBase}>Azúcar inicial (g/L)</label>
+          <label style={LABEL_BASE_STYLE}>Azúcar inicial (g/L)</label>
           <input
             type="number"
             value={form.initial_sugar}
             onChange={e => set('initial_sugar', e.target.value)}
             placeholder="Ej: 120"
-            style={inputBase}
+            style={INPUT_BASE_STYLE}
             min={0}
             step={0.1}
             autoFocus
           />
         </div>
         <div>
-          <label style={labelBase}>Inicio programado</label>
+          <label style={LABEL_BASE_STYLE}>Inicio programado</label>
           <input
             type="datetime-local"
             value={form.scheduled_start}
             onChange={e => set('scheduled_start', e.target.value)}
-            style={inputBase}
+            style={INPUT_BASE_STYLE}
           />
         </div>
         <div>
-          <label style={labelBase}>Fin programado</label>
+          <label style={LABEL_BASE_STYLE}>Fin programado</label>
           <input
             type="datetime-local"
             value={form.scheduled_end}
             onChange={e => set('scheduled_end', e.target.value)}
-            style={inputBase}
+            style={INPUT_BASE_STYLE}
           />
         </div>
       </div>
