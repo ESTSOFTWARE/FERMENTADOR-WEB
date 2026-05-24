@@ -1,9 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL
+import { authHeaders } from '../../../../core/api/http'
 
-const authHeaders = () => ({
-  'Content-Type': 'application/json',
-  Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-})
+const BASE = import.meta.env.VITE_API_URL
 
 export const userApi = {
   getAll: () =>
@@ -12,24 +9,23 @@ export const userApi = {
   getById: (id: number) =>
     fetch(`${BASE}/users/${id}`, { headers: authHeaders() }),
 
-  create: (body: object) => {
-    return fetch(`${BASE}/users/`, {
-      method: 'POST',
+  create: (body: object) =>
+    fetch(`${BASE}/users/`, {
+      method:  'POST',
       headers: authHeaders(),
-      body: JSON.stringify(body),
-    })
-  },
+      body:    JSON.stringify(body),
+    }),
 
   update: (id: number, body: object) =>
     fetch(`${BASE}/users/${id}/`, {
-      method: 'PUT',
+      method:  'PUT',
       headers: authHeaders(),
-      body: JSON.stringify(body),
+      body:    JSON.stringify(body),
     }),
 
   delete: (id: number) =>
     fetch(`${BASE}/users/${id}/`, {
-      method: 'DELETE',
+      method:  'DELETE',
       headers: authHeaders(),
     }),
 }

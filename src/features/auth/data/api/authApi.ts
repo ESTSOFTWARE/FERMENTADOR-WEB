@@ -1,23 +1,16 @@
-import type { LoginRequest } from '../../domain/dtos/request/login.request'
-import type { RegisterRequest } from '../../domain/dtos/request/register.request'
+import type { LoginRequest }        from '../../domain/dtos/request/login.request'
+import type { RegisterRequest }     from '../../domain/dtos/request/register.request'
 import type { RefreshTokenRequest } from '../../domain/dtos/request/refresh-token.request'
-import type { TokenResponse } from '../../domain/dtos/response/token.response'
+import type { TokenResponse }       from '../../domain/dtos/response/token.response'
 import type { AccessTokenResponse } from '../../domain/dtos/response/access-token.response'
-import type { RegisterResponse } from '../../domain/dtos/response/register.response'
+import type { RegisterResponse }    from '../../domain/dtos/response/register.response'
+import { handleResponse }           from '../../../../core/api/http'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
 const HEADERS = {
   'Content-Type':               'application/json',
   'ngrok-skip-browser-warning': 'true',
-}
-
-async function handleResponse<T>(res: Response): Promise<T> {
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data?.detail ?? `HTTP ${res.status}`)
-  }
-  return res.json()
 }
 
 export const authApi = {

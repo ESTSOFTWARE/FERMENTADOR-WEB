@@ -11,4 +11,5 @@ export interface ProfileRepository {
   changePassword(data: ChangePasswordRequest):                   Promise<ChangePasswordResponse>
   uploadProfileImage(file: File):                                Promise<{ profile_image: string }>
   activateCircuit(data: ActivateCircuitRequest):                 Promise<ActivateCircuitResponse>
+  markTourCompleted():                                           Promise<{ message: string }>
 }

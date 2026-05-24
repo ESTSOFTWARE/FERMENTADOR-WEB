@@ -1,5 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { FermentationRepositoryImpl }               from '../../data/repositories/FermentationRepositoryImpl'
+import { GetActiveSessionUseCase }                  from '../../domain/usecases/get-active-session.usecase'
+import { ScheduleFermentationUseCase }              from '../../domain/usecases/schedule-fermentation.usecase'
+import { StartFermentationUseCase }                 from '../../domain/usecases/start-fermentation.usecase'
+import { StopFermentationUseCase }                  from '../../domain/usecases/stop-fermentation.usecase'
+import { GetFermentationReportUseCase }             from '../../domain/usecases/get-fermentation-report.usecase'
 import { useUserAuth }                              from '../../../../core/hooks/userAuth'
 import { useCommandsWebSocket }                     from '../../../sensors/presentation/hooks/useCommandsWebSocket'
 import type { FermentationSession }                 from '../../domain/models/FermentationSession'
@@ -11,7 +16,12 @@ import { ALL_SENSORS_OFF, ALL_SENSORS_ON }          from '../../../sensors/domai
 import { loadSensorStates, saveSensorStates, clearSensorStates } from '../utils/sensor-state-storage'
 import { toDeviceState }                            from '../utils/to-device-state'
 
-const repository = new FermentationRepositoryImpl()
+const repo              = new FermentationRepositoryImpl()
+const getActiveSession  = new GetActiveSessionUseCase(repo)
+const scheduleFerm      = new ScheduleFermentationUseCase(repo)
+const startFerm         = new StartFermentationUseCase(repo)
+const stopFerm          = new StopFermentationUseCase(repo)
+const getReport         = new GetFermentationReportUseCase(repo)
 
 export const useFermentationViewModel = () => {
   const { user } = useUserAuth()
@@ -46,7 +56,7 @@ export const useFermentationViewModel = () => {
 
     const init = async () => {
       try {
-        const active = await repository.getActiveSession()
+        const active = await getActiveSession.execute()
         if (cancelled) return
 
         if (active) {
@@ -80,13 +90,13 @@ export const useFermentationViewModel = () => {
     if (!circuitId) { setError('No hay un circuito asociado a tu cuenta'); return }
     setLoading(true); clearMessages()
     try {
-      const scheduled = await repository.scheduleFermentation({
+      const scheduled = await scheduleFerm.execute({
         circuit_id:      circuitId,
         scheduled_start: formData.scheduled_start,
         scheduled_end:   formData.scheduled_end,
         initial_sugar:   formData.initial_sugar,
       })
-      const started = await repository.startFermentation(scheduled.id)
+      const started = await startFerm.execute(scheduled.id)
       setSession(started)
       setSensorStates(ALL_SENSORS_ON)
       hydratedRef.current = true
@@ -110,7 +120,7 @@ export const useFermentationViewModel = () => {
     try {
       commands.sendAllOff()
       setTimeout(() => commands.disconnect(), 500)
-      const stopped = await repository.stopFermentation(session.id, { interrupted })
+      const stopped = await stopFerm.execute(session.id, { interrupted })
       setSession(stopped)
       setSensorStates(ALL_SENSORS_OFF)
       clearSensorStates(session.id)
@@ -138,7 +148,7 @@ export const useFermentationViewModel = () => {
     if (!session) return
     setLoading(true); clearMessages()
     try {
-      const r = await repository.getReport(session.id)
+      const r = await getReport.execute(session.id)
       setReport(r)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al cargar el reporte')

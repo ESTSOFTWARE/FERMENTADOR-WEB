@@ -20,6 +20,10 @@ export class FermentationRepositoryImpl implements FermentationRepository {
     return fermentationApi.stopFermentation(sessionId, data.interrupted) as Promise<FermentationSession>
   }
 
+  async getSessionsHistory(): Promise<FermentationSession[]> {
+    return fermentationApi.getSessionsHistory() as Promise<FermentationSession[]>
+  }
+
   async getReport(sessionId: number): Promise<FermentationReport> {
     return fermentationApi.getReportBySessionId(sessionId) as Promise<FermentationReport>
   }

@@ -1,13 +1,13 @@
-import type { FermentationSessionResponse } from '../../../fermentation/domain/dtos/response/fermentation-session.response'
-import type { FermentationReportData }       from '../../../fermentation/domain/dtos/response/fermentation-report.response'
+import type { FermentationSession } from '../../../fermentation/domain/models/FermentationSession'
+import type { FermentationReport }  from '../../../fermentation/domain/models/FermentationReport'
 import type { ReportWithEfficiency }         from '../types/report-with-efficiency.types'
 import { mapStatus }                         from './map-status'
 import { formatDatetime }                    from './format-datetime'
 import { calcDuration }                      from './calc-duration'
 
 export const mergeReport = (
-  session: FermentationSessionResponse,
-  report:  FermentationReportData | null,
+  session: FermentationSession,
+  report:  FermentationReport | null,
 ): ReportWithEfficiency => {
   const ph   = report?.ph_final          ?? report?.ph_last_reading          ?? report?.ph_initial          ?? 0
   const temp = report?.temperature_final ?? report?.temperature_last_reading ?? report?.temperature_initial ?? 0

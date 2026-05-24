@@ -13,4 +13,5 @@ export class ProfileRepositoryImpl implements ProfileRepository {
   updateUser(userId: number, data: UpdateUserRequest):          Promise<UserProfile>            { return profileApi.updateUser(userId, data) }
   changePassword(data: ChangePasswordRequest):                  Promise<ChangePasswordResponse> { return profileApi.changePassword(data) }
   activateCircuit(data: ActivateCircuitRequest):                Promise<ActivateCircuitResponse>{ return profileApi.activateCircuit(data) }
+  markTourCompleted():                                          Promise<{ message: string }>    { return profileApi.markTourCompleted() }
 }
