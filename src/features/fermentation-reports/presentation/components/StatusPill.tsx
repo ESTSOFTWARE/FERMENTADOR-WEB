@@ -1,9 +1,7 @@
-import type { Status } from '../types/Status'
-import { STATUS_CONFIG } from '../constants/statusConfig'
+import { STATUS_CONFIG }          from '../constants/statusConfig'
+import type { StatusPillProps }   from '../types/status-pill.types'
 
-type Props = { status: Status }
-
-const StatusPill = ({ status }: Props) => {
+const StatusPill = ({ status }: StatusPillProps) => {
   const { label, color } = STATUS_CONFIG[status]
   return (
     <span

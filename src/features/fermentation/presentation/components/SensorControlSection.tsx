@@ -1,20 +1,8 @@
-import { SENSOR_CONTROLS } from '../../domain/models/Fermentation'
-import type { SensorKey } from '../../domain/models/Fermentation'
+import { SENSOR_CONTROLS }                    from '../constants/sensor-controls.constants'
+import { getSensorIcon }                      from '../utils/get-sensor-icon'
+import type { SensorKey }                     from '../../domain/models/SensorKey'
 import type { SensorControlSectionProps as Props } from '../types/SensorControlSectionProps'
-import ToggleSwitch from './ToggleSwitch'
-
-const SENSOR_ICONS: Record<string, string> = {
-  temperature: 'M12 2a3 3 0 0 0-3 3v7a5 5 0 1 0 6 0V5a3 3 0 0 0-3-3zm0 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM11 5h2v7.17A5.02 5.02 0 0 0 11 12.1V5z',
-  ph:          'M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18',
-  sugar:       'M8.5 2a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zm7 9a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z',
-  co2:         'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zm0 0v9',
-  turbidity:   'M2 12h20M2 12a10 10 0 0 1 20 0M2 12a10 10 0 0 0 20 0M12 2v20',
-  pump:        'M5 12H2m3 0a7 7 0 1 0 14 0 7 7 0 0 0-14 0zm14 0h3M12 5V2m0 3a7 7 0 0 1 0 14m0-14a7 7 0 0 0 0 14m0 0v3',
-  motor:       'M13 2 3 14h9l-1 8 10-12h-9l1-8z',
-}
-
-const getIcon = (key: string) =>
-  SENSOR_ICONS[key] ?? 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v4l3 3'
+import ToggleSwitch                           from './ToggleSwitch'
 
 const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
   const total  = Object.keys(sensorStates).length
@@ -29,7 +17,6 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
         border:          '1px solid #1F1F22',
       }}
     >
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <p style={{ color: '#52525B', fontSize: 10, letterSpacing: '0.25em', textTransform: 'uppercase', margin: '0 0 4px 0' }}>
@@ -61,7 +48,6 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
         </div>
       </div>
 
-      {/* Grid */}
       <div style={{
         display:             'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
@@ -85,7 +71,6 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 overflow:        'hidden',
               }}
             >
-              {/* Accent line */}
               <div style={{
                 position:        'absolute',
                 top:             0,
@@ -98,7 +83,6 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 transition:      'opacity 0.3s',
               }} />
 
-              {/* Row 1: icon + name + toggle */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width:           38,
@@ -121,7 +105,7 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                     strokeLinejoin="round"
                     style={{ transition: 'stroke 0.25s' }}
                   >
-                    <path d={getIcon(sensor.key)} />
+                    <path d={getSensorIcon(sensor.key)} />
                   </svg>
                 </div>
 
@@ -150,10 +134,8 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 />
               </div>
 
-              {/* Divider */}
               <div style={{ height: 1, backgroundColor: '#1A1A1D' }} />
 
-              {/* Row 2: description + badges */}
               <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
                 <p style={{ color: '#52525B', fontSize: 11, margin: 0, lineHeight: 1.55, flex: 1 }}>
                   {sensor.description}
@@ -162,14 +144,14 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                   {sensor.isHardware && (
                     <span style={{
-                      padding:       '2px 6px',
-                      borderRadius:  4,
+                      padding:         '2px 6px',
+                      borderRadius:    4,
                       backgroundColor: '#1F1F22',
-                      color:         '#3F3F46',
-                      fontSize:      9,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      fontWeight:    700,
+                      color:           '#3F3F46',
+                      fontSize:        9,
+                      letterSpacing:   '0.1em',
+                      textTransform:   'uppercase',
+                      fontWeight:      700,
                     }}>
                       HW
                     </span>
@@ -189,10 +171,9 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
           )
         })}
 
-        {/* Read-only Motor card */}
         {([
-          { key: 'motor', label: 'Motor',  description: 'Velocidad de agitación', unit: 'rpm',    color: '#06B6D4' },
-          { key: 'pump',  label: 'Bomba',  description: 'Control de flujo',       unit: 'ON/OFF', color: '#FB923C' },
+          { key: 'motor', label: 'Motor', description: 'Velocidad de agitación', unit: 'rpm',    color: '#06B6D4' },
+          { key: 'pump',  label: 'Bomba', description: 'Control de flujo',       unit: 'ON/OFF', color: '#FB923C' },
         ] as const).map(device => (
           <div
             key={device.key}
@@ -208,7 +189,6 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
               overflow:        'hidden',
             }}
           >
-            {/* Row 1: icon + name + info badge */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 width:           38,
@@ -222,7 +202,7 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 flexShrink:      0,
               }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={device.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d={getIcon(device.key)} />
+                  <path d={getSensorIcon(device.key)} />
                 </svg>
               </div>
 
@@ -251,10 +231,8 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
               </span>
             </div>
 
-            {/* Divider */}
             <div style={{ height: 1, backgroundColor: '#1A1A1D' }} />
 
-            {/* Row 2: description */}
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
               <p style={{ color: '#52525B', fontSize: 11, margin: 0, lineHeight: 1.55, flex: 1 }}>
                 {device.description}

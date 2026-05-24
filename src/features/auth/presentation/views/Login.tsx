@@ -6,38 +6,9 @@ import { cn } from '../../../../lib/utils'
 import { PointerHighlight } from '../../../../components/ui/pointer-highlight'
 import Text3DFlip from '../../../../components/ui/text-3d-flip'
 import { sileo } from 'sileo'
-
-const panel = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-}
-const item = {
-  hidden:   { opacity: 0, y: 18 },
-  visible:  { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] } },
-}
-
-const COL1 = [
-  'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',
-  'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=600&q=80',
-  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',
-]
-const COL2 = [
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80',
-  'https://images.unsplash.com/photo-1559525839-8c4c01c1dee2?w=600&q=80',
-  'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=600&q=80',
-  'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=600&q=80',
-]
-const COL3 = [
-  'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80',
-  'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&q=80',
-  'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80',
-  'https://images.unsplash.com/photo-1559525839-8c4c01c1dee2?w=600&q=80',
-]
-
-const EyeIcon = ({ open }: { open: boolean }) => open
-  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+import { COL1, COL2, COL3 } from '../constants/auth-gallery.constants'
+import { authPanelVariants, authItemVariants } from '../constants/auth.variants'
+import { EyeIcon } from '../components/EyeIcon'
 
 const Login = () => {
   const location = useLocation()
@@ -64,19 +35,19 @@ const Login = () => {
     <div className="min-h-screen w-full flex bg-[#0A0A0B]">
       <motion.div
         className="flex-1 flex flex-col justify-center px-12 py-16 max-w-xl"
-        variants={panel}
+        variants={authPanelVariants}
         initial="hidden"
         animate="visible"
       >
 
-        <motion.div variants={item}>
+        <motion.div variants={authItemVariants}>
           <Link to="/" className="flex items-center gap-2.5 mb-12">
             <img src="/assets/logo.svg" alt="Fermest" className="w-8 h-8 object-contain cursor-pointer" />
             <span className="text-white font-bold text-lg tracking-tight">Nich-Ká</span>
           </Link>
         </motion.div>
 
-        <motion.div variants={item} className="flex flex-col gap-3 mb-10">
+        <motion.div variants={authItemVariants} className="flex flex-col gap-3 mb-10">
           <h1 className="text-4xl font-black text-white tracking-tight">¡Bienvenido de nuevo!</h1>
           <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
             Monitorea y optimiza la fermentación de tu café con inteligencia artificial en tiempo real.
@@ -84,7 +55,7 @@ const Login = () => {
         </motion.div>
 
         {justRegistered && (
-          <motion.div variants={item} className="flex items-start gap-2.5 rounded-lg px-4 py-3 mb-6 text-sm text-green-400 bg-green-950/40 border border-green-500/20">
+          <motion.div variants={authItemVariants} className="flex items-start gap-2.5 rounded-lg px-4 py-3 mb-6 text-sm text-green-400 bg-green-950/40 border border-green-500/20">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 flex-shrink-0">
               <path d="M20 6L9 17l-5-5" />
             </svg>
@@ -96,7 +67,7 @@ const Login = () => {
           </motion.div>
         )}
 
-        <motion.form variants={item} onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <motion.form variants={authItemVariants} onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm text-neutral-400 font-medium">Correo electrónico</label>
             <input
@@ -146,13 +117,13 @@ const Login = () => {
           </button>
         </motion.form>
 
-        <motion.div variants={item} className="flex items-center gap-3 my-6">
+        <motion.div variants={authItemVariants} className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-neutral-800" />
           <span className="text-neutral-600 text-xs">o</span>
           <div className="flex-1 h-px bg-neutral-800" />
         </motion.div>
 
-        <motion.div variants={item} className="grid grid-cols-2 gap-3">
+        <motion.div variants={authItemVariants} className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL}/auth/google` }}
@@ -178,7 +149,7 @@ const Login = () => {
           </button>
         </motion.div>
 
-        <motion.p variants={item} className="text-center text-sm text-neutral-600 mt-8">
+        <motion.p variants={authItemVariants} className="text-center text-sm text-neutral-600 mt-8">
           ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-white hover:text-neutral-200 font-medium transition-colors">
             Regístrate

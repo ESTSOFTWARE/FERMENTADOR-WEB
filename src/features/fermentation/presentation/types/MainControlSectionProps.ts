@@ -1,13 +1,13 @@
-import type { FermentationSession } from '../../domain/models/Fermentation'
+import type { FermentationSession } from '../../domain/models/FermentationSession'
 import type { FermentationFormData } from './FermentationFormData'
 
 export type MainControlSectionProps = {
-  isRunning:   boolean
-  loading:     boolean
-  showForm:    boolean
-  session:     FermentationSession | null
-  circuitId:   number | null          // viene del usuario autenticado
+  isRunning:    boolean
+  loading:      boolean
+  showForm:     boolean
+  session:      FermentationSession | null
+  circuitId:    number | null
   onMainToggle: () => void
-  onSubmit:    (data: FermentationFormData) => void
+  onSubmit:     (data: FermentationFormData) => void
   onCancelForm: () => void
 }

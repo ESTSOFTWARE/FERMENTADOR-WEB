@@ -1,0 +1,25 @@
+import type { Country } from '../types/country.types'
+
+export const COUNTRIES: Country[] = [
+  { name: 'México',               code: 'MX', dialCode: '+52',    flag: 'https://flagcdn.com/w40/mx.png' },
+  { name: 'Estados Unidos',       code: 'US', dialCode: '+1',     flag: 'https://flagcdn.com/w40/us.png' },
+  { name: 'España',               code: 'ES', dialCode: '+34',    flag: 'https://flagcdn.com/w40/es.png' },
+  { name: 'Argentina',            code: 'AR', dialCode: '+54',    flag: 'https://flagcdn.com/w40/ar.png' },
+  { name: 'Colombia',             code: 'CO', dialCode: '+57',    flag: 'https://flagcdn.com/w40/co.png' },
+  { name: 'Chile',                code: 'CL', dialCode: '+56',    flag: 'https://flagcdn.com/w40/cl.png' },
+  { name: 'Perú',                 code: 'PE', dialCode: '+51',    flag: 'https://flagcdn.com/w40/pe.png' },
+  { name: 'Venezuela',            code: 'VE', dialCode: '+58',    flag: 'https://flagcdn.com/w40/ve.png' },
+  { name: 'Ecuador',              code: 'EC', dialCode: '+593',   flag: 'https://flagcdn.com/w40/ec.png' },
+  { name: 'Guatemala',            code: 'GT', dialCode: '+502',   flag: 'https://flagcdn.com/w40/gt.png' },
+  { name: 'Cuba',                 code: 'CU', dialCode: '+53',    flag: 'https://flagcdn.com/w40/cu.png' },
+  { name: 'Bolivia',              code: 'BO', dialCode: '+591',   flag: 'https://flagcdn.com/w40/bo.png' },
+  { name: 'República Dominicana', code: 'DO', dialCode: '+1-809', flag: 'https://flagcdn.com/w40/do.png' },
+  { name: 'Honduras',             code: 'HN', dialCode: '+504',   flag: 'https://flagcdn.com/w40/hn.png' },
+  { name: 'Paraguay',             code: 'PY', dialCode: '+595',   flag: 'https://flagcdn.com/w40/py.png' },
+  { name: 'El Salvador',          code: 'SV', dialCode: '+503',   flag: 'https://flagcdn.com/w40/sv.png' },
+  { name: 'Nicaragua',            code: 'NI', dialCode: '+505',   flag: 'https://flagcdn.com/w40/ni.png' },
+  { name: 'Costa Rica',           code: 'CR', dialCode: '+506',   flag: 'https://flagcdn.com/w40/cr.png' },
+  { name: 'Panamá',               code: 'PA', dialCode: '+507',   flag: 'https://flagcdn.com/w40/pa.png' },
+  { name: 'Uruguay',              code: 'UY', dialCode: '+598',   flag: 'https://flagcdn.com/w40/uy.png' },
+  { name: 'Puerto Rico',          code: 'PR', dialCode: '+1-787', flag: 'https://flagcdn.com/w40/pr.png' },
+]

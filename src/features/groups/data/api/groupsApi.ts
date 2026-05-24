@@ -1,4 +1,7 @@
-import type { AddMemberRequest, CreateGroupRequest, Group } from '../../domain/models/Group'
+import type { CreateGroupRequest } from '../../domain/dtos/request/create-group.request'
+import type { AddMemberRequest }   from '../../domain/dtos/request/add-member.request'
+import type { Group }              from '../../domain/models/Group'
+import type { SimpleUser }         from '../../domain/models/SimpleUser'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 
@@ -74,4 +77,8 @@ export const groupsApi = {
       body:    form,
     }).then(handleResponse<Group>)
   },
+
+  getStudents: (): Promise<SimpleUser[]> =>
+    fetch(`${BASE_URL}/users/students`, { headers: authHeaders() })
+      .then(handleResponse<SimpleUser[]>),
 }

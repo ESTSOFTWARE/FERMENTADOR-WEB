@@ -1,4 +1,4 @@
-import type { LatestBadgeProps as Props } from '../types/LatestBadgeProps'
+import type { LatestBadgeProps as Props } from '../types/latest-badge.types'
 
 const LatestBadge = ({ value, unit, color }: Props) => (
   <div>

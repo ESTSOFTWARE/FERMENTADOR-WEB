@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { RunExperimentResponse } from '../../features/dashboard/domain/models/RunExperiment'
+import type { RunExperimentResponse } from '../../features/dashboard/domain/dtos/response/run-experiment.response'
 
 interface ExperimentStore {
   experimentId: string | null

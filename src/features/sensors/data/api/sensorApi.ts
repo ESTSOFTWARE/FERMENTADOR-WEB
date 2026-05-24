@@ -1,4 +1,6 @@
-import type { SensorReading, SensorHistoryResponse, BackendSensorType } from '../../domain/models/Sensor'
+import type { BackendSensorType }    from '../../domain/models/BackendSensorType'
+import type { SensorReading }        from '../../domain/models/SensorReading'
+import type { SensorHistoryResponse } from '../../domain/dtos/response/sensor-history.response'
 
 const BASE_URL = import.meta.env.VITE_API_URL
 const WS_URL   = import.meta.env.VITE_WS_URL ?? BASE_URL?.replace(/^http/, 'ws')

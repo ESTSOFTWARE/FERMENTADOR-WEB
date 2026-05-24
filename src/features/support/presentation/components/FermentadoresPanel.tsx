@@ -1,96 +1,25 @@
-import { useState } from 'react'
+import { useState }              from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { sileo } from 'sileo'
-import { cn } from '../../../../lib/utils'
-import PaginationBar from '../../../../shared/components/PaginationBar'
-
-const PAGE_SIZE = 10
-
-type CodigoStatus = 'activo-asignado' | 'activo-libre' | 'inactivo'
-type Responsable  = 'Ameth Toledo' | 'Fabricio Pérez' | 'Melissa Corral' | 'Fernando Mijanos'
-
-interface Fermentador {
-  id:            string
-  serial:        string
-  codigoStatus:  CodigoStatus
-  codigo:        string
-  vendido:       boolean
-  clienteNombre: string | null
-  creadoEn:      string
-  altaPor:       Responsable
-}
-
-const MOCK_INITIAL: Fermentador[] = [
-  { id: '1',  serial: 'FRM-00001', codigoStatus: 'activo-asignado', codigo: 'ACT-4F2A', vendido: true,  clienteNombre: 'Carlos Méndez',   creadoEn: '2024-01-10T09:15:00Z', altaPor: 'Ameth Toledo'     },
-  { id: '2',  serial: 'FRM-00002', codigoStatus: 'activo-asignado', codigo: 'ACT-9C3B', vendido: true,  clienteNombre: 'Ana Torres',       creadoEn: '2024-01-12T14:30:00Z', altaPor: 'Fabricio Pérez'   },
-  { id: '3',  serial: 'FRM-00003', codigoStatus: 'activo-libre',    codigo: 'ACT-7E1D', vendido: false, clienteNombre: null,               creadoEn: '2024-01-14T11:00:00Z', altaPor: 'Melissa Corral'   },
-  { id: '4',  serial: 'FRM-00004', codigoStatus: 'inactivo',        codigo: '—',        vendido: false, clienteNombre: null,               creadoEn: '2024-01-15T08:45:00Z', altaPor: 'Fernando Mijanos' },
-  { id: '5',  serial: 'FRM-00005', codigoStatus: 'activo-asignado', codigo: 'ACT-2B8F', vendido: true,  clienteNombre: 'Coop. Yucatán',   creadoEn: '2024-01-16T10:20:00Z', altaPor: 'Ameth Toledo'     },
-  { id: '6',  serial: 'FRM-00006', codigoStatus: 'activo-libre',    codigo: 'ACT-5A9C', vendido: false, clienteNombre: null,               creadoEn: '2024-01-17T13:10:00Z', altaPor: 'Fabricio Pérez'   },
-  { id: '7',  serial: 'FRM-00007', codigoStatus: 'activo-asignado', codigo: 'ACT-3D6E', vendido: true,  clienteNombre: 'Finca El Roble',  creadoEn: '2024-01-18T09:00:00Z', altaPor: 'Melissa Corral'   },
-  { id: '8',  serial: 'FRM-00008', codigoStatus: 'inactivo',        codigo: '—',        vendido: false, clienteNombre: null,               creadoEn: '2024-01-19T16:55:00Z', altaPor: 'Fernando Mijanos' },
-  { id: '9',  serial: 'FRM-00009', codigoStatus: 'activo-asignado', codigo: 'ACT-8H5K', vendido: true,  clienteNombre: 'Hacienda Virgen', creadoEn: '2024-01-20T10:00:00Z', altaPor: 'Ameth Toledo'     },
-  { id: '10', serial: 'FRM-00010', codigoStatus: 'activo-libre',    codigo: 'ACT-1J9M', vendido: false, clienteNombre: null,               creadoEn: '2024-01-21T11:30:00Z', altaPor: 'Fabricio Pérez'   },
-  { id: '11', serial: 'FRM-00011', codigoStatus: 'inactivo',        codigo: '—',        vendido: false, clienteNombre: null,               creadoEn: '2024-01-22T08:00:00Z', altaPor: 'Melissa Corral'   },
-  { id: '12', serial: 'FRM-00012', codigoStatus: 'activo-asignado', codigo: 'ACT-6N2P', vendido: true,  clienteNombre: 'Lab Ferment MX',  creadoEn: '2024-01-23T14:00:00Z', altaPor: 'Fernando Mijanos' },
-  { id: '13', serial: 'FRM-00013', codigoStatus: 'activo-libre',    codigo: 'ACT-0Q4R', vendido: false, clienteNombre: null,               creadoEn: '2024-01-24T09:45:00Z', altaPor: 'Ameth Toledo'     },
-  { id: '14', serial: 'FRM-00014', codigoStatus: 'activo-asignado', codigo: 'ACT-3S7T', vendido: true,  clienteNombre: 'Café Selecto',    creadoEn: '2024-01-25T12:20:00Z', altaPor: 'Fabricio Pérez'   },
-  { id: '15', serial: 'FRM-00015', codigoStatus: 'inactivo',        codigo: '—',        vendido: false, clienteNombre: null,               creadoEn: '2024-01-26T15:10:00Z', altaPor: 'Melissa Corral'   },
-]
-
-const STATUS_STYLE: Record<CodigoStatus, { label: string; dot: string; text: string; border: string }> = {
-  'activo-asignado': { label: 'Asignado',   dot: 'bg-green-400',   text: 'text-green-400',   border: 'border-green-500/60'  },
-  'activo-libre':    { label: 'Disponible', dot: 'bg-blue-400',    text: 'text-blue-400',    border: 'border-blue-500/60'   },
-  'inactivo':        { label: 'Inactivo',   dot: 'bg-neutral-600', text: 'text-neutral-500', border: 'border-neutral-700'   },
-}
-
-const RESPONSABLE_COLOR: Record<Responsable, string> = {
-  'Ameth Toledo':     '#22C55E',
-  'Fabricio Pérez':   '#3B82F6',
-  'Melissa Corral':   '#A855F7',
-  'Fernando Mijanos': '#F59E0B',
-}
-
-const INITIALS: Record<Responsable, string> = {
-  'Ameth Toledo':     'AT',
-  'Fabricio Pérez':   'FP',
-  'Melissa Corral':   'MC',
-  'Fernando Mijanos': 'FM',
-}
-
-const formatFecha = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
-
-const generateCode = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  return 'ACT-' + Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
-}
-
-const Avatar = ({ name }: { name: Responsable }) => {
-  const color    = RESPONSABLE_COLOR[name]
-  const initials = INITIALS[name]
-  return (
-    <div className="relative group/av flex-shrink-0">
-      <div
-        className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold"
-        style={{ backgroundColor: `${color}20`, border: `1px solid ${color}40`, color }}
-      >
-        {initials}
-      </div>
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded-md bg-neutral-800 border border-neutral-700 text-white text-[11px] whitespace-nowrap opacity-0 group-hover/av:opacity-100 transition-opacity pointer-events-none z-50">
-        {name}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-neutral-800" />
-      </div>
-    </div>
-  )
-}
+import { sileo }                  from 'sileo'
+import { cn }                     from '../../../../lib/utils'
+import PaginationBar              from '../../../../shared/components/PaginationBar'
+import { PAGE_SIZE }              from '../constants/pagination.constants'
+import { FERMENTADOR_STATUS_STYLE } from '../constants/fermentador-status-style.constants'
+import { RESPONSABLE_COLOR }      from '../constants/responsable-color.constants'
+import { RESPONSABLE_INITIALS }   from '../constants/responsable-initials.constants'
+import { MOCK_FERMENTADORES }     from '../constants/mock-fermentadores.constants'
+import { formatDate }             from '../utils/format-date'
+import { generateCode }           from '../utils/generate-code'
+import { ResponsableAvatar }      from './ResponsableAvatar'
+import type { CodigoStatus } from '../types/codigo-status.types'
+import type { Fermentador }  from '../types/fermentador.types'
 
 const FermentadoresPanel = () => {
-  const [items, setItems]       = useState<Fermentador[]>(MOCK_INITIAL)
-  const [selected, setSelected] = useState<Fermentador | null>(null)
-  const [search, setSearch]     = useState('')
-  const [page, setPage]         = useState(1)
-  const [copied, setCopied]     = useState(false)
+  const [items, setItems]         = useState<Fermentador[]>(MOCK_FERMENTADORES)
+  const [selected, setSelected]   = useState<Fermentador | null>(null)
+  const [search, setSearch]       = useState('')
+  const [page, setPage]           = useState(1)
+  const [copied, setCopied]       = useState(false)
   const [generando, setGenerando] = useState(false)
 
   const vendidos  = items.filter(f => f.vendido).length
@@ -105,7 +34,7 @@ const FermentadoresPanel = () => {
   const handleStatusChange = (id: string, newStatus: CodigoStatus) => {
     setItems(prev => prev.map(f => f.id === id ? { ...f, codigoStatus: newStatus } : f))
     if (selected?.id === id) setSelected(prev => prev ? { ...prev, codigoStatus: newStatus } : prev)
-    sileo.success({ title: 'Estado actualizado', description: `${STATUS_STYLE[newStatus].label}`, fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
+    sileo.success({ title: 'Estado actualizado', description: `${FERMENTADOR_STATUS_STYLE[newStatus].label}`, fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
   }
 
   const handleGenerarCodigo = () => {
@@ -130,7 +59,6 @@ const FermentadoresPanel = () => {
   return (
     <div className="relative h-full flex flex-col overflow-hidden">
 
-      {/* Header */}
       <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Fermentadores</h2>
@@ -149,7 +77,6 @@ const FermentadoresPanel = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="flex-1 overflow-y-auto px-6 py-5">
         <div className="border border-neutral-800/60 rounded-2xl overflow-hidden">
         <table className="w-full border-collapse">
@@ -177,63 +104,61 @@ const FermentadoresPanel = () => {
                   <p className="text-neutral-600 text-sm">Sin resultados</p>
                 </div>
               </td></tr>
-            ) : paged.map(f => {
-              return (
-                <tr key={f.id} className="border-b border-neutral-900/60 hover:bg-white/[0.02] transition-colors group">
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-300">{f.serial.slice(-2)}</div>
-                      <span className="text-sm text-white font-bold font-mono">{f.serial}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-5">
-                    <span className={cn('text-xs font-mono font-bold tracking-wider', f.codigo !== '—' ? 'text-green-400' : 'text-neutral-700')}>{f.codigo}</span>
-                  </td>
-                  <td className="px-6 py-5">
-                    <span className={cn('inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border whitespace-nowrap',
-                      f.vendido ? 'text-green-400 bg-green-400/10 border-green-400/30' : 'text-neutral-500 bg-neutral-800/40 border-neutral-700')}>
-                      {f.vendido
-                        ? <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-                        : <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                      }
-                      {f.vendido ? 'Sí' : 'No'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5">
-                    <select
-                      value={f.codigoStatus}
-                      onChange={e => handleStatusChange(f.id, e.target.value as CodigoStatus)}
-                      onClick={e => e.stopPropagation()}
-                      className={cn(
-                        'text-[11px] font-medium px-3 py-1.5 rounded-full border appearance-none cursor-pointer outline-none transition-opacity hover:opacity-75 [&>option]:bg-neutral-950 [&>option]:text-white',
-                        f.codigoStatus === 'activo-asignado' ? 'text-green-400 bg-neutral-950 border-green-400/30' :
-                        f.codigoStatus === 'activo-libre'    ? 'text-blue-400 bg-neutral-950 border-blue-400/30'   :
-                                                               'text-neutral-500 bg-neutral-950 border-neutral-700'
-                      )}
-                    >
-                      <option value="activo-asignado">Asignado</option>
-                      <option value="activo-libre">Disponible</option>
-                      <option value="inactivo">Inactivo</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-2.5">
-                      <Avatar name={f.altaPor} />
-                      <span className="text-sm text-neutral-400">{f.altaPor}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-5 text-right">
-                    <button
-                      onClick={() => setSelected(f)}
-                      className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors opacity-0 group-hover:opacity-100 whitespace-nowrap"
-                    >
-                      <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z"/></svg>
-                      Ver detalle
-                    </button>
-                  </td>
-                </tr>
-              )
-            })}
+            ) : paged.map(f => (
+              <tr key={f.id} className="border-b border-neutral-900/60 hover:bg-white/[0.02] transition-colors group">
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-neutral-300">{f.serial.slice(-2)}</div>
+                    <span className="text-sm text-white font-bold font-mono">{f.serial}</span>
+                  </div>
+                </td>
+                <td className="px-6 py-5">
+                  <span className={cn('text-xs font-mono font-bold tracking-wider', f.codigo !== '—' ? 'text-green-400' : 'text-neutral-700')}>{f.codigo}</span>
+                </td>
+                <td className="px-6 py-5">
+                  <span className={cn('inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-full border whitespace-nowrap',
+                    f.vendido ? 'text-green-400 bg-green-400/10 border-green-400/30' : 'text-neutral-500 bg-neutral-800/40 border-neutral-700')}>
+                    {f.vendido
+                      ? <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                      : <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    }
+                    {f.vendido ? 'Sí' : 'No'}
+                  </span>
+                </td>
+                <td className="px-6 py-5">
+                  <select
+                    value={f.codigoStatus}
+                    onChange={e => handleStatusChange(f.id, e.target.value as CodigoStatus)}
+                    onClick={e => e.stopPropagation()}
+                    className={cn(
+                      'text-[11px] font-medium px-3 py-1.5 rounded-full border appearance-none cursor-pointer outline-none transition-opacity hover:opacity-75 [&>option]:bg-neutral-950 [&>option]:text-white',
+                      f.codigoStatus === 'activo-asignado' ? 'text-green-400 bg-neutral-950 border-green-400/30' :
+                      f.codigoStatus === 'activo-libre'    ? 'text-blue-400 bg-neutral-950 border-blue-400/30'   :
+                                                             'text-neutral-500 bg-neutral-950 border-neutral-700'
+                    )}
+                  >
+                    <option value="activo-asignado">Asignado</option>
+                    <option value="activo-libre">Disponible</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
+                </td>
+                <td className="px-6 py-5">
+                  <div className="flex items-center gap-2.5">
+                    <ResponsableAvatar name={f.altaPor} />
+                    <span className="text-sm text-neutral-400">{f.altaPor}</span>
+                  </div>
+                </td>
+                <td className="px-8 py-5 text-right">
+                  <button
+                    onClick={() => setSelected(f)}
+                    className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 transition-colors opacity-0 group-hover:opacity-100 whitespace-nowrap"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zM12 9a3 3 0 100 6 3 3 0 000-6z"/></svg>
+                    Ver detalle
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
         </div>
@@ -266,7 +191,6 @@ const FermentadoresPanel = () => {
         </>}
       />
 
-      {/* Drawer — solo detalle */}
       <AnimatePresence>
         {selected && (
           <>
@@ -279,14 +203,13 @@ const FermentadoresPanel = () => {
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 35 }}
             >
-              {/* Drawer header */}
               <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3">
                 <div className="relative flex-shrink-0">
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
                     style={{ backgroundColor: `${RESPONSABLE_COLOR[selected.altaPor]}20`, border: `1px solid ${RESPONSABLE_COLOR[selected.altaPor]}40`, color: RESPONSABLE_COLOR[selected.altaPor] }}
                   >
-                    {INITIALS[selected.altaPor]}
+                    {RESPONSABLE_INITIALS[selected.altaPor]}
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -303,22 +226,19 @@ const FermentadoresPanel = () => {
                 </button>
               </div>
 
-              {/* Drawer body */}
               <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
-                {/* Badges */}
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={cn('text-xs px-2.5 py-1 rounded-full border bg-neutral-950', STATUS_STYLE[selected.codigoStatus].text, STATUS_STYLE[selected.codigoStatus].border)}>
-                    {STATUS_STYLE[selected.codigoStatus].label}
+                  <span className={cn('text-xs px-2.5 py-1 rounded-full border bg-neutral-950', FERMENTADOR_STATUS_STYLE[selected.codigoStatus].text, FERMENTADOR_STATUS_STYLE[selected.codigoStatus].border)}>
+                    {FERMENTADOR_STATUS_STYLE[selected.codigoStatus].label}
                   </span>
                   <span className={cn('text-xs px-2.5 py-1 rounded-full border bg-neutral-950', selected.vendido ? 'text-green-400 border-green-500/60' : 'text-neutral-500 border-neutral-700')}>
                     {selected.vendido ? 'Vendido' : 'En inventario'}
                   </span>
                 </div>
 
-                {/* Stats */}
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { label: 'Registro', value: formatFecha(selected.creadoEn) },
+                    { label: 'Registro', value: formatDate(selected.creadoEn) },
                     { label: 'Vendido',  value: selected.vendido ? 'Sí' : 'No'  },
                   ].map(({ label, value }) => (
                     <div key={label} className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2.5 text-center">
@@ -332,7 +252,7 @@ const FermentadoresPanel = () => {
                         className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
                         style={{ backgroundColor: `${RESPONSABLE_COLOR[selected.altaPor]}20`, border: `1px solid ${RESPONSABLE_COLOR[selected.altaPor]}40`, color: RESPONSABLE_COLOR[selected.altaPor] }}
                       >
-                        {INITIALS[selected.altaPor]}
+                        {RESPONSABLE_INITIALS[selected.altaPor]}
                       </div>
                       <span className="text-white font-bold text-xs leading-none truncate">{selected.altaPor.split(' ')[0]}</span>
                     </div>
@@ -340,13 +260,12 @@ const FermentadoresPanel = () => {
                   </div>
                 </div>
 
-                {/* Código de activación */}
                 <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-white text-sm font-semibold">Código de activación</p>
-                    <span className={cn('flex items-center gap-1.5 text-xs', STATUS_STYLE[selected.codigoStatus].text)}>
-                      <span className={cn('w-1.5 h-1.5 rounded-full', STATUS_STYLE[selected.codigoStatus].dot)} />
-                      {STATUS_STYLE[selected.codigoStatus].label}
+                    <span className={cn('flex items-center gap-1.5 text-xs', FERMENTADOR_STATUS_STYLE[selected.codigoStatus].text)}>
+                      <span className={cn('w-1.5 h-1.5 rounded-full', FERMENTADOR_STATUS_STYLE[selected.codigoStatus].dot)} />
+                      {FERMENTADOR_STATUS_STYLE[selected.codigoStatus].label}
                     </span>
                   </div>
                   {selected.codigo !== '—' ? (
@@ -374,13 +293,12 @@ const FermentadoresPanel = () => {
                   )}
                 </div>
 
-                {/* Información del equipo */}
                 <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-4">
                   <p className="text-white text-sm font-semibold mb-3">Información del equipo</p>
                   <div className="flex flex-col gap-0">
                     {[
                       { label: 'Serial',            value: selected.serial },
-                      { label: 'Fecha de registro', value: formatFecha(selected.creadoEn) },
+                      { label: 'Fecha de registro', value: formatDate(selected.creadoEn) },
                     ].map(({ label, value }) => (
                       <div key={label} className="flex items-center justify-between py-2.5 border-b border-neutral-800">
                         <span className="text-neutral-500 text-xs">{label}</span>
@@ -390,7 +308,7 @@ const FermentadoresPanel = () => {
                     <div className="flex items-center justify-between py-2.5 border-b border-neutral-800">
                       <span className="text-neutral-500 text-xs">Dado de alta por</span>
                       <div className="flex items-center gap-2">
-                        <Avatar name={selected.altaPor} />
+                        <ResponsableAvatar name={selected.altaPor} />
                         <span className="text-white text-xs font-medium">{selected.altaPor}</span>
                       </div>
                     </div>

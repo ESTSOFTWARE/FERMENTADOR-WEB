@@ -1,66 +1,29 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect }  from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { sileo } from 'sileo'
-import { cn } from '../../../../lib/utils'
-import { linkify } from '../../../../shared/utils/linkify'
-import PaginationBar from '../../../../shared/components/PaginationBar'
+import { sileo }                 from 'sileo'
+import { cn }                    from '../../../../lib/utils'
+import { linkify }               from '../../../../shared/utils/linkify'
+import PaginationBar             from '../../../../shared/components/PaginationBar'
+import { announcementsApi }      from '../../../announcements/data/api/announcementsApi'
+import { PAGE_SIZE }             from '../constants/pagination.constants'
+import { LABEL_OPTIONS, EMPTY_ANNOUNCEMENT_FORM } from '../constants/announcement-label-colors.constants'
+import { ANUNCIOS_INPUT_CLS }    from '../constants/anuncios-input-cls.constants'
+import { labelColor }            from '../utils/label-color'
+import LabelBadge                from './LabelBadge'
+import type { Announcement }     from '../../../announcements/domain/models/Announcement'
 
-const PAGE_SIZE = 10
-
-interface Announcement {
-  id:           number
-  label:        string
-  version:      string
-  date:         string
-  title:        string
-  description:  string
-  is_pinned:    boolean
-  pinned_until: string | null
-}
-
-const BASE_URL = import.meta.env.VITE_API_URL
-
-const authHeaders = () => ({
-  'Content-Type':               'application/json',
-  'ngrok-skip-browser-warning': 'true',
-  Authorization: `Bearer ${localStorage.getItem('access_token') ?? ''}`,
-})
-
-const LABEL_COLORS: Record<string, string> = {
-  NUEVO:   '#22C55E',
-  MEJORA:  '#3B82F6',
-  AVISO:   '#F59E0B',
-  CRÍTICO: '#F43F5E',
-  CRITICO: '#F43F5E',
-}
-const labelColor = (l: string) => LABEL_COLORS[l.toUpperCase()] ?? '#A855F7'
-
-const LABEL_OPTIONS = ['NUEVO', 'MEJORA', 'AVISO', 'CRÍTICO']
-const EMPTY_FORM    = { label: 'NUEVO', version: '', date: '', title: '', description: '' }
-
-const LabelBadge = ({ label }: { label: string }) => {
-  const color = labelColor(label)
-  return (
-    <span
-      className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-      style={{ color, backgroundColor: `${color}15`, border: `1px solid ${color}30` }}
-    >
-      {label}
-    </span>
-  )
-}
 
 const AnunciosPanel = () => {
   const [items, setItems]           = useState<Announcement[]>([])
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState<string | null>(null)
   const [showForm, setShowForm]     = useState(false)
-  const [form, setForm]             = useState(EMPTY_FORM)
+  const [form, setForm]             = useState(EMPTY_ANNOUNCEMENT_FORM)
   const [saving, setSaving]         = useState(false)
   const [saveError, setSaveError]   = useState<string | null>(null)
   const [selected, setSelected]     = useState<Announcement | null>(null)
   const [editing, setEditing]       = useState(false)
-  const [editForm, setEditForm]     = useState(EMPTY_FORM)
+  const [editForm, setEditForm]     = useState(EMPTY_ANNOUNCEMENT_FORM)
   const [savingEdit, setSavingEdit] = useState(false)
   const [editError, setEditError]   = useState<string | null>(null)
   const [page, setPage]             = useState(1)
@@ -77,8 +40,7 @@ const AnunciosPanel = () => {
 
   const load = () => {
     setLoading(true); setError(null)
-    fetch(`${BASE_URL}/announcements/`, { headers: authHeaders() })
-      .then(r => r.ok ? r.json() : r.json().then((d: { detail?: string }) => Promise.reject(d?.detail ?? `HTTP ${r.status}`)))
+    announcementsApi.getAll()
       .then(setItems)
       .catch(e => setError(String(e)))
       .finally(() => setLoading(false))
@@ -92,22 +54,14 @@ const AnunciosPanel = () => {
     }
     setSaving(true); setSaveError(null)
     try {
-      const res = await fetch(`${BASE_URL}/announcements/`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({
-          label:       form.label,
-          version:     form.version.trim(),
-          date:        form.date.trim() || undefined,
-          title:       form.title.trim(),
-          description: form.description.trim(),
-        }),
+      await announcementsApi.create({
+        label:       form.label,
+        version:     form.version.trim(),
+        date:        form.date.trim() || undefined,
+        title:       form.title.trim(),
+        description: form.description.trim(),
       })
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}))
-        throw new Error(d?.detail ?? `HTTP ${res.status}`)
-      }
-      setForm(EMPTY_FORM); setShowForm(false)
+      setForm(EMPTY_ANNOUNCEMENT_FORM); setShowForm(false)
       sileo.success({ title: 'Comunicado publicado', description: 'Ya es visible para todos los usuarios.', fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
       load()
     } catch (e) {
@@ -145,7 +99,7 @@ const AnunciosPanel = () => {
 
   const executeDelete = async (id: number) => {
     try {
-      await fetch(`${BASE_URL}/announcements/${id}`, { method: 'DELETE', headers: authHeaders() })
+      await announcementsApi.delete(id)
       setItems(prev => prev.filter(i => i.id !== id))
       if (selected?.id === id) setSelected(null)
       sileo.success({ title: 'Comunicado eliminado', fill: '#1A1A1A', styles: { title: 'text-white' } })
@@ -157,13 +111,7 @@ const AnunciosPanel = () => {
   const handlePin = async (item: Announcement, durationDays: number | null) => {
     setPinning(true)
     try {
-      const res = await fetch(`${BASE_URL}/announcements/${item.id}/pin`, {
-        method: 'POST',
-        headers: authHeaders(),
-        body: JSON.stringify({ duration_days: durationDays }),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const updated: Announcement = await res.json()
+      const updated = await announcementsApi.pin(item.id, durationDays)
       setItems(prev => prev.map(i => i.id === updated.id ? updated : i))
       setSelected(updated)
       sileo.success({ title: 'Comunicado fijado', description: durationDays ? `Se desfijará en ${durationDays} día${durationDays > 1 ? 's' : ''}.` : 'Fijado indefinidamente.', fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
@@ -177,12 +125,7 @@ const AnunciosPanel = () => {
   const handleUnpin = async (item: Announcement) => {
     setPinning(true)
     try {
-      const res = await fetch(`${BASE_URL}/announcements/${item.id}/pin`, {
-        method: 'DELETE',
-        headers: authHeaders(),
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const updated: Announcement = await res.json()
+      const updated = await announcementsApi.unpin(item.id)
       setItems(prev => prev.map(i => i.id === updated.id ? updated : i))
       setSelected(updated)
       sileo.success({ title: 'Comunicado desfijado', fill: '#1A1A1A', styles: { title: 'text-white' } })
@@ -206,22 +149,13 @@ const AnunciosPanel = () => {
     if (!selected) return
     setSavingEdit(true); setEditError(null)
     try {
-      const res = await fetch(`${BASE_URL}/announcements/${selected.id}`, {
-        method: 'PUT',
-        headers: authHeaders(),
-        body: JSON.stringify({
-          label:       editForm.label,
-          version:     editForm.version.trim(),
-          date:        editForm.date.trim() || undefined,
-          title:       editForm.title.trim(),
-          description: editForm.description.trim(),
-        }),
+      const updated = await announcementsApi.update(selected.id, {
+        label:       editForm.label,
+        version:     editForm.version.trim(),
+        date:        editForm.date.trim() || undefined,
+        title:       editForm.title.trim(),
+        description: editForm.description.trim(),
       })
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}))
-        throw new Error(d?.detail ?? `HTTP ${res.status}`)
-      }
-      const updated: Announcement = await res.json()
       setItems(prev => prev.map(i => i.id === updated.id ? updated : i))
       setSelected(updated)
       setEditing(false)
@@ -233,12 +167,9 @@ const AnunciosPanel = () => {
     }
   }
 
-  const inputCls = 'bg-[#0A0A0B] border border-neutral-800 rounded-lg px-3 py-2 text-white text-xs placeholder-neutral-700 focus:outline-none focus:border-green-500/50'
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative">
 
-      {/* Header */}
       <div className="px-6 py-4 flex items-center justify-between flex-shrink-0">
         <div>
           <h2 className="text-white text-sm font-semibold">Comunicados</h2>
@@ -262,7 +193,6 @@ const AnunciosPanel = () => {
 
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
 
-        {/* Formulario de creación */}
         {showForm && (
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 flex flex-col gap-4">
             <p className="text-white text-xs font-semibold">Nuevo comunicado</p>
@@ -270,33 +200,32 @@ const AnunciosPanel = () => {
             <div className="grid grid-cols-3 gap-3">
               <div className="flex flex-col gap-1.5">
                 <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Tipo</label>
-                <select value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} className={inputCls}>
+                <select value={form.label} onChange={e => setForm(p => ({ ...p, label: e.target.value }))} className={ANUNCIOS_INPUT_CLS}>
                   {LABEL_OPTIONS.map(l => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Versión</label>
-                <input value={form.version} onChange={e => setForm(p => ({ ...p, version: e.target.value }))} placeholder="v1.2" className={inputCls} />
+                <input value={form.version} onChange={e => setForm(p => ({ ...p, version: e.target.value }))} placeholder="v1.2" className={ANUNCIOS_INPUT_CLS} />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Fecha (opcional)</label>
-                <input value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} placeholder="Jun 2025" className={inputCls} />
+                <input value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} placeholder="Jun 2025" className={ANUNCIOS_INPUT_CLS} />
               </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Título</label>
-              <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Nombre del comunicado" className={inputCls} />
+              <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="Nombre del comunicado" className={ANUNCIOS_INPUT_CLS} />
             </div>
 
             <div className="flex flex-col gap-1.5">
               <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Descripción</label>
-              <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descripción del comunicado..." rows={3} className={`${inputCls} resize-none`} />
+              <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Descripción del comunicado..." rows={3} className={`${ANUNCIOS_INPUT_CLS} resize-none`} />
             </div>
 
             {saveError && <p className="text-red-400 text-xs">{saveError}</p>}
 
-            {/* Preview */}
             <div className="border-t border-neutral-800 pt-4">
               <p className="text-neutral-600 text-[10px] uppercase tracking-widest mb-3">Vista previa</p>
               <div className="relative bg-[#111113] border border-neutral-800 rounded-xl p-4 overflow-hidden">
@@ -327,7 +256,6 @@ const AnunciosPanel = () => {
           </div>
         )}
 
-        {/* Lista */}
         {loading && (
           <div className="flex justify-center pt-12">
             <svg className="animate-spin w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none">
@@ -377,7 +305,6 @@ const AnunciosPanel = () => {
                   <p className="text-neutral-500 text-[11px] leading-relaxed line-clamp-2">{item.description}</p>
                 </div>
 
-                {/* Acciones — visibles en hover */}
                 <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1 flex-shrink-0 transition-opacity" onClick={e => e.stopPropagation()}>
                   <button
                     onClick={() => { setSelected(item); openEdit(item) }}
@@ -404,7 +331,6 @@ const AnunciosPanel = () => {
         })}
       </div>
 
-      {/* ── Drawer de detalle / edición ── */}
       <AnimatePresence>
         {selected && (
           <>
@@ -419,7 +345,6 @@ const AnunciosPanel = () => {
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: 'spring', stiffness: 300, damping: 35 }}
             >
-              {/* Drawer header */}
               <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3">
                 <LabelBadge label={editing ? editForm.label : selected.label} />
                 <span className="flex-1 text-white text-sm font-semibold truncate">
@@ -459,10 +384,8 @@ const AnunciosPanel = () => {
                 </div>
               </div>
 
-              {/* Drawer body */}
               <div className="flex-1 overflow-y-auto p-5">
                 {!editing ? (
-                  /* Vista detalle */
                   <div className="flex flex-col gap-5">
                     <div className="flex items-center gap-3">
                       <LabelBadge label={selected.label} />
@@ -483,7 +406,6 @@ const AnunciosPanel = () => {
                       {linkify(selected.description)}
                     </p>
 
-                    {/* ── Sección de fijado ── */}
                     <div className="border-t border-neutral-800 pt-4 flex flex-col gap-3">
                       <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5" viewBox="0 0 17.021 17.021" fill="#FBBF24">
@@ -522,9 +444,9 @@ const AnunciosPanel = () => {
                       ) : (
                         <div className="flex flex-wrap gap-1.5">
                           {[
-                            { label: '1 día',   days: 1   },
-                            { label: '7 días',  days: 7   },
-                            { label: '30 días', days: 30  },
+                            { label: '1 día',     days: 1    },
+                            { label: '7 días',    days: 7    },
+                            { label: '30 días',   days: 30   },
                             { label: 'Sin límite', days: null },
                           ].map(opt => (
                             <button
@@ -545,33 +467,32 @@ const AnunciosPanel = () => {
                     </div>
                   </div>
                 ) : (
-                  /* Formulario de edición */
                   <div className="flex flex-col gap-4">
                     <div className="grid grid-cols-3 gap-3">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Tipo</label>
-                        <select value={editForm.label} onChange={e => setEditForm(p => ({ ...p, label: e.target.value }))} className={inputCls}>
+                        <select value={editForm.label} onChange={e => setEditForm(p => ({ ...p, label: e.target.value }))} className={ANUNCIOS_INPUT_CLS}>
                           {LABEL_OPTIONS.map(l => <option key={l} value={l}>{l}</option>)}
                         </select>
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Versión</label>
-                        <input value={editForm.version} onChange={e => setEditForm(p => ({ ...p, version: e.target.value }))} className={inputCls} />
+                        <input value={editForm.version} onChange={e => setEditForm(p => ({ ...p, version: e.target.value }))} className={ANUNCIOS_INPUT_CLS} />
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Fecha</label>
-                        <input value={editForm.date} onChange={e => setEditForm(p => ({ ...p, date: e.target.value }))} placeholder="Jun 2025" className={inputCls} />
+                        <input value={editForm.date} onChange={e => setEditForm(p => ({ ...p, date: e.target.value }))} placeholder="Jun 2025" className={ANUNCIOS_INPUT_CLS} />
                       </div>
                     </div>
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Título</label>
-                      <input value={editForm.title} onChange={e => setEditForm(p => ({ ...p, title: e.target.value }))} className={inputCls} />
+                      <input value={editForm.title} onChange={e => setEditForm(p => ({ ...p, title: e.target.value }))} className={ANUNCIOS_INPUT_CLS} />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
                       <label className="text-neutral-500 text-[10px] uppercase tracking-widest">Descripción</label>
-                      <textarea value={editForm.description} onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))} rows={5} className={`${inputCls} resize-none`} />
+                      <textarea value={editForm.description} onChange={e => setEditForm(p => ({ ...p, description: e.target.value }))} rows={5} className={`${ANUNCIOS_INPUT_CLS} resize-none`} />
                     </div>
 
                     {editError && <p className="text-red-400 text-xs">{editError}</p>}
@@ -579,7 +500,6 @@ const AnunciosPanel = () => {
                 )}
               </div>
 
-              {/* Drawer footer — solo en modo edición */}
               {editing && (
                 <div className="flex-shrink-0 px-5 py-4 border-t border-neutral-800 flex items-center justify-end gap-2">
                   <button

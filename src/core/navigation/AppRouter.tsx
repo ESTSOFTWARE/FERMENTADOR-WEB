@@ -32,7 +32,7 @@ import GroupsView from '../../features/groups/presentation/view/GroupsView'
 import GroupDetailView from '../../features/groups/presentation/view/GroupDetailView'
 import AdminGroupsView from '../../features/groups/presentation/view/AdminGroupsView'
 import SupportView from '../../features/support/presentation/view/SupportView'
-import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationContext'
+import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationProvider'
 import PrivateRoute from './PrivateRoute'
 import ScrollToTop from './ScrollToTop'
 

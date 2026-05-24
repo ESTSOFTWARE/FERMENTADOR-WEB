@@ -4,28 +4,18 @@ import { motion, AnimatePresence } from 'motion/react'
 import { QRCodeSVG } from 'qrcode.react'
 import { sileo } from 'sileo'
 import { ArrowLeft, Users, QrCode, Plus, Link, Mail, Hash, Calendar } from 'lucide-react'
-import * as XLSX from 'xlsx'
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { cn } from '../../../../lib/utils'
 import { pageVariants } from '../../../../shared/animations/variants'
 import { useGroupDetailViewModel } from '../viewmodels/useGroupDetailViewModel'
 import { useUserAuth } from '../../../../core/hooks/userAuth'
-import type { GroupMember } from '../../domain/models/Group'
+import type { GroupMember } from '../../domain/models/GroupMember'
 import PaginationBar from '../../../../shared/components/PaginationBar'
-
-const PAGE_SIZE = 10
-
-const JOIN_BASE = 'https://nich-ka.space/join?code='
-const TOAST_STYLE = { fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } }
-
-type Tab = 'alumnos' | 'qr'
-
-const modalVariants = {
-  hidden:  { opacity: 0, scale: 0.95, y: 8 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.2, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] } },
-  exit:    { opacity: 0, scale: 0.95, y: 8, transition: { duration: 0.15 } },
-}
+import { JOIN_BASE, PAGE_SIZE } from '../constants/group-detail.constants'
+import { TOAST_STYLE } from '../constants/toast-style.constants'
+import { modalVariants } from '../constants/modal-variants.constants'
+import { formatDate } from '../utils/format-date'
+import { exportCSV, exportXLSX, exportPDF } from '../utils/export-members'
+import type { Tab } from '../types/tab.types'
 
 const GroupDetailView = () => {
   const { id }       = useParams<{ id: string }>()
@@ -41,9 +31,6 @@ const GroupDetailView = () => {
   const members    = vm.group?.members ?? []
   const totalPages = Math.max(1, Math.ceil(members.length / PAGE_SIZE))
   const paged      = members.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-
-  const formatDate = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
 
   const copyLink = (code: string) => {
     navigator.clipboard.writeText(`${JOIN_BASE}${code}`)
@@ -65,53 +52,7 @@ const GroupDetailView = () => {
   }
 
   const professorName = user ? `${user.name} ${user.last_name}` : 'Profesor'
-
-  const isAdmin = user?.role === 'admin'
-
-  const exportRows = () => members.map((m, i) => ({
-    '#': i + 1,
-    Nombre: `${m.name} ${m.last_name}`,
-    Correo: m.email,
-    Registrado: formatDate(m.joined_at),
-  }))
-
-  const exportCSV = () => {
-    const rows = exportRows()
-    const header = Object.keys(rows[0]).join(',')
-    const body = rows.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n')
-    const blob = new Blob([`${header}\n${body}`], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `alumnos-${vm.group!.code}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
-    setShowExport(false)
-  }
-
-  const exportXLSX = () => {
-    const ws = XLSX.utils.json_to_sheet(exportRows())
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Alumnos')
-    XLSX.writeFile(wb, `alumnos-${vm.group!.code}.xlsx`)
-    setShowExport(false)
-  }
-
-  const exportPDF = () => {
-    const doc = new jsPDF()
-    doc.setFontSize(14)
-    doc.text(`Alumnos — ${vm.group!.name} (${vm.group!.subject})`, 14, 16)
-    autoTable(doc, {
-      startY: 24,
-      head: [['#', 'Nombre', 'Correo', 'Registrado']],
-      body: members.map((m, i) => [i + 1, `${m.name} ${m.last_name}`, m.email, formatDate(m.joined_at)]),
-      theme: 'grid',
-      headStyles: { fillColor: [34, 197, 94] },
-      styles: { fontSize: 9 },
-    })
-    doc.save(`alumnos-${vm.group!.code}.pdf`)
-    setShowExport(false)
-  }
+  const isAdmin       = user?.role === 'admin'
 
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: 'alumnos', label: 'Alumnos', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
@@ -244,7 +185,7 @@ const GroupDetailView = () => {
                                   <span className="text-sm text-neutral-500">{m.email}</span>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <span className="text-sm text-neutral-500">{formatDate(m.joined_at)}</span>
+                                  <span className="text-sm text-neutral-500">{formatDate(m.joined_at, true)}</span>
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                   <button
@@ -371,7 +312,7 @@ const GroupDetailView = () => {
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { label: 'ID de alumno', value: String(drawer.student_id) },
-                    { label: 'Se unió',      value: formatDate(drawer.joined_at) },
+                    { label: 'Se unió',      value: formatDate(drawer.joined_at, true) },
                   ].map(s => (
                     <div key={s.label} className="bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-3 text-center">
                       <p className="text-white font-bold text-base leading-none">{s.value}</p>
@@ -385,7 +326,7 @@ const GroupDetailView = () => {
                   {[
                     { icon: <Mail className="w-3.5 h-3.5" />,     label: 'Correo',  value: drawer.email },
                     { icon: <Hash className="w-3.5 h-3.5" />,     label: 'ID',      value: String(drawer.student_id) },
-                    { icon: <Calendar className="w-3.5 h-3.5" />, label: 'Registro',value: formatDate(drawer.joined_at) },
+                    { icon: <Calendar className="w-3.5 h-3.5" />, label: 'Registro',value: formatDate(drawer.joined_at, true) },
                   ].map(row => (
                     <div key={row.label} className="flex items-center gap-3 px-4 py-3">
                       <span className="text-neutral-600">{row.icon}</span>
@@ -470,9 +411,9 @@ const GroupDetailView = () => {
                 <p style={{ color: '#52525B', fontSize: 13, margin: '0 0 24px 0' }}>Elige el formato de descarga</p>
                 <div style={{ display: 'flex', gap: 10 }}>
                   {([
-                    { icon: '/assets/icons/pdf.svg',  label: 'PDF',   action: exportPDF  },
-                    { icon: '/assets/icons/csv.svg',  label: 'CSV',   action: exportCSV  },
-                    { icon: '/assets/icons/xlsx.svg', label: 'Excel', action: exportXLSX },
+                    { icon: '/assets/icons/pdf.svg',  label: 'PDF',   action: () => { exportPDF(members, vm.group!.name, vm.group!.subject, vm.group!.code); setShowExport(false) } },
+                    { icon: '/assets/icons/csv.svg',  label: 'CSV',   action: () => { exportCSV(members, vm.group!.code); setShowExport(false) } },
+                    { icon: '/assets/icons/xlsx.svg', label: 'Excel', action: () => { exportXLSX(members, vm.group!.code); setShowExport(false) } },
                   ] as const).map(opt => (
                     <button key={opt.label} onClick={opt.action}
                       style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '18px 12px', borderRadius: 12, backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D', cursor: 'pointer', transition: 'border-color 0.15s' }}

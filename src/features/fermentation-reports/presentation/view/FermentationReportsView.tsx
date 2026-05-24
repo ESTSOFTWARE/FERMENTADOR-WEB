@@ -1,12 +1,12 @@
-import { useState }     from 'react'
-import { motion }       from 'motion/react'
-import type { Status }  from '../types/Status'
-import { FILTERS }      from '../constants/filters'
-import StatusPill       from '../components/StatusPill'
-import { useFermentationReportsViewModel } from '../viewmodels/useFermentationReportsViewModel'
+import { useState }                          from 'react'
+import { motion }                            from 'motion/react'
+import type { Status }                       from '../types/Status'
+import { FILTERS }                           from '../constants/filters'
+import { REPORTS_STYLES }                    from '../constants/styles'
+import StatusPill                            from '../components/StatusPill'
+import { useFermentationReportsViewModel }   from '../viewmodels/useFermentationReportsViewModel'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
-/* Filtros sin "running" */
 const VISIBLE_FILTERS = FILTERS.filter(f => f.value !== 'running')
 
 const FermentationReportsView = () => {
@@ -36,16 +36,8 @@ const FermentationReportsView = () => {
         flexDirection:   'column',
       }}
     >
-      <style>{`
-        @keyframes spin  { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
-        .report-row { cursor: pointer; transition: background-color 0.15s; }
-        .report-row:hover { background-color: rgba(255,255,255,0.02) !important; }
-        .filter-btn { cursor: pointer; transition: all 0.15s; font-family: Poppins, sans-serif; }
-        .filter-btn:hover { border-color: #3F3F46 !important; color: #A1A1AA !important; }
-      `}</style>
+      <style>{REPORTS_STYLES}</style>
 
-      {/* ── Header ── */}
       <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Historial
@@ -90,7 +82,6 @@ const FermentationReportsView = () => {
         </div>
       </motion.div>
 
-      {/* ── Error ── */}
       {error && (
         <div
           style={{
@@ -123,13 +114,12 @@ const FermentationReportsView = () => {
         </div>
       )}
 
-      {/* ── Stats ── */}
       <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }}>
         {([
-          { label: 'Total sesiones', value: reports.length,  color: '#F4F4F5',  accent: '#27272A' },
-          { label: 'Completadas',    value: completadas,     color: '#22C55E',  accent: '#22C55E15' },
-          { label: 'Interrumpidas',  value: interrumpidas,   color: '#F59E0B',  accent: '#F59E0B15' },
-          { label: 'En curso',       value: enCurso,         color: '#3B82F6',  accent: '#3B82F615' },
+          { label: 'Total sesiones', value: reports.length, color: '#F4F4F5', accent: '#27272A' },
+          { label: 'Completadas',    value: completadas,    color: '#22C55E', accent: '#22C55E15' },
+          { label: 'Interrumpidas',  value: interrumpidas,  color: '#F59E0B', accent: '#F59E0B15' },
+          { label: 'En curso',       value: enCurso,        color: '#3B82F6', accent: '#3B82F615' },
         ] as const).map(stat => (
           <motion.div
             key={stat.label}
@@ -143,7 +133,6 @@ const FermentationReportsView = () => {
               overflow:        'hidden',
             }}
           >
-            {/* Accent top bar */}
             <div
               style={{
                 position:        'absolute',
@@ -167,7 +156,6 @@ const FermentationReportsView = () => {
         ))}
       </motion.div>
 
-      {/* ── Filtros ── */}
       <motion.div variants={sectionVariants} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
         <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 8px 0 0' }}>
           Filtrar
@@ -190,13 +178,11 @@ const FermentationReportsView = () => {
             {f.label}
           </button>
         ))}
-
         <span style={{ marginLeft: 'auto', color: '#3F3F46', fontSize: 12 }}>
           {loading ? '—' : `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}`}
         </span>
       </motion.div>
 
-      {/* ── Tabla + panel lateral ── */}
       <motion.div
         variants={sectionVariants}
         style={{
@@ -207,7 +193,6 @@ const FermentationReportsView = () => {
           alignItems:          'start',
         }}
       >
-        {/* Tabla */}
         <div
           style={{
             borderRadius:    16,
@@ -239,7 +224,6 @@ const FermentationReportsView = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Skeleton */}
               {loading && Array.from({ length: 6 }).map((_, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid #17171A' }}>
                   {[40, 80, 100, 50, 40, 50, 72, 14].map((w, j) => (
@@ -250,7 +234,6 @@ const FermentationReportsView = () => {
                 </tr>
               ))}
 
-              {/* Filas */}
               {!loading && filtered.map((r, i) => (
                 <tr
                   key={r.id}
@@ -262,9 +245,7 @@ const FermentationReportsView = () => {
                   }}
                 >
                   <td style={{ padding: '13px 20px' }}>
-                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>
-                      #{r.id}
-                    </span>
+                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>#{r.id}</span>
                   </td>
                   <td style={{ padding: '13px 20px' }}>
                     <span style={{ color: '#71717A', fontSize: 12 }}>#{r.circuit}</span>
@@ -308,7 +289,6 @@ const FermentationReportsView = () => {
           </table>
         </div>
 
-        {/* Panel lateral */}
         {selected && selectedReport && (
           <div
             style={{
@@ -321,7 +301,6 @@ const FermentationReportsView = () => {
               gap:             18,
             }}
           >
-            {/* Panel header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ color: '#52525B', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 4px 0' }}>
@@ -334,15 +313,15 @@ const FermentationReportsView = () => {
               <button
                 onClick={() => setSelected(null)}
                 style={{
-                  background:      'none',
-                  border:          '1px solid #2A2A2D',
-                  borderRadius:    7,
-                  cursor:          'pointer',
-                  color:           '#52525B',
-                  padding:         '5px 7px',
-                  display:         'flex',
-                  alignItems:      'center',
-                  justifyContent:  'center',
+                  background:     'none',
+                  border:         '1px solid #2A2A2D',
+                  borderRadius:   7,
+                  cursor:         'pointer',
+                  color:          '#52525B',
+                  padding:        '5px 7px',
+                  display:        'flex',
+                  alignItems:     'center',
+                  justifyContent: 'center',
                 }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -353,15 +332,14 @@ const FermentationReportsView = () => {
 
             <StatusPill status={selectedReport.status} />
 
-            {/* Metadata */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {([
                 { label: 'Circuito',        value: `#${selectedReport.circuit}` },
                 { label: 'Inicio',          value: selectedReport.start },
                 { label: 'Fin',             value: selectedReport.end },
                 { label: 'Duración',        value: selectedReport.duration },
-                { label: 'pH registrado',   value: selectedReport.ph > 0 ? `${selectedReport.ph}` : '—' },
-                { label: 'Temperatura',     value: selectedReport.temp > 0 ? `${selectedReport.temp} °C` : '—' },
+                { label: 'pH registrado',   value: selectedReport.ph   > 0 ? `${selectedReport.ph}`        : '—' },
+                { label: 'Temperatura',     value: selectedReport.temp > 0 ? `${selectedReport.temp} °C`   : '—' },
                 { label: 'Azúcar inicial',  value: selectedReport.sugar > 0 ? `${selectedReport.sugar} g/L` : '—' },
                 { label: 'Etanol obtenido', value: selectedReport.etanol > 0 ? `${selectedReport.etanol} g/L` : '—' },
               ] as const).map((item, i, arr) => (
@@ -383,7 +361,6 @@ const FermentationReportsView = () => {
               ))}
             </div>
 
-            {/* Eficiencia */}
             {selectedReport.efficiency != null && (
               <div
                 style={{

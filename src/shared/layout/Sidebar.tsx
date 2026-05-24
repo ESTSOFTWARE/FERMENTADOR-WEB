@@ -4,26 +4,7 @@ import { useExperimentStore } from '../../core/store/useExperimentStore'
 import { nav } from '../../core/navigation/navItems'
 import { useUserAuth } from '../../core/hooks/userAuth'
 import { cn } from '../../lib/utils'
-
-const TOUR_IDS: Record<string, string> = {
-  '/overview':                           'tour-step-inicio',
-  '/dashboard':                          'tour-step-dashboard',
-  '/results/:id':                        'tour-step-results',
-  '/experiment/:id':                     'tour-step-generaciones',
-  '/experiment/:id/best-per-generation': 'tour-step-mejor',
-  '/experiment/:id/charts':              'tour-step-graficas',
-  '/simulation/:id':                     'tour-step-simulacion',
-  '/grafics':                            'tour-step-grafics',
-  '/efficiency-calculator':              'tour-step-efficiency',
-  '/users/add':                          'tour-step-users-add',
-  '/users/manage':                       'tour-step-users-manage',
-  '/fermentation':                       'tour-step-fermentation',
-  '/fermentation-reports':               'tour-step-reports',
-  '/announcements':                      'tour-step-announcements',
-  '/chat':                               'tour-step-chat',
-  '/groups':                             'tour-step-groups',
-  '/admin/groups':                       'tour-step-admin-groups',
-}
+import { TOUR_IDS } from '../constants/tour-ids.constants'
 
 const Sidebar = () => {
   const { experimentId, individualId } = useExperimentStore()

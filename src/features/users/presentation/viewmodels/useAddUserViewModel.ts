@@ -1,7 +1,7 @@
 import { useState, useEffect }  from 'react'
 import { UserRepositoryImpl }   from '../../data/repositories/UserRepositoryImpl'
 import { useUserAuth }             from '../../../../core/hooks/userAuth'
-import type { AddUserForm }     from '../types/AddUserForm'
+import type { AddUserForm }     from '../types/add-user-form.types'
 
 const repo = new UserRepositoryImpl()
 

@@ -1,11 +1,9 @@
-import type {
-  LoginRequest,
-  RegisterRequest,
-  RefreshTokenRequest,
-  TokenResponse,
-  AccessTokenResponse,
-  RegisterResponse,
-} from '../models/Auth'
+import type { LoginRequest } from '../dtos/request/login.request'
+import type { RegisterRequest } from '../dtos/request/register.request'
+import type { RefreshTokenRequest } from '../dtos/request/refresh-token.request'
+import type { TokenResponse } from '../dtos/response/token.response'
+import type { AccessTokenResponse } from '../dtos/response/access-token.response'
+import type { RegisterResponse } from '../dtos/response/register.response'
 
 export interface AuthRepository {
   login(data: LoginRequest): Promise<TokenResponse>

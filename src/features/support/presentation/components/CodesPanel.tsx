@@ -1,9 +1,7 @@
-import { useState } from 'react'
+import { useState }             from 'react'
 import { useSupportClientsStore } from '../../../../core/store/useSupportClientsStore'
-import { cn } from '../../../../lib/utils'
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+import { cn }                    from '../../../../lib/utils'
+import { formatDateTime }        from '../utils/format-date-time'
 
 const CodesPanel = () => {
   const { clients, codes, generateCode } = useSupportClientsStore()
@@ -36,18 +34,16 @@ const CodesPanel = () => {
   return (
     <div className="h-full flex flex-col overflow-hidden">
 
-      {/* ── Top bar ── */}
       <div className="flex-shrink-0 px-8 pt-6 pb-5 border-b border-neutral-900 flex items-center gap-6">
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-base">Códigos de activación</h2>
           <p className="text-neutral-500 text-sm mt-0.5">Genera y administra códigos para activar cuentas de usuarios</p>
         </div>
 
-        {/* Stats inline */}
         <div className="flex items-center gap-4 flex-shrink-0">
           {[
-            { label: 'Generados', value: codes.length },
-            { label: 'Asignados', value: codes.filter(c => c.assignedTo).length },
+            { label: 'Generados',  value: codes.length },
+            { label: 'Asignados',  value: codes.filter(c => c.assignedTo).length },
             { label: 'Sin código', value: clientsWithoutCode.length },
           ].map(stat => (
             <div key={stat.label} className="text-center px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl">
@@ -58,7 +54,6 @@ const CodesPanel = () => {
         </div>
       </div>
 
-      {/* ── Generate bar ── */}
       <div className="flex-shrink-0 px-8 py-4 border-b border-neutral-900 flex items-center gap-3">
         {generated && (
           <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-2 mr-2">
@@ -92,7 +87,6 @@ const CodesPanel = () => {
         </button>
       </div>
 
-      {/* ── Table header ── */}
       <div className="flex-shrink-0 px-8 py-3 border-b border-neutral-900 flex items-center justify-between">
         <div className="grid grid-cols-4 gap-4 flex-1 text-[11px] font-semibold text-neutral-600 uppercase tracking-wider">
           <span>Código</span>
@@ -108,7 +102,6 @@ const CodesPanel = () => {
         </div>
       </div>
 
-      {/* ── Table rows (scrollable) ── */}
       <div className="flex-1 overflow-y-auto">
         {filteredCodes.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 h-full text-center">
@@ -124,7 +117,7 @@ const CodesPanel = () => {
               <div className="min-w-0">
                 <p className="text-neutral-300 text-sm truncate">{code.assignedEmail ?? '—'}</p>
               </div>
-              <p className="text-neutral-600 text-xs">{formatDate(code.createdAt)}</p>
+              <p className="text-neutral-600 text-xs">{formatDateTime(code.createdAt)}</p>
               <div className="flex items-center gap-3">
                 <span className={cn('text-[10px] px-2.5 py-1 rounded-full border',
                   code.status === 'available' ? 'text-green-400 bg-green-400/10 border-green-400/20' : 'text-neutral-500 bg-neutral-800/60 border-neutral-700')}>

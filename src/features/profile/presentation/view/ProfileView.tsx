@@ -1,62 +1,13 @@
-import { useState, useRef } from 'react'
-import { motion } from 'motion/react'
-import { useProfileViewModel } from '../viewmodels/useProfileViewModel'
+import { useState, useRef }              from 'react'
+import { motion }                        from 'motion/react'
+import { useProfileViewModel }           from '../viewmodels/useProfileViewModel'
 import { pageVariants, sectionVariants, gridVariants } from '../../../../shared/animations/variants'
-import { PhoneInput } from '../components/PhoneInput'
-
-const STYLES = `
-  .profile-input:focus {
-    outline: none;
-    border-color: #22C55E !important;
-    box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
-  }
-  .profile-input::placeholder { color: #3F3F46; }
-  .avatar-option { transition: transform 0.15s ease; cursor: pointer; }
-  .avatar-option:hover { transform: scale(1.06); }
-`
-
-const inputStyle: React.CSSProperties = {
-  width: '100%', backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D',
-  borderRadius: 10, color: '#F4F4F5', fontSize: 13, padding: '11px 14px',
-  fontFamily: 'Poppins, sans-serif', boxSizing: 'border-box',
-  transition: 'border-color 0.2s, box-shadow 0.2s',
-}
-const labelStyle: React.CSSProperties = {
-  display: 'block', color: '#71717A', fontSize: 10,
-  letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8,
-}
-const readonlyStyle: React.CSSProperties = {
-  ...inputStyle, backgroundColor: '#0D0D0F',
-  border: '1px solid #1F1F22', color: '#52525B', cursor: 'default',
-}
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Administrador', profesor: 'Profesor', estudiante: 'Estudiante',
-}
-
-
-const EyeBtn = ({ show, onToggle }: { show: boolean; onToggle: () => void }) => (
-  <button type="button" onClick={onToggle}
-    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#52525B', padding: 0 }}>
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      {show
-        ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" /><line x1="1" y1="1" x2="23" y2="23" /></>
-        : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>}
-    </svg>
-  </button>
-)
-
-const Flash = ({ msg, type }: { msg: string; type: 'success' | 'error' }) => {
-  const ok = type === 'success'
-  return (
-    <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, backgroundColor: ok ? '#22C55E10' : '#F43F5E10', border: `1px solid ${ok ? '#22C55E30' : '#F43F5E30'}`, color: ok ? '#22C55E' : '#F43F5E', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-      {ok
-        ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5" /></svg>
-        : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>}
-      {msg}
-    </div>
-  )
-}
+import { PhoneInput }                    from '../components/PhoneInput'
+import { EyeBtn }                        from '../components/EyeBtn'
+import { Flash }                         from '../components/Flash'
+import { PROFILE_STYLES }                from '../constants/profile-styles.constants'
+import { inputStyle, labelStyle, readonlyStyle } from '../constants/profile-input-styles.constants'
+import { ROLE_LABELS }                   from '../constants/role-labels.constants'
 
 const ProfileView = () => {
   const {
@@ -83,7 +34,7 @@ const ProfileView = () => {
 
   return (
     <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
-      <style>{STYLES}</style>
+      <style>{PROFILE_STYLES}</style>
 
       <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>Cuenta</p>
@@ -103,7 +54,6 @@ const ProfileView = () => {
                 </div>
               )}
 
-              {/* input oculto para subir foto */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -112,7 +62,6 @@ const ProfileView = () => {
                 onChange={e => { const f = e.target.files?.[0]; if (f) handleUploadImage(f); e.target.value = '' }}
               />
 
-              {/* botón cámara → abre file picker */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={loadingImage}
@@ -160,7 +109,6 @@ const ProfileView = () => {
                 })()}
               </div>
             </div>
-
           </div>
 
           <div style={{ padding: 24, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22' }}>
@@ -336,7 +284,6 @@ const ProfileView = () => {
               </div>
             </div>
           </div>
-
         </div>
       </motion.div>
     </motion.div>

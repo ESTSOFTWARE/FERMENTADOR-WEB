@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDashboardViewModel } from '../viewmodels/useDashboardViewModel'
-import type { RunExperimentRequest } from '../../domain/models/RunExperiment'
+import type { RunExperimentRequest } from '../../domain/dtos/request/run-experiment.request'
 import { useExperimentStore } from '../../../../core/store/useExperimentStore'
 import { fields } from '../constants/fields'
 import LoadingScreen from '../components/LoadingScreen'

@@ -1,34 +1,12 @@
 import { motion } from 'motion/react'
-import { useManageUsersViewModel } from '../viewmodels/useManageUsersViewModel'
-import { MANAGE_USERS_STYLES, ROLE_CONFIG } from '../constants/manageUsersStyles'
-import type { Role } from '../../models/entities/User'
+import { useManageUsersViewModel }    from '../viewmodels/useManageUsersViewModel'
+import { MANAGE_USERS_STYLES }        from '../constants/manage-users-styles.constants'
+import { MANAGE_USERS_INPUT_STYLE }   from '../constants/manage-users-input-style.constants'
+import { MANAGE_USERS_FILTERS }       from '../constants/manage-users-filters.constants'
+import { MANAGE_USERS_STAT_COLORS }   from '../constants/manage-users-stat-colors.constants'
+import { ROLE_CONFIG }                from '../constants/role-config.constants'
+import type { Role }                  from '../../models/entities/User'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
-
-const inputStyle: React.CSSProperties = {
-  width:           '100%',
-  backgroundColor: '#0A0A0B',
-  border:          '1px solid #2A2A2D',
-  borderRadius:    8,
-  color:           '#F4F4F5',
-  fontSize:        12,
-  padding:         '8px 12px',
-  fontFamily:      'Poppins, sans-serif',
-  boxSizing:       'border-box',
-}
-
-const FILTERS = [
-  { label: 'Todos los roles', value: ''              },
-  { label: 'Administrador',   value: 'Administrador' },
-  { label: 'Profesor',        value: 'Profesor'      },
-  { label: 'Estudiante',      value: 'Estudiante'    },
-]
-
-const STAT_COLORS: Record<string, string> = {
-  '':              '#F4F4F5',
-  'Administrador': '#A78BFA',
-  'Profesor':      '#22C55E',
-  'Estudiante':    '#38BDF8',
-}
 
 const ManageUsersView = () => {
   const {
@@ -43,8 +21,8 @@ const ManageUsersView = () => {
   } = useManageUsersViewModel()
 
   const visibleFilters = isProfesor
-    ? FILTERS.filter(f => f.value === '' || f.value === 'Estudiante')
-    : FILTERS
+    ? MANAGE_USERS_FILTERS.filter(f => f.value === '' || f.value === 'Estudiante')
+    : MANAGE_USERS_FILTERS
 
   const countFor = (value: string) =>
     value === ''
@@ -55,7 +33,6 @@ const ManageUsersView = () => {
     <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{MANAGE_USERS_STYLES}</style>
 
-      {/* ── Header ── */}
       <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
           Gestión de Usuarios
@@ -66,7 +43,6 @@ const ManageUsersView = () => {
         <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
       </motion.div>
 
-      {/* ── Alertas ── */}
       {success && (
         <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, backgroundColor: '#22C55E10', border: '1px solid #22C55E30', color: '#22C55E', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -85,10 +61,8 @@ const ManageUsersView = () => {
         </div>
       )}
 
-      {/* ── Toolbar ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16 }}>
 
-        {/* Búsqueda + select rol (solo admin) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ position: 'relative', width: 280 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#52525B" strokeWidth="2" strokeLinecap="round"
@@ -100,7 +74,7 @@ const ManageUsersView = () => {
               placeholder={isProfesor ? 'Buscar estudiante...' : 'Buscar por nombre, email o rol...'}
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ ...inputStyle, paddingLeft: 36, paddingRight: 16 }}
+              style={{ ...MANAGE_USERS_INPUT_STYLE, paddingLeft: 36, paddingRight: 16 }}
             />
           </div>
 
@@ -114,15 +88,15 @@ const ManageUsersView = () => {
                 value={roleFilter}
                 onChange={e => setRoleFilter(e.target.value)}
                 style={{
-                  ...inputStyle,
+                  ...MANAGE_USERS_INPUT_STYLE,
                   width:        'auto',
                   paddingLeft:  32,
                   paddingRight: 32,
                   cursor:       'pointer',
                   colorScheme:  'dark',
                   appearance:   'none',
-                  color:        roleFilter === '' ? '#52525B' : STAT_COLORS[roleFilter],
-                  borderColor:  roleFilter === '' ? '#2A2A2D' : `${STAT_COLORS[roleFilter]}50`,
+                  color:        roleFilter === '' ? '#52525B' : MANAGE_USERS_STAT_COLORS[roleFilter],
+                  borderColor:  roleFilter === '' ? '#2A2A2D' : `${MANAGE_USERS_STAT_COLORS[roleFilter]}50`,
                 }}
               >
                 {visibleFilters.map(f => (
@@ -137,10 +111,9 @@ const ManageUsersView = () => {
           )}
         </div>
 
-        {/* Pills de filtro */}
         <div style={{ display: 'flex', gap: 6 }}>
           {visibleFilters.map(f => {
-            const color  = STAT_COLORS[f.value]
+            const color  = MANAGE_USERS_STAT_COLORS[f.value]
             const count  = countFor(f.value)
             const active = roleFilter === f.value
             return (
@@ -185,7 +158,6 @@ const ManageUsersView = () => {
         </div>
       </div>
 
-      {/* ── Tabla ── */}
       {loading ? (
         <div style={{ padding: '48px 20px', textAlign: 'center', color: '#3F3F46', fontSize: 13 }}>
           Cargando usuarios...
@@ -216,8 +188,8 @@ const ManageUsersView = () => {
                   <td style={{ padding: '14px 20px' }}>
                     {editing === u.id && editForm ? (
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <input className="manage-input" value={editForm.name}      onChange={e => setField('name',      e.target.value)} style={{ ...inputStyle, width: 90  }} placeholder="Nombre"   />
-                        <input className="manage-input" value={editForm.last_name} onChange={e => setField('last_name', e.target.value)} style={{ ...inputStyle, width: 90  }} placeholder="Apellido" />
+                        <input className="manage-input" value={editForm.name}      onChange={e => setField('name',      e.target.value)} style={{ ...MANAGE_USERS_INPUT_STYLE, width: 90  }} placeholder="Nombre"   />
+                        <input className="manage-input" value={editForm.last_name} onChange={e => setField('last_name', e.target.value)} style={{ ...MANAGE_USERS_INPUT_STYLE, width: 90  }} placeholder="Apellido" />
                       </div>
                     ) : (
                       <span style={{ color: '#F4F4F5', fontSize: 13 }}>{u.name} {u.last_name}</span>
@@ -226,7 +198,7 @@ const ManageUsersView = () => {
 
                   <td style={{ padding: '14px 20px' }}>
                     {editing === u.id && editForm ? (
-                      <input className="manage-input" type="email" value={editForm.email} onChange={e => setField('email', e.target.value)} style={{ ...inputStyle, width: 180 }} />
+                      <input className="manage-input" type="email" value={editForm.email} onChange={e => setField('email', e.target.value)} style={{ ...MANAGE_USERS_INPUT_STYLE, width: 180 }} />
                     ) : (
                       <span style={{ color: '#71717A', fontSize: 12 }}>{u.email}</span>
                     )}
@@ -237,7 +209,7 @@ const ManageUsersView = () => {
                       <select
                         value={editForm.role_name}
                         onChange={e => setField('role_name', e.target.value)}
-                        style={{ ...inputStyle, width: 140, cursor: 'pointer', colorScheme: 'dark' }}
+                        style={{ ...MANAGE_USERS_INPUT_STYLE, width: 140, cursor: 'pointer', colorScheme: 'dark' }}
                       >
                         {isProfesor
                           ? <option value="Estudiante">Estudiante</option>
@@ -339,7 +311,6 @@ const ManageUsersView = () => {
         </div>
       )}
 
-      {/* ── Modal eliminar ── */}
       {deleteId !== null && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ padding: 32, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', maxWidth: 380, width: '90%' }}>

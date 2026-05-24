@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
-import { useFermentation } from '../context/FermentationContext'
-import type { SensorKey } from '../../../sensors/domain/models/Sensor'
+import { useFermentation } from '../hooks/useFermentation'
+import type { SensorKey } from '../../../sensors/domain/models/SensorKey'
 import MainControlSection from '../components/MainControlSection'
 import SensorControlSection from '../components/SensorControlSection'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'

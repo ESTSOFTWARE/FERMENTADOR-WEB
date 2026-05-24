@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import SupportSidebar from '../components/SupportSidebar'
-import TicketsPanel from '../components/TicketsPanel'
-import ClientsPanel from '../components/ClientsPanel'
-import FermentadoresPanel from '../components/FermentadoresPanel'
-import NotificacionesPanel from '../components/NotificacionesPanel'
-import AnunciosPanel from '../components/AnunciosPanel'
-import ProfilePanel from '../components/ProfilePanel'
+import { useState }           from 'react'
+import SupportSidebar         from '../components/SupportSidebar'
+import TicketsPanel           from '../components/TicketsPanel'
+import ClientsPanel           from '../components/ClientsPanel'
+import FermentadoresPanel     from '../components/FermentadoresPanel'
+import NotificacionesPanel    from '../components/NotificacionesPanel'
+import AnunciosPanel          from '../components/AnunciosPanel'
+import ProfilePanel           from '../components/ProfilePanel'
+import type { SupportSection } from '../types/support-section.types'
 
-export type SupportSection = 'tickets' | 'clients' | 'fermentadores' | 'notificaciones' | 'anuncios' | 'perfil'
+export type { SupportSection }
 
 const SupportView = () => {
   const [section, setSection] = useState<SupportSection>('tickets')
