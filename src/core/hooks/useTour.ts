@@ -5,11 +5,11 @@ import 'driver.js/dist/driver.css'
 import { ProfileRepositoryImpl }      from '../../features/profile/data/repositories/ProfileRepositoryImpl'
 import { GetUserProfileUseCase }      from '../../features/profile/domain/usecases/get-user-profile.usecase'
 import { MarkTourCompletedUseCase }   from '../../features/profile/domain/usecases/mark-tour-completed.usecase'
+import { useUserAuth }                from './userAuth'
 
 const profileRepo    = new ProfileRepositoryImpl()
 const getUserProfile = new GetUserProfileUseCase(profileRepo)
 const markTour       = new MarkTourCompletedUseCase(profileRepo)
-import { useUserAuth } from './userAuth'
 
 interface TourStep {
   path:    string | null
@@ -215,5 +215,5 @@ export const useTour = () => {
         setTimeout(() => driverObj.drive(), 600)
       }
     }).catch(() => {})
-  }, [user?.id])
+  }, [user?.id, navigate])
 }
