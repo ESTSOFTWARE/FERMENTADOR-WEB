@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
-import { useAnnouncementsViewModel, labelColor } from '../viewmodels/useAnnouncementsViewModel'
+import { useAnnouncementsViewModel } from '../viewmodels/useAnnouncementsViewModel'
+import { labelColor }               from '../utils/label-color'
 import { linkify } from '../../../../shared/utils/linkify'
 
 const AnnouncementsView = () => {
