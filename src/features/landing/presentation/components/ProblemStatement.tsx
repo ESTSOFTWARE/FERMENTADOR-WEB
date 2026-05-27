@@ -1,60 +1,44 @@
-import { motion, type Variants } from "motion/react"
-import { HexagonPattern } from "../../../../components/ui/hexagon-pattern"
-import { cn } from "../../../../lib/utils"
+import { motion } from 'motion/react'
+import { HexagonPattern } from '../../../../components/ui/hexagon-pattern'
+import { ImageAccordion } from '../../../../components/ui/interactive-image-accordion'
+import { cn } from '../../../../lib/utils'
 
-const PROBLEMS = [
+const ACCORDION_ITEMS = [
   {
-    num: "01",
-    title: "Brecha instrumental",
-    description: "Los laboratorios universitarios de biotecnología en Latinoamérica carecen de equipamiento accesible para monitoreo continuo. Los estudiantes aprenden fermentación con procedimientos manuales que imposibilitan la recopilación sistemática de datos.",
-    color: "#fbbf24",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-    ),
+    id: 1,
+    title: 'Brecha instrumental',
+    imageUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=80',
   },
   {
-    num: "02",
-    title: "Aprendizaje desconectado",
-    description: "Sin monitoreo en tiempo real, los estudiantes aprenden los principios de la fermentación de forma teórica o con observaciones puntuales, sin desarrollar la capacidad de interpretar dinámicas continuas del proceso.",
-    color: "#06b6d4",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-    ),
+    id: 2,
+    title: 'Aprendizaje desconectado',
+    imageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80',
   },
   {
-    num: "03",
-    title: "Soluciones inaccesibles",
-    description: "Las soluciones comerciales instrumentadas (Eppendorf BioFlo, Sartorius BIOSTAT) superan los $15,000 USD. Los proyectos de código abierto como OpenFermentor proveen hardware accesible pero carecen de IA integrada y reportes automatizados.",
-    color: "#f472b6",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-      </svg>
-    ),
+    id: 3,
+    title: 'Costos inaccesibles',
+    imageUrl: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=800&q=80',
+  },
+  {
+    id: 4,
+    title: 'Sin datos en tiempo real',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+  },
+  {
+    id: 5,
+    title: 'Propuesta: Nich-Ká',
+    imageUrl: '/assets/nich-ka.png',
   },
 ]
 
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 60, scale: 0.92, rotateX: 8 },
-  visible: (i: number) => ({
-    opacity: 1, y: 0, scale: 1, rotateX: 0,
-    transition: { type: "spring", stiffness: 90, damping: 18, delay: i * 0.18 },
-  }),
-}
-
 const ProblemStatement = () => (
-  <section className="relative w-full overflow-hidden" style={{ background: "#0F8E4D", perspective: "1200px" }}>
+  <section className="relative w-full overflow-hidden" style={{ background: '#0F8E4D' }}>
 
     <HexagonPattern
       hexagons={[[1,1],[4,4],[2,2],[3,4],[5,4],[8,2],[6,3],[8,5],[10,10],[12,3],[7,7],[3,8]]}
       className={cn(
-        "absolute inset-0 z-0 [&_svg]:w-full [&_svg]:h-full",
-        "mask-[radial-gradient(600px_circle_at_center,white,transparent)]",
+        'absolute inset-0 z-0 [&_svg]:w-full [&_svg]:h-full',
+        'mask-[radial-gradient(600px_circle_at_center,white,transparent)]',
       )}
       radius={36}
     />
@@ -62,82 +46,68 @@ const ProblemStatement = () => (
     <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
     <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
 
-    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-16">
+    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-20">
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      {/* Top: heading left + accordion right */}
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+
+        {/* Left — text */}
         <motion.div
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-6 lg:max-w-md"
           initial={{ opacity: 0, x: -32 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ type: "spring", stiffness: 80, damping: 20 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ type: 'spring', stiffness: 80, damping: 20 }}
         >
           <span className="text-xs uppercase tracking-[0.3em] text-white/60 font-medium">Contexto</span>
           <h2 className="text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">
             Planteamiento<br />del problema
           </h2>
           <div className="w-12 h-1 rounded-full bg-white/40" />
+          <p className="text-white/70 text-sm leading-relaxed">
+            La enseñanza práctica de la fermentación enfrenta una brecha crítica: formación sin datos,
+            sin monitoreo continuo y sin herramientas al alcance de las instituciones educativas de Latinoamérica.
+          </p>
+          <ul className="flex flex-col gap-3 mt-2">
+            {[
+              'Laboratorios sin equipamiento de monitoreo continuo',
+              'Soluciones industriales fuera del presupuesto institucional ($15K+ USD)',
+              'Aprendizaje teórico sin interpretación de dinámicas reales',
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3 text-sm text-white/70">
+                <span className="mt-1 w-1.5 h-1.5 rounded-full bg-white/50 flex-shrink-0" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </motion.div>
-        <motion.p
-          className="max-w-sm text-white/70 text-sm leading-relaxed md:text-right"
+
+        {/* Right — accordion */}
+        <motion.div
+          className="w-full lg:w-auto"
           initial={{ opacity: 0, x: 32 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ type: 'spring', stiffness: 70, damping: 20, delay: 0.1 }}
         >
-          La enseñanza práctica de la fermentación enfrenta una brecha crítica: formación sin datos,
-          sin monitoreo continuo y sin herramientas al alcance de las instituciones educativas.
-        </motion.p>
+          <ImageAccordion items={ACCORDION_ITEMS} defaultIndex={4} />
+        </motion.div>
+
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5" style={{ perspective: "1000px" }}>
-        {PROBLEMS.map(({ num, title, description, icon, color }, i) => (
-          <motion.div
-            key={num}
-            custom={i}
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
-            whileHover={{ y: -6, scale: 1.02, transition: { type: "spring", stiffness: 300, damping: 20 } }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="relative flex flex-col gap-6 p-8 rounded-2xl cursor-default border-2 border-dashed"
-            style={{ borderColor: "rgba(0,0,0,0.4)" }}
-          >
-            <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{ background: "rgba(0,0,0,0.1)" }} />
-
-            <div className="flex items-start justify-between relative">
-              <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center"
-                style={{ background: "rgba(0,0,0,0.35)", border: `1px solid ${color}70`, color }}
-              >
-                {icon}
-              </div>
-              <span className="text-5xl font-black leading-none select-none" style={{ color: "rgba(0,0,0,0.2)" }}>{num}</span>
-            </div>
-
-            <div className="flex flex-col gap-2 relative">
-              <h3 className="text-white font-black text-lg leading-tight tracking-tight">{title}</h3>
-              <p className="text-white/60 text-sm leading-relaxed">{description}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
+      {/* Bottom: pregunta + respuesta */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         {/* Pregunta */}
         <motion.div
           className="relative flex flex-col justify-between gap-6 p-8 rounded-2xl overflow-hidden"
-          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(12px)" }}
+          style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(12px)' }}
           initial={{ opacity: 0, x: -32 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ type: "spring", stiffness: 70, damping: 18, delay: 0.1 }}
+          transition={{ type: 'spring', stiffness: 70, damping: 18, delay: 0.1 }}
         >
-          <span
-            className="pointer-events-none absolute -top-4 -right-2 text-[9rem] font-black leading-none select-none"
-            style={{ color: "rgba(255,255,255,0.07)" }}
-          >?</span>
+          <span className="pointer-events-none absolute -top-4 -right-2 text-[9rem] font-black leading-none select-none" style={{ color: 'rgba(255,255,255,0.07)' }}>?</span>
 
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
@@ -149,8 +119,8 @@ const ProblemStatement = () => (
           </p>
 
           <div className="flex gap-2 flex-wrap">
-            {["Educación", "Instrumentación", "Accesibilidad"].map(t => (
-              <span key={t} className="text-[10px] px-2.5 py-1 rounded-full font-semibold text-white/60" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.18)" }}>{t}</span>
+            {['Educación', 'Instrumentación', 'Accesibilidad'].map(t => (
+              <span key={t} className="text-[10px] px-2.5 py-1 rounded-full font-semibold text-white/60" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)' }}>{t}</span>
             ))}
           </div>
         </motion.div>
@@ -158,18 +128,18 @@ const ProblemStatement = () => (
         {/* Respuesta */}
         <motion.div
           className="relative flex flex-col justify-between gap-6 p-8 rounded-2xl overflow-hidden"
-          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(12px)" }}
+          style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(12px)' }}
           initial={{ opacity: 0, x: 32 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ type: "spring", stiffness: 70, damping: 18, delay: 0.2 }}
+          transition={{ type: 'spring', stiffness: 70, damping: 18, delay: 0.2 }}
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl" style={{ background: "linear-gradient(to right, rgba(255,255,255,0.5), transparent)" }} />
+          <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl" style={{ background: 'linear-gradient(to right, rgba(255,255,255,0.5), transparent)' }} />
 
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)" }}>
+            <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)' }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6 9 17l-5-5"/>
+                <path d="M20 6 9 17l-5-5" />
               </svg>
             </div>
             <span className="text-xs uppercase tracking-[0.25em] text-white/50 font-semibold">Respuesta</span>
@@ -183,8 +153,8 @@ const ProblemStatement = () => (
           </div>
 
           <div className="flex gap-2 flex-wrap">
-            {["IoT", "ML propio", "NLP local", "Multi-rol", "<$1,000 USD"].map(t => (
-              <span key={t} className="text-[10px] px-2.5 py-1 rounded-full font-semibold text-white/60" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.18)" }}>{t}</span>
+            {['IoT', 'ML propio', 'NLP local', 'Multi-rol', '<$1,000 USD'].map(t => (
+              <span key={t} className="text-[10px] px-2.5 py-1 rounded-full font-semibold text-white/60" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)' }}>{t}</span>
             ))}
           </div>
         </motion.div>
