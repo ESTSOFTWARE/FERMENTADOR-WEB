@@ -1,230 +1,281 @@
-import { motion } from "motion/react"
-import { Activity, Cpu, Globe, FlaskConical, Database } from "lucide-react"
-import { HexagonBackground } from "../../../../components/animate-ui/components/backgrounds/hexagon"
-import { GlowingEffect } from "../../../../components/ui/glowing-effect"
-import { RadialNav } from "../../../../components/animate-ui/components/community/radial-nav"
+import { Activity, Cpu, Globe, FlaskConical, Database, CheckCircle2, LoaderCircle, Circle } from 'lucide-react'
+import FlowArt, { FlowSection } from '../../../../components/ui/story-scroll'
 
-const NAV_ITEMS = [
-  { id: 1, icon: Activity,     label: "IoT",        angle: 0    },
-  { id: 2, icon: Cpu,          label: "ML",         angle: 72   },
-  { id: 3, icon: Globe,        label: "NLP",        angle: 144  },
-  { id: 4, icon: FlaskConical, label: "Plataforma", angle: -144 },
-  { id: 5, icon: Database,     label: "Negocio",    angle: -72  },
-]
-
-const SPECIFIC: { num: string; title: string; text: string; tag: string; icon: React.ReactNode }[] = [
-  {
-    num: "01", tag: "IoT",
-    title: "Adquisición en tiempo real",
-    text: "Implementar adquisición continua de datos (pH, temperatura, alcohol, turbidez, conductividad) con transmisión mediante RabbitMQ y control remoto de actuadores (bomba y motor a pasos).",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
-  },
-  {
-    num: "02", tag: "ML",
-    title: "Predicción de eficiencia",
-    text: "Entrenar un modelo de regresión supervisado capaz de predecir la eficiencia final de una fermentación a partir de lecturas de la primera mitad del proceso, con métricas documentadas.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
-  },
-  {
-    num: "03", tag: "ML",
-    title: "Detección de anomalías",
-    text: "Implementar Isolation Forest o Autoencoder ligero para detectar lecturas fuera del comportamiento histórico normal y disparar alertas en tiempo real durante el proceso.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
-  },
-  {
-    num: "04", tag: "NLP",
-    title: "Reportes en lenguaje natural",
-    text: "Desarrollar un módulo que, al finalizar cada fermentación, produzca un párrafo de análisis interpretativo en español basado en los datos reales del proceso, sin APIs de IA externas.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
-  },
-  {
-    num: "05", tag: "NLP",
-    title: "Notificaciones inteligentes",
-    text: "Integrar un LLM local (vía ngrok u hospedaje propio) que analice lecturas periódicas de sensores y genere recomendaciones accionables como notificaciones push en la app móvil.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
-  },
-  {
-    num: "06", tag: "Plataforma",
-    title: "Sistema multirol",
-    text: "Consolidar la plataforma web y app móvil con gestión de roles Admin → Docente → Estudiante, sistema de reportes descargables y simulador pedagógico de fermentación.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
-  },
-  {
-    num: "07", tag: "Negocio",
-    title: "Validación HaaS + SaaS",
-    text: "Validar el modelo HaaS + SaaS con al menos una institución piloto, documentando métricas de adopción, satisfacción docente y mejora en el desempeño académico de los estudiantes.",
-    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
-  },
-]
-
-interface BentoItemProps {
-  area: string;
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
+const StatusIcon = ({ status }: { status: string }) => {
+  if (status === 'completed') return <CheckCircle2 className="w-4 h-4 text-[#0F8E4D]" />
+  if (status === 'progress')  return <LoaderCircle  className="w-4 h-4 text-[#0F8E4D] animate-spin" />
+  return <Circle className="w-4 h-4 text-white/25" />
 }
 
-const BentoItem = ({ area, children, className = "", delay = 0 }: BentoItemProps) => (
-  <motion.li
-    className={`list-none ${area} ${className}`}
-    initial={{ opacity: 0, y: 28, scale: 0.97 }}
-    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-    viewport={{ once: true, amount: 0.2 }}
-    transition={{ type: "spring", stiffness: 70, damping: 18, delay }}
-  >
-    <div className="relative h-full rounded-2xl border border-black p-2">
-      <GlowingEffect spread={40} glow={false} proximity={64} inactiveZone={0.01} disabled={false} />
-      <div className="relative flex h-full flex-col gap-5 overflow-hidden rounded-xl p-6 bg-black" style={{ boxShadow: "0px 0px 27px 0px #1a1a1a" }}>
-        {children}
-      </div>
-    </div>
-  </motion.li>
-)
+const TASKS_IOT = [
+  { title: 'Sensores pH, temp, alcohol, turbidez', status: 'completed', meta: 'Lectura continua activa'      },
+  { title: 'Transmisión RabbitMQ',                 status: 'completed', meta: 'Pipeline configurado'         },
+  { title: 'Control remoto de actuadores',         status: 'progress',  meta: 'En progreso...'               },
+  { title: 'Validación de lecturas',               status: 'pending',   meta: 'Pendiente'                    },
+]
+const TASKS_ML = [
+  { title: 'Recolección y etiquetado de datos',  status: 'completed', meta: 'Dataset listo'               },
+  { title: 'Regresión supervisada (eficiencia)', status: 'completed', meta: 'Métricas documentadas'        },
+  { title: 'Isolation Forest (anomalías)',        status: 'progress',  meta: 'Entrenando… alertas activas' },
+  { title: 'Integración con dashboard',           status: 'pending',   meta: 'Pendiente'                   },
+]
+const TASKS_NLP = [
+  { title: 'Reportes en español',              status: 'completed', meta: 'Módulo activo'              },
+  { title: 'LLM local vía ngrok',              status: 'completed', meta: 'Hospedaje configurado'      },
+  { title: 'Análisis periódico de sensores',   status: 'progress',  meta: 'Generando recomendaciones…' },
+  { title: 'Notificaciones push app móvil',    status: 'pending',   meta: 'Pendiente'                  },
+]
+const TASKS_PLATFORM = [
+  { title: 'Roles Admin / Docente / Estudiante', status: 'completed', meta: 'Implementado'    },
+  { title: 'App móvil React Native',             status: 'completed', meta: 'Build estable'   },
+  { title: 'Simulador pedagógico',               status: 'progress',  meta: 'En desarrollo…' },
+  { title: 'Reportes descargables PDF',          status: 'pending',   meta: 'Pendiente'       },
+]
+const TASKS_BUSINESS = [
+  { title: 'Institución piloto identificada',     status: 'completed', meta: 'Confirmada'          },
+  { title: 'Despliegue hardware en laboratorio',  status: 'completed', meta: 'Instalado'           },
+  { title: 'Métricas de adopción y satisfacción', status: 'progress',  meta: 'Recopilando datos…' },
+  { title: 'Informe final de validación',         status: 'pending',   meta: 'Pendiente'           },
+]
 
-const ObjCardInner = ({ item }: { item: typeof SPECIFIC[0] }) => (
-  <>
-    <div className="flex items-start justify-between">
-      <div className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-white/60">
-        {item.icon}
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold text-white/40" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-          {item.tag}
-        </span>
-        <span className="text-[10px] font-black font-mono text-white/25">{item.num}</span>
-      </div>
+function TaskList({ tasks, light = false }: { tasks: { title: string; status: string; meta: string }[]; light?: boolean }) {
+  return (
+    <div className="flex flex-col gap-3">
+      {tasks.map((t, i) => (
+        <div key={i} className="flex items-start gap-2.5">
+          <div className="mt-[2px] flex-shrink-0"><StatusIcon status={t.status} /></div>
+          <div>
+            <p className={`text-[clamp(0.7rem,1.1vw,0.85rem)] leading-snug ${
+              t.status === 'completed' ? `line-through ${light ? 'text-white/40' : 'text-white/30'}` :
+              t.status === 'progress'  ? `text-[#4ade80] font-medium` :
+              `${light ? 'text-white/35' : 'text-white/25'}`
+            }`}>{t.title}</p>
+            <p className={`text-[0.7rem] mt-0.5 ${light ? 'text-white/40' : 'text-white/25'}`}>{t.meta}</p>
+          </div>
+        </div>
+      ))}
     </div>
-    <div className="flex flex-col gap-1.5 flex-1 justify-end">
-      <h3 className="text-white font-semibold text-base leading-tight">{item.title}</h3>
-      <p className="text-neutral-400 text-xs leading-relaxed">{item.text}</p>
-    </div>
-  </>
-)
+  )
+}
 
 const Objectives = () => (
-  <section className="relative w-full overflow-hidden" style={{ background: "#0F8E4D" }}>
-    <HexagonBackground
-      className="absolute inset-0 z-0 !bg-transparent"
-      hexagonSize={70}
-      hexagonMargin={2}
-      hexagonProps={{
-        className: "before:!bg-[rgba(255,255,255,0.06)] after:!bg-[rgba(15,142,77,1)] hover:before:!bg-[rgba(255,255,255,0.14)] hover:after:!bg-[rgba(255,255,255,0.04)]"
-      }}
-    />
-    <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
-    <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
+  <FlowArt aria-label="Objetivos del proyecto">
 
-    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-16">
-
-      <div className="flex items-center justify-between gap-8">
-        <motion.div
-          className="flex flex-col gap-4"
-          initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-        >
-          <span className="text-xs uppercase tracking-[0.3em] text-white/60 font-medium">Metas</span>
-          <h2 className="text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">Objetivos</h2>
-          <div className="w-12 h-1 rounded-full bg-white/40" />
-        </motion.div>
-
-        <motion.div
-          className="hidden md:block"
-          initial={{ opacity: 0, scale: 0.85 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-        >
-          <RadialNav items={NAV_ITEMS} size={140} defaultActiveId={1} menuButtonConfig={{ iconSize: 14, buttonSize: 30, buttonPadding: 6 }} />
-        </motion.div>
+    {/* ── 01 Objetivo general ── */}
+    <FlowSection aria-label="Objetivo general" style={{ backgroundColor: '#0A3D20', color: '#fff' }}>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/50">01 — Objetivo general</p>
+      <hr className="my-[2vw] border-none border-t border-white/10" style={{ borderTopWidth: 1 }} />
+      <div>
+        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
+          Moni&shy;toreo<br />
+          Inteli&shy;gente
+        </h2>
       </div>
-
-      <motion.ul
-        className="grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-4"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1 }}
-        transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-      >
-        {/* Objetivo General — tall left card, spans 3 rows */}
-        <BentoItem area="md:[grid-area:1/1/4/5]" className="min-h-[14rem]" delay={0}>
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
-            <span className="text-[10px] uppercase tracking-wider font-semibold text-white/50">Objetivo general</span>
-          </div>
-
-          <p className="text-white font-bold text-base leading-snug tracking-tight flex-1">
-            Desarrollar un sistema integral de monitoreo y análisis inteligente de procesos fermentativos orientado a la enseñanza experimental de biotecnología, integrando IoT, Machine Learning propio y NLP sin dependencia de APIs externas de IA.
+      <hr className="my-[2vw] border-none border-t border-white/10" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[3vw]">
+        <div className="min-w-[200px] flex-1">
+          <p className="mb-2 text-sm font-bold uppercase tracking-wider text-[#4ade80]">IoT</p>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-60">
+            Adquisición continua de cinco variables críticas del proceso fermentativo.
           </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <p className="mb-2 text-sm font-bold uppercase tracking-wider text-[#4ade80]">ML Propio</p>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-60">
+            Modelos entrenados sobre datos reales, sin APIs externas de IA.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <p className="mb-2 text-sm font-bold uppercase tracking-wider text-[#4ade80]">NLP Local</p>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-60">
+            Reportes interpretativos en español con un LLM hospedado localmente.
+          </p>
+        </div>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/10" style={{ borderTopWidth: 1 }} />
+      <p className="mt-auto max-w-[55ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed opacity-70">
+        Un sistema integral accesible para instituciones educativas de Latinoamérica — sin dependencia de servicios externos de IA.
+      </p>
+    </FlowSection>
 
-          <div className="flex gap-2 flex-wrap">
-            {["IoT", "ML propio", "NLP local", "Multi-rol"].map(label => (
-              <span key={label} className="text-[10px] px-2.5 py-1 rounded-full font-semibold text-white/80" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}>
-                {label}
-              </span>
-            ))}
-          </div>
-        </BentoItem>
-
-        {/* Obj 01 — IoT */}
-        <BentoItem area="md:[grid-area:1/5/2/9]" className="min-h-[12rem]" delay={0.1}>
-          <ObjCardInner item={SPECIFIC[0]} />
-        </BentoItem>
-
-        {/* Obj 02 — ML predicción */}
-        <BentoItem area="md:[grid-area:1/9/2/13]" className="min-h-[12rem]" delay={0.15}>
-          <ObjCardInner item={SPECIFIC[1]} />
-        </BentoItem>
-
-        {/* Obj 03 — ML anomalías */}
-        <BentoItem area="md:[grid-area:2/5/3/9]" className="min-h-[12rem]" delay={0.2}>
-          <ObjCardInner item={SPECIFIC[2]} />
-        </BentoItem>
-
-        {/* Obj 04 — NLP reportes */}
-        <BentoItem area="md:[grid-area:2/9/3/13]" className="min-h-[12rem]" delay={0.25}>
-          <ObjCardInner item={SPECIFIC[3]} />
-        </BentoItem>
-
-        {/* Obj 05 — NLP notificaciones */}
-        <BentoItem area="md:[grid-area:3/5/4/9]" className="min-h-[12rem]" delay={0.3}>
-          <ObjCardInner item={SPECIFIC[4]} />
-        </BentoItem>
-
-        {/* Obj 06 — Plataforma multirol */}
-        <BentoItem area="md:[grid-area:3/9/4/13]" className="min-h-[12rem]" delay={0.35}>
-          <ObjCardInner item={SPECIFIC[5]} />
-        </BentoItem>
-
-        {/* Obj 07 — Modelo de negocio — full width bottom */}
-        <BentoItem area="md:[grid-area:4/1/5/13]" className="min-h-[10rem]" delay={0.4}>
-          <div className="flex items-start justify-between">
-            <div className="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center text-white/60">
-              {SPECIFIC[6].icon}
+    {/* ── 02 IoT ── */}
+    <FlowSection aria-label="Adquisición IoT" style={{ backgroundColor: '#060d09', color: '#fff' }}>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">02 — Adquisición IoT</p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div>
+        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
+          Tiempo<br />
+          Real
+        </h2>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <p className="max-w-[50ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed opacity-60">
+        El fermentador captura pH, temperatura, alcohol, turbidez y conductividad de forma continua. Los datos viajan por <span className="text-[#4ade80] font-semibold">RabbitMQ</span> y el operador puede controlar bomba y motor a pasos de forma remota.
+      </p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[3vw]">
+        {['pH', 'Temperatura', 'Alcohol', 'Turbidez', 'Conductividad'].map(v => (
+          <div key={v} className="min-w-[120px] flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Activity className="w-3.5 h-3.5 text-[#0F8E4D]" />
+              <p className="text-sm font-bold uppercase tracking-wider">{v}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold text-white/40" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                {SPECIFIC[6].tag}
-              </span>
-              <span className="text-[10px] font-black font-mono text-white/25">{SPECIFIC[6].num}</span>
-            </div>
+            <p className="text-[clamp(0.85rem,1.1vw,0.9rem)] leading-relaxed opacity-40">Lectura continua activa</p>
           </div>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 flex-1">
-            <div className="flex flex-col gap-1.5">
-              <h3 className="text-white font-semibold text-base leading-tight">{SPECIFIC[6].title}</h3>
-              <p className="text-neutral-400 text-xs leading-relaxed max-w-2xl">{SPECIFIC[6].text}</p>
-            </div>
-          </div>
-        </BentoItem>
+        ))}
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <TaskList tasks={TASKS_IOT} />
+    </FlowSection>
 
-      </motion.ul>
-    </div>
-  </section>
+    {/* ── 03 ML ── */}
+    <FlowSection aria-label="Machine Learning" style={{ backgroundColor: '#040a06', color: '#fff' }}>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">03 — Machine Learning</p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div>
+        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
+          ML<br />
+          Propio
+        </h2>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <p className="max-w-[50ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed opacity-60">
+        Dos modelos entrenados sobre datos reales: <span className="text-[#4ade80] font-semibold">regresión supervisada</span> para predecir eficiencia final del batch e <span className="text-[#4ade80] font-semibold">Isolation Forest</span> para detectar anomalías antes de que el proceso falle.
+      </p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[3vw]">
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Cpu className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Regresión supervisada</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Predice la eficiencia final de cada fermentación a partir de las variables medidas en tiempo real.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Cpu className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Isolation Forest</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Detecta patrones anómalos en tiempo real y emite alertas accionables al operador.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Cpu className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Sin APIs externas</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Entrenados y ejecutados localmente sobre datos reales del proceso fermentativo.
+          </p>
+        </div>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <TaskList tasks={TASKS_ML} />
+    </FlowSection>
+
+    {/* ── 04 NLP ── */}
+    <FlowSection aria-label="Procesamiento de lenguaje natural" style={{ backgroundColor: '#060c08', color: '#fff' }}>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">04 — NLP Local</p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div>
+        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
+          Repor&shy;tes<br />
+          Natu&shy;rales
+        </h2>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <p className="max-w-[50ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed opacity-60">
+        Al finalizar cada fermentación, un <span className="text-[#4ade80] font-semibold">LLM local hospedado vía ngrok</span> genera un reporte interpretativo en español con desviaciones del proceso y recomendaciones accionables — sin enviar datos a OpenAI.
+      </p>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[3vw]">
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Reportes en español</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Explicación del comportamiento del proceso al finalizar cada batch.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Análisis periódico</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Monitoreo continuo con recomendaciones generadas automáticamente por el LLM.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Globe className="w-4 h-4 text-[#0F8E4D]" />
+            <p className="text-sm font-bold uppercase tracking-wider">Notificaciones push</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
+            Alertas en la app móvil con acciones sugeridas en tiempo real.
+          </p>
+        </div>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
+      <TaskList tasks={TASKS_NLP} />
+    </FlowSection>
+
+    {/* ── 05 Plataforma + Negocio ── */}
+    <FlowSection aria-label="Plataforma y modelo de negocio" style={{ backgroundColor: '#0F8E4D', color: '#fff' }}>
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">05 — Plataforma & Negocio</p>
+      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
+      <div>
+        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
+          HaaS +<br />
+          SaaS
+        </h2>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
+      <p className="max-w-[50ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed" style={{ opacity: 0.8 }}>
+        Plataforma web + app móvil con roles <span className="font-semibold text-white">Admin → Docente → Estudiante</span>, hardware accesible (&lt;$1K USD) y modelo de suscripción SaaS. Piloto activo con institución educativa real.
+      </p>
+      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[3vw]">
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <FlaskConical className="w-4 h-4 text-white/80" />
+            <p className="text-sm font-bold uppercase tracking-wider">Sistema multirol</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
+            Web + React Native con simulador pedagógico y reportes descargables en PDF.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="w-4 h-4 text-white/80" />
+            <p className="text-sm font-bold uppercase tracking-wider">Modelo HaaS + SaaS</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
+            Hardware inicial accesible + suscripción de bajo costo. Alternativa a soluciones industriales de $15K+.
+          </p>
+        </div>
+        <div className="min-w-[200px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Database className="w-4 h-4 text-white/80" />
+            <p className="text-sm font-bold uppercase tracking-wider">Efecto de red ML</p>
+          </div>
+          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
+            Cada institución alimenta los modelos ML con datos reales propios, mejorando el sistema para todos.
+          </p>
+        </div>
+      </div>
+      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
+      <div className="flex flex-wrap gap-[4vw]">
+        <TaskList tasks={TASKS_PLATFORM} light />
+        <TaskList tasks={TASKS_BUSINESS} light />
+      </div>
+    </FlowSection>
+
+  </FlowArt>
 )
 
 export default Objectives
