@@ -177,7 +177,7 @@ const Objectives = () => (
     </FlowSection>
 
     {/* ── 04 NLP ── */}
-    <FlowSection aria-label="Procesamiento de lenguaje natural" style={{ backgroundColor: '#060c08', color: '#fff' }}>
+    <FlowSection aria-label="Procesamiento de lenguaje natural" style={{ backgroundColor: '#0F8E4D', color: '#fff' }}>
       <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">04 — NLP Local</p>
       <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
       <div>
@@ -222,57 +222,6 @@ const Objectives = () => (
       </div>
       <hr className="my-[2vw] border-none border-t border-white/8" style={{ borderTopWidth: 1 }} />
       <TaskList tasks={TASKS_NLP} />
-    </FlowSection>
-
-    {/* ── 05 Plataforma + Negocio ── */}
-    <FlowSection aria-label="Plataforma y modelo de negocio" style={{ backgroundColor: '#0F8E4D', color: '#fff' }}>
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">05 — Plataforma & Negocio</p>
-      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
-      <div>
-        <h2 className="text-[clamp(3.5rem,12vw,14rem)] font-black leading-[0.85] uppercase tracking-tight">
-          HaaS +<br />
-          SaaS
-        </h2>
-      </div>
-      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
-      <p className="max-w-[50ch] text-[clamp(1rem,2.5vw,2rem)] font-normal leading-relaxed" style={{ opacity: 0.8 }}>
-        Plataforma web + app móvil con roles <span className="font-semibold text-white">Admin → Docente → Estudiante</span>, hardware accesible (&lt;$1K USD) y modelo de suscripción SaaS. Piloto activo con institución educativa real.
-      </p>
-      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
-      <div className="flex flex-wrap gap-[3vw]">
-        <div className="min-w-[200px] flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <FlaskConical className="w-4 h-4 text-white/80" />
-            <p className="text-sm font-bold uppercase tracking-wider">Sistema multirol</p>
-          </div>
-          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
-            Web + React Native con simulador pedagógico y reportes descargables en PDF.
-          </p>
-        </div>
-        <div className="min-w-[200px] flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Database className="w-4 h-4 text-white/80" />
-            <p className="text-sm font-bold uppercase tracking-wider">Modelo HaaS + SaaS</p>
-          </div>
-          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
-            Hardware inicial accesible + suscripción de bajo costo. Alternativa a soluciones industriales de $15K+.
-          </p>
-        </div>
-        <div className="min-w-[200px] flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Database className="w-4 h-4 text-white/80" />
-            <p className="text-sm font-bold uppercase tracking-wider">Efecto de red ML</p>
-          </div>
-          <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed" style={{ opacity: 0.65 }}>
-            Cada institución alimenta los modelos ML con datos reales propios, mejorando el sistema para todos.
-          </p>
-        </div>
-      </div>
-      <hr className="my-[2vw] border-none border-t border-white/20" style={{ borderTopWidth: 1 }} />
-      <div className="flex flex-wrap gap-[4vw]">
-        <TaskList tasks={TASKS_PLATFORM} light />
-        <TaskList tasks={TASKS_BUSINESS} light />
-      </div>
     </FlowSection>
 
   </FlowArt>
