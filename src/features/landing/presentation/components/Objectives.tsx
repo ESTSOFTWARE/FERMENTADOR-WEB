@@ -1,4 +1,4 @@
-import { Activity, Cpu, Globe, FlaskConical, Database, CheckCircle2, LoaderCircle, Circle } from 'lucide-react'
+import { Activity, Cpu, Globe, CheckCircle2, LoaderCircle, Circle } from 'lucide-react'
 import FlowArt, { FlowSection } from '../../../../components/ui/story-scroll'
 
 const StatusIcon = ({ status }: { status: string }) => {
@@ -24,18 +24,6 @@ const TASKS_NLP = [
   { title: 'LLM local vía ngrok',              status: 'completed', meta: 'Hospedaje configurado'      },
   { title: 'Análisis periódico de sensores',   status: 'progress',  meta: 'Generando recomendaciones…' },
   { title: 'Notificaciones push app móvil',    status: 'pending',   meta: 'Pendiente'                  },
-]
-const TASKS_PLATFORM = [
-  { title: 'Roles Admin / Docente / Estudiante', status: 'completed', meta: 'Implementado'    },
-  { title: 'App móvil React Native',             status: 'completed', meta: 'Build estable'   },
-  { title: 'Simulador pedagógico',               status: 'progress',  meta: 'En desarrollo…' },
-  { title: 'Reportes descargables PDF',          status: 'pending',   meta: 'Pendiente'       },
-]
-const TASKS_BUSINESS = [
-  { title: 'Institución piloto identificada',     status: 'completed', meta: 'Confirmada'          },
-  { title: 'Despliegue hardware en laboratorio',  status: 'completed', meta: 'Instalado'           },
-  { title: 'Métricas de adopción y satisfacción', status: 'progress',  meta: 'Recopilando datos…' },
-  { title: 'Informe final de validación',         status: 'pending',   meta: 'Pendiente'           },
 ]
 
 function TaskList({ tasks, light = false }: { tasks: { title: string; status: string; meta: string }[]; light?: boolean }) {
