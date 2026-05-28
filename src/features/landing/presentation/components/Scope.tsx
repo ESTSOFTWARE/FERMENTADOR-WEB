@@ -33,12 +33,14 @@ const tabs: TabItem[] = [
   },
   {
     id: '02',
-    title: 'Machine Learning',
+    title: 'Implementaciones de IA y NLP',
     image: '/assets/banner.png',
     description: (
       <div className="flex flex-col gap-4">
         {[
           { Icon: Zap,           name: 'Algoritmo genético',            info: 'Optimización experimental de parámetros de fermentación' },
+          { Icon: MessageSquare, name: 'NLP — análisis narrativo',            info: 'Párrafo interpretativo post-fermentación sin APIs externas' },
+          { Icon: Bell,          name: 'Notificaciones push con LLM',         info: 'Recomendaciones accionables basadas en lecturas de sensores' },
           { Icon: TrendingUp,    name: 'ML — predicción de eficiencia', info: 'Modelo supervisado que predice el resultado desde la mitad del proceso' },
           { Icon: AlertTriangle, name: 'ML — detección de anomalías',   info: 'Isolation Forest / Autoencoder en tiempo real con alertas' },
         ].map(({ Icon, name, info }) => (
@@ -57,14 +59,12 @@ const tabs: TabItem[] = [
   },
   {
     id: '03',
-    title: 'Plataforma & NLP',
+    title: 'Plataforma',
     image: '/assets/plataforma.png',
     description: (
       <div className="flex flex-col gap-3">
         {[
           { Icon: FileText,      name: 'Reportes PDF automáticos',            info: 'Generados al finalizar cada fermentación' },
-          { Icon: MessageSquare, name: 'NLP — análisis narrativo',            info: 'Párrafo interpretativo post-fermentación sin APIs externas' },
-          { Icon: Bell,          name: 'Notificaciones push con LLM',         info: 'Recomendaciones accionables basadas en lecturas de sensores' },
           { Icon: Smartphone,    name: 'App móvil con simulador',             info: 'Para estudiantes con modo simulador pedagógico' },
           { Icon: Users,         name: 'Gestión multirol',                    info: 'Admin → Docente → Estudiante con permisos diferenciados' },
           { Icon: Calculator,    name: 'Calculadora de eficiencia',           info: 'Fórmula Gay-Lussac validada con parámetros reales' },
