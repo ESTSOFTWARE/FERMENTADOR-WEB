@@ -6,31 +6,22 @@ import type { User }           from '../../models/entities/User'
 
 export class UserRepositoryImpl implements UserRepository {
   async getAll(): Promise<User[]> {
-    const res = await userApi.getAll()
-    if (!res.ok) throw new Error('Error al obtener usuarios')
-    return res.json()
+    return userApi.getAll()
   }
 
   async getById(id: number): Promise<User> {
-    const res = await userApi.getById(id)
-    if (!res.ok) throw new Error('Error al obtener usuario')
-    return res.json()
+    return userApi.getById(id)
   }
 
   async create(data: UserRequest): Promise<UserResponse> {
-    const res = await userApi.create(data)
-    if (!res.ok) throw new Error('Error al crear usuario')
-    return res.json()
+    return userApi.create(data)
   }
 
   async update(id: number, data: Partial<UserRequest>): Promise<UserResponse> {
-    const res = await userApi.update(id, data)
-    if (!res.ok) throw new Error('Error al actualizar usuario')
-    return res.json()
+    return userApi.update(id, data)
   }
 
   async delete(id: number): Promise<void> {
-    const res = await userApi.delete(id)
-    if (!res.ok) throw new Error('Error al eliminar usuario')
+    return userApi.delete(id)
   }
 }

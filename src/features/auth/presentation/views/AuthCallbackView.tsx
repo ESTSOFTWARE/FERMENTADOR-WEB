@@ -1,35 +1,28 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { notifyUserUpdated } from '../../../../core/hooks/userAuth'
 
 const AuthCallbackView = () => {
   const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
+  const navigate       = useNavigate()
 
   useEffect(() => {
-    const accessToken  = searchParams.get('access_token')
-    const refreshToken = searchParams.get('refresh_token')
-    const userDataB64  = searchParams.get('user_data')
+    const userDataB64 = searchParams.get('user_data')
 
-    if (!accessToken || !refreshToken) {
+    if (!userDataB64) {
       navigate('/login', { replace: true })
       return
     }
 
-    localStorage.setItem('access_token',  accessToken)
-    localStorage.setItem('refresh_token', refreshToken)
-
-    let role = ''
-    if (userDataB64) {
-      try {
-        const userData = JSON.parse(atob(userDataB64))
-        localStorage.setItem('user_data', JSON.stringify(userData))
-        role = userData.role?.toLowerCase() ?? ''
-      } catch {
-        // si falla el decode se navega a overview igualmente
-      }
+    try {
+      const userData = JSON.parse(atob(userDataB64))
+      localStorage.setItem('user_data', JSON.stringify(userData))
+      notifyUserUpdated()
+      const role = userData.role?.toLowerCase() ?? ''
+      navigate(role === 'soporte' ? '/support' : '/overview', { replace: true })
+    } catch {
+      navigate('/login', { replace: true })
     }
-
-    navigate(role === 'soporte' ? '/support' : '/overview', { replace: true })
   }, [navigate, searchParams])
 
   return (

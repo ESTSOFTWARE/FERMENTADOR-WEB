@@ -1,31 +1,12 @@
-import { authHeaders } from '../../../../core/api/http'
-
-const BASE = import.meta.env.VITE_API_URL
+import type { UserRequest }  from '../../models/dto/UserRequest'
+import type { UserResponse } from '../../models/dto/UserResponse'
+import type { User }         from '../../models/entities/User'
+import { apiClient }         from '../../../../core/network/client'
 
 export const userApi = {
-  getAll: () =>
-    fetch(`${BASE}/users/`, { headers: authHeaders() }),
-
-  getById: (id: number) =>
-    fetch(`${BASE}/users/${id}`, { headers: authHeaders() }),
-
-  create: (body: object) =>
-    fetch(`${BASE}/users/`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }),
-
-  update: (id: number, body: object) =>
-    fetch(`${BASE}/users/${id}/`, {
-      method:  'PUT',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }),
-
-  delete: (id: number) =>
-    fetch(`${BASE}/users/${id}/`, {
-      method:  'DELETE',
-      headers: authHeaders(),
-    }),
+  getAll:  ()                              => apiClient.get<User[]>('/users/'),
+  getById: (id: number)                    => apiClient.get<User>(`/users/${id}`),
+  create:  (body: UserRequest)             => apiClient.post<UserResponse>('/users/', body),
+  update:  (id: number, body: Partial<UserRequest>) => apiClient.put<UserResponse>(`/users/${id}/`, body),
+  delete:  (id: number)                    => apiClient.delete<void>(`/users/${id}/`),
 }

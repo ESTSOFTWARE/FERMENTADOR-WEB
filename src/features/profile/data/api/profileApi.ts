@@ -4,28 +4,19 @@ import type { ActivateCircuitRequest }  from '../../domain/dtos/request/activate
 import type { ChangePasswordResponse }  from '../../domain/dtos/response/change-password.response'
 import type { ActivateCircuitResponse } from '../../domain/dtos/response/activate-circuit.response'
 import type { UserProfile }             from '../../domain/models/UserProfile'
-import { authHeaders, authHeadersMultipart, handleResponse } from '../../../../core/api/http'
-
-const BASE_URL = import.meta.env.VITE_API_URL
+import { apiClient }                    from '../../../../core/network/client'
 
 export const profileApi = {
-  getUser: (userId: number): Promise<UserProfile> =>
-    fetch(`${BASE_URL}/users/${userId}`, {
-      headers: authHeaders(),
-    }).then(handleResponse<UserProfile>),
+  getUser: (userId: number) =>
+    apiClient.get<UserProfile>(`/users/${userId}`),
 
   uploadProfileImage: (file: File): Promise<{ profile_image: string }> => {
-    const form = new FormData()
-    form.append('file', file)
+    const form       = new FormData()
     const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 30_000)
-    return fetch(`${BASE_URL}/users/me/profile-image`, {
-      method:  'POST',
-      headers: authHeadersMultipart(),
-      body:    form,
-      signal:  controller.signal,
-    })
-      .then(res => { clearTimeout(timer); return handleResponse<{ profile_image: string }>(res) })
+    const timer      = setTimeout(() => controller.abort(), 30_000)
+    form.append('file', file)
+    return apiClient.upload<{ profile_image: string }>('/users/me/profile-image', form)
+      .then(res  => { clearTimeout(timer); return res })
       .catch(err => {
         clearTimeout(timer)
         if (err instanceof DOMException && err.name === 'AbortError') {
@@ -35,30 +26,15 @@ export const profileApi = {
       })
   },
 
-  changePassword: (data: ChangePasswordRequest): Promise<ChangePasswordResponse> =>
-    fetch(`${BASE_URL}/users/me/change-password`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(data),
-    }).then(handleResponse<ChangePasswordResponse>),
+  changePassword: (data: ChangePasswordRequest) =>
+    apiClient.post<ChangePasswordResponse>('/users/me/change-password', data),
 
-  updateUser: (userId: number, data: UpdateUserRequest): Promise<UserProfile> =>
-    fetch(`${BASE_URL}/users/${userId}`, {
-      method:  'PUT',
-      headers: authHeaders(),
-      body:    JSON.stringify(data),
-    }).then(handleResponse<UserProfile>),
+  updateUser: (userId: number, data: UpdateUserRequest) =>
+    apiClient.put<UserProfile>(`/users/${userId}`, data),
 
-  activateCircuit: (data: ActivateCircuitRequest): Promise<ActivateCircuitResponse> =>
-    fetch(`${BASE_URL}/users/me/activate`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(data),
-    }).then(handleResponse<ActivateCircuitResponse>),
+  activateCircuit: (data: ActivateCircuitRequest) =>
+    apiClient.post<ActivateCircuitResponse>('/users/me/activate', data),
 
-  markTourCompleted: (): Promise<{ message: string }> =>
-    fetch(`${BASE_URL}/users/me/tour`, {
-      method:  'PATCH',
-      headers: authHeaders(),
-    }).then(handleResponse<{ message: string }>),
+  markTourCompleted: () =>
+    apiClient.patch<{ message: string }>('/users/me/tour'),
 }

@@ -9,12 +9,8 @@ export class LoginUseCase {
   }
 
   async execute(email: string, password: string): Promise<AuthUser> {
-    const data = await this.repository.login({ email, password })
-
-    localStorage.setItem('access_token',  data.access_token)
-    localStorage.setItem('refresh_token', data.refresh_token)
-    localStorage.setItem('user_data',     JSON.stringify(data.user))
-
-    return data.user
+    const { user } = await this.repository.login({ email, password })
+    localStorage.setItem('user_data', JSON.stringify(user))
+    return user
   }
 }
