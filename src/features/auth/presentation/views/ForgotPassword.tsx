@@ -7,36 +7,22 @@ import Text3DFlip from '../../../../components/ui/text-3d-flip'
 import { COL1, COL2, COL3 } from '../constants/auth-gallery.constants'
 import { authPanelVariants, authItemVariants } from '../constants/auth.variants'
 import { EyeIcon } from '../components/EyeIcon'
-import type { Step } from '../types/forgot-password.types'
+import { OtpInput } from '../../../../components/ui/otp-input'
+import { useForgotPasswordViewModel } from '../viewmodels/useForgotPasswordViewModel'
 
 const ForgotPassword = () => {
-  const [step, setStep]         = useState<Step>('email')
-  const [email, setEmail]       = useState('')
-  const [code, setCode]         = useState('')
-  const [password, setPassword] = useState('')
-  const [confirm, setConfirm]   = useState('')
+  const {
+    step, email, setEmail,
+    code, setCode,
+    password, setPassword,
+    confirm, setConfirm,
+    loading, error,
+    handleSendCode, handleReset,
+    goToEmail,
+  } = useForgotPasswordViewModel()
+
   const [showPass, setShowPass] = useState(false)
   const [showConf, setShowConf] = useState(false)
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-
-  const handleSendCode = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    // TODO: conectar con API
-    setTimeout(() => { setLoading(false); setStep('code') }, 1000)
-  }
-
-  const handleReset = (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    if (password !== confirm) { setError('Las contraseñas no coinciden.'); return }
-    if (password.length < 8)  { setError('La contraseña debe tener al menos 8 caracteres.'); return }
-    setLoading(true)
-    // TODO: conectar con API
-    setTimeout(() => { setLoading(false); setStep('done') }, 1000)
-  }
 
   return (
     <div className="min-h-screen w-full flex bg-[#0A0A0B]">
@@ -129,12 +115,7 @@ const ForgotPassword = () => {
               <form onSubmit={handleReset} className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm text-neutral-400 font-medium">Código de verificación</label>
-                  <input
-                    type="text" required maxLength={6}
-                    value={code} onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="000000"
-                    className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-neutral-600 bg-neutral-900 border border-neutral-800 outline-none focus:border-green-500/60 focus:ring-1 focus:ring-green-500/20 transition-all duration-200 tracking-[0.4em] font-mono text-center"
-                  />
+                  <OtpInput value={code} onChange={setCode} length={6} disabled={loading} />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -191,7 +172,7 @@ const ForgotPassword = () => {
 
               <p className="text-center text-sm text-neutral-600 mt-6">
                 ¿No recibiste el código?{' '}
-                <button onClick={() => setStep('email')} className="text-white hover:text-neutral-200 font-medium transition-colors">
+                <button onClick={goToEmail} className="text-white hover:text-neutral-200 font-medium transition-colors">
                   Reenviar
                 </button>
               </p>
