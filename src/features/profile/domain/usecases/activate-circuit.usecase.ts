@@ -11,7 +11,6 @@ export class ActivateCircuitUseCase {
   async execute(data: ActivateCircuitRequest): Promise<number> {
     const result = await this.repository.activateCircuit(data)
 
-    localStorage.setItem('access_token', result.access_token)
     const stored = localStorage.getItem('user_data')
     if (stored) {
       localStorage.setItem('user_data', JSON.stringify({ ...JSON.parse(stored), circuit_id: result.circuit_id }))

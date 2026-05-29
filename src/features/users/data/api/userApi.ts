@@ -1,31 +1,9 @@
-import { authHeaders } from '../../../../core/api/http'
-
-const BASE = import.meta.env.VITE_API_URL
+import { apiClient } from '../../../../core/network/client'
 
 export const userApi = {
-  getAll: () =>
-    fetch(`${BASE}/users/`, { headers: authHeaders() }),
-
-  getById: (id: number) =>
-    fetch(`${BASE}/users/${id}`, { headers: authHeaders() }),
-
-  create: (body: object) =>
-    fetch(`${BASE}/users/`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }),
-
-  update: (id: number, body: object) =>
-    fetch(`${BASE}/users/${id}/`, {
-      method:  'PUT',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }),
-
-  delete: (id: number) =>
-    fetch(`${BASE}/users/${id}/`, {
-      method:  'DELETE',
-      headers: authHeaders(),
-    }),
+  getAll:          ()                   => apiClient.get('/users/'),
+  getById:         (id: number)         => apiClient.get(`/users/${id}`),
+  create:          (body: object)       => apiClient.post('/users/', body),
+  update:          (id: number, body: object) => apiClient.put(`/users/${id}/`, body),
+  delete:          (id: number)         => apiClient.delete(`/users/${id}/`),
 }

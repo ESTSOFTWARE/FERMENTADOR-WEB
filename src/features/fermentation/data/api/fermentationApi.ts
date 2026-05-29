@@ -1,49 +1,28 @@
-import type { ScheduleFermentationRequest }  from '../../domain/dtos/request/schedule-fermentation.request'
-import type { FermentationSessionResponse }  from '../../domain/dtos/response/fermentation-session.response'
-import type { FermentationReportData }       from '../../domain/dtos/response/fermentation-report.response'
-import type { ReportHistoryItem }            from '../../domain/dtos/response/report-history-item.response'
-import { authHeaders, handleResponse }       from '../../../../core/api/http'
-
-const BASE_URL = import.meta.env.VITE_API_URL
+import type { ScheduleFermentationRequest } from '../../domain/dtos/request/schedule-fermentation.request'
+import type { FermentationSessionResponse } from '../../domain/dtos/response/fermentation-session.response'
+import type { FermentationReportData }      from '../../domain/dtos/response/fermentation-report.response'
+import type { ReportHistoryItem }           from '../../domain/dtos/response/report-history-item.response'
+import { apiClient }                        from '../../../../core/network/client'
 
 export const fermentationApi = {
-  scheduleFermentation: (body: ScheduleFermentationRequest): Promise<FermentationSessionResponse> =>
-    fetch(`${BASE_URL}/fermentation/schedule`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }).then(handleResponse<FermentationSessionResponse>),
+  scheduleFermentation: (body: ScheduleFermentationRequest) =>
+    apiClient.post<FermentationSessionResponse>('/fermentation/schedule', body),
 
-  startFermentation: (sessionId: number): Promise<FermentationSessionResponse> =>
-    fetch(`${BASE_URL}/fermentation/${sessionId}/start`, {
-      method:  'POST',
-      headers: authHeaders(),
-    }).then(handleResponse<FermentationSessionResponse>),
+  startFermentation: (sessionId: number) =>
+    apiClient.post<FermentationSessionResponse>(`/fermentation/${sessionId}/start`),
 
-  stopFermentation: (sessionId: number, interrupted: boolean): Promise<FermentationSessionResponse> =>
-    fetch(`${BASE_URL}/fermentation/${sessionId}/stop`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify({ interrupted }),
-    }).then(handleResponse<FermentationSessionResponse>),
+  stopFermentation: (sessionId: number, interrupted: boolean) =>
+    apiClient.post<FermentationSessionResponse>(`/fermentation/${sessionId}/stop`, { interrupted }),
 
-  getActiveSession: (): Promise<FermentationSessionResponse | null> =>
-    fetch(`${BASE_URL}/fermentation/active`, {
-      headers: authHeaders(),
-    }).then(handleResponse<FermentationSessionResponse | null>),
+  getActiveSession: () =>
+    apiClient.get<FermentationSessionResponse | null>('/fermentation/active'),
 
-  getSessionsHistory: (): Promise<FermentationSessionResponse[]> =>
-    fetch(`${BASE_URL}/fermentation/sessions`, {
-      headers: authHeaders(),
-    }).then(handleResponse<FermentationSessionResponse[]>),
+  getSessionsHistory: () =>
+    apiClient.get<FermentationSessionResponse[]>('/fermentation/sessions'),
 
-  getReportBySessionId: (sessionId: number): Promise<FermentationReportData> =>
-    fetch(`${BASE_URL}/fermentation/${sessionId}/report`, {
-      headers: authHeaders(),
-    }).then(handleResponse<FermentationReportData>),
+  getReportBySessionId: (sessionId: number) =>
+    apiClient.get<FermentationReportData>(`/fermentation/${sessionId}/report`),
 
-  getReportHistory: (): Promise<ReportHistoryItem[]> =>
-    fetch(`${BASE_URL}/fermentation/history`, {
-      headers: authHeaders(),
-    }).then(handleResponse<ReportHistoryItem[]>),
+  getReportHistory: () =>
+    apiClient.get<ReportHistoryItem[]>('/fermentation/history'),
 }

@@ -1,44 +1,23 @@
 import type { Announcement }     from '../../domain/models/Announcement'
 import type { AnnouncementBody } from '../../domain/dtos/announcement-body.dto'
-import { authHeaders, handleResponse } from '../../../../core/api/http'
-
-const BASE_URL = import.meta.env.VITE_API_URL
+import { apiClient }             from '../../../../core/network/client'
 
 export const announcementsApi = {
-  getAll: (): Promise<Announcement[]> =>
-    fetch(`${BASE_URL}/announcements/`, { headers: authHeaders() })
-      .then(handleResponse<Announcement[]>),
+  getAll: () =>
+    apiClient.get<Announcement[]>('/announcements/'),
 
-  create: (body: AnnouncementBody): Promise<Announcement> =>
-    fetch(`${BASE_URL}/announcements/`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }).then(handleResponse<Announcement>),
+  create: (body: AnnouncementBody) =>
+    apiClient.post<Announcement>('/announcements/', body),
 
-  update: (id: number, body: AnnouncementBody): Promise<Announcement> =>
-    fetch(`${BASE_URL}/announcements/${id}`, {
-      method:  'PUT',
-      headers: authHeaders(),
-      body:    JSON.stringify(body),
-    }).then(handleResponse<Announcement>),
+  update: (id: number, body: AnnouncementBody) =>
+    apiClient.put<Announcement>(`/announcements/${id}`, body),
 
-  delete: (id: number): Promise<void> =>
-    fetch(`${BASE_URL}/announcements/${id}`, {
-      method:  'DELETE',
-      headers: authHeaders(),
-    }).then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`) }),
+  delete: (id: number) =>
+    apiClient.delete<void>(`/announcements/${id}`),
 
-  pin: (id: number, durationDays: number | null): Promise<Announcement> =>
-    fetch(`${BASE_URL}/announcements/${id}/pin`, {
-      method:  'POST',
-      headers: authHeaders(),
-      body:    JSON.stringify({ duration_days: durationDays }),
-    }).then(handleResponse<Announcement>),
+  pin: (id: number, durationDays: number | null) =>
+    apiClient.post<Announcement>(`/announcements/${id}/pin`, { duration_days: durationDays }),
 
-  unpin: (id: number): Promise<Announcement> =>
-    fetch(`${BASE_URL}/announcements/${id}/pin`, {
-      method:  'DELETE',
-      headers: authHeaders(),
-    }).then(handleResponse<Announcement>),
+  unpin: (id: number) =>
+    apiClient.delete<Announcement>(`/announcements/${id}/pin`),
 }

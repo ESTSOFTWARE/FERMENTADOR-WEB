@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useUserAuth } from './userAuth'
+import { apiClient }   from '../network/client'
 
-const API = import.meta.env.VITE_API_URL
-const WS  = import.meta.env.VITE_WS_URL ?? API.replace(/^http/, 'ws').replace(/\/api$/, '')
+const WS = import.meta.env.VITE_WS_URL ?? import.meta.env.VITE_API_URL?.replace(/^http/, 'ws').replace(/\/api$/, '')
 
 export interface AppNotification {
   id:         number
@@ -19,12 +19,10 @@ export const useNotifications = () => {
   const wsRef     = useRef<WebSocket | null>(null)
   const [notifications, setNotifications] = useState<AppNotification[]>([])
 
-  const token = localStorage.getItem('access_token')
-
   useEffect(() => {
-    if (!user?.id || !token) return
+    if (!user?.id) return
 
-    fetch(`${API}/notifications/`, { headers: { Authorization: `Bearer ${token}` } })
+    apiClient.get('/notifications/')
       .then(r => r.ok ? r.json() : [])
       .then((data: AppNotification[]) => setNotifications(data))
       .catch(() => {})
@@ -54,17 +52,13 @@ export const useNotifications = () => {
 
   const markOneRead = useCallback(async (id: number) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, status: 'read' } : n))
-    await fetch(`${API}/notifications/${id}/read`, {
-      method: 'PATCH', headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {})
-  }, [token])
+    await apiClient.patch(`/notifications/${id}/read`).catch(() => {})
+  }, [])
 
   const markAllRead = useCallback(async () => {
     setNotifications(prev => prev.map(n => ({ ...n, status: 'read' })))
-    await fetch(`${API}/notifications/read-all`, {
-      method: 'PATCH', headers: { Authorization: `Bearer ${token}` },
-    }).catch(() => {})
-  }, [token])
+    await apiClient.patch('/notifications/read-all').catch(() => {})
+  }, [])
 
   return { notifications, markOneRead, markAllRead }
 }
