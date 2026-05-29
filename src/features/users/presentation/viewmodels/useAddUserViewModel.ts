@@ -31,8 +31,7 @@ export const useAddUserViewModel = () => {
 
   useEffect(() => {
     if (!user?.circuit_id) return
-    apiClient.get(`/circuits/${user.circuit_id}/`)
-      .then(r => r.json())
+    apiClient.get<{ activation_code: string | null }>(`/circuits/${user.circuit_id}/`)
       .then(data => setActivationCode(data.activation_code ?? null))
       .catch(() => setError('No se pudo obtener el código del circuito.'))
   }, [user?.circuit_id])
