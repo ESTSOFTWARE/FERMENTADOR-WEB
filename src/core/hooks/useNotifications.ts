@@ -22,9 +22,8 @@ export const useNotifications = () => {
   useEffect(() => {
     if (!user?.id) return
 
-    apiClient.get('/notifications/')
-      .then(r => r.ok ? r.json() : [])
-      .then((data: AppNotification[]) => setNotifications(data))
+    apiClient.get<AppNotification[]>('/notifications/')
+      .then(data => setNotifications(data))
       .catch(() => {})
 
     const ws = new WebSocket(`${WS}/ws/notifications/${user.id}`)
