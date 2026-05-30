@@ -44,6 +44,20 @@ const PLANES = [
     ],
     off: [],
   },
+  {
+    num: "03", nombre: "Enterprise", precio: "$299", periodo: "USD / mes", color: "#f59e0b",
+    desc: "Para instituciones que requieren escala, integración con sus sistemas y soporte garantizado.",
+    items: [
+      "Todo lo incluido en Academic",
+      "Multi-admin (varios administradores)",
+      "White label (reportes con logo institucional)",
+      "Soporte dedicado (SLA garantizado)",
+      "Chat con alumnos y docentes en la plataforma",
+      "Prioridad en nuevas funcionalidades y personalizaciones",
+      "Onboarding — sesión de capacitación incluida",
+    ],
+    off: [],
+  },
 ]
 
 const PlanesView = () => {
@@ -86,7 +100,7 @@ const PlanesView = () => {
                 <h2 className="text-lg font-semibold text-white">Planes disponibles</h2>
               </div>
               <div className="pl-10 border-l border-white/5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start max-w-4xl">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
                   {PLANES.map((plan, i) => (
                     <motion.div key={plan.num}
                       initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
