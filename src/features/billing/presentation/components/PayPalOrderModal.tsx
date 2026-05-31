@@ -4,8 +4,14 @@ import {
   PayPalHostedFieldsProvider,
   PayPalHostedField,
   usePayPalHostedFields,
+  type PayPalHostedFieldsComponentProps,
 } from '@paypal/react-paypal-js'
 import { AnimatePresence, motion } from 'motion/react'
+
+type HostedFieldsProviderProps = Omit<PayPalHostedFieldsComponentProps, 'notEligible'> & {
+  notEligible?: React.ReactNode
+}
+const HostedFieldsProvider = PayPalHostedFieldsProvider as React.FC<React.PropsWithChildren<HostedFieldsProviderProps>>
 import { X, Lock } from 'lucide-react'
 import { billingApi } from '../../data/api/billingApi'
 
@@ -37,8 +43,8 @@ const CardSubmitButton = ({ amount, currency, loading, setLoading, setError, onS
     setError(null)
     setLoading(true)
     try {
-      const result = await cardFields.submit({})
-      const orderId = (result as any).orderId ?? (result as any).orderID
+      const result = await cardFields.submit({}) as { orderId?: string; orderID?: string }
+      const orderId = result.orderId ?? result.orderID
       if (!orderId) throw new Error('No se recibió ID de orden')
       onSuccess(orderId)
     } catch {
@@ -96,9 +102,11 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
 
   useEffect(() => {
     if (!open) {
-      setClientToken(null)
-      setTokenError(false)
-      setError(null)
+      void Promise.resolve().then(() => {
+        setClientToken(null)
+        setTokenError(false)
+        setError(null)
+      })
       return
     }
     billingApi.getPayPalClientToken()
@@ -176,7 +184,7 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
                     intent:          'capture',
                   }}
                 >
-                  <PayPalHostedFieldsProvider
+                  <HostedFieldsProvider
                     createOrder={async () => {
                       const { order_id } = await billingApi.createPayPalOrder(amount, currency, description)
                       return order_id
@@ -206,8 +214,9 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
                         </label>
                         <PayPalHostedField
                           hostedFieldType="number"
-                          options={{ placeholder: '4111 1111 1111 1111' }}
+                          options={{ selector: '#paypal-card-number', placeholder: '4111 1111 1111 1111' }}
                           style={fieldStyle}
+                          id="paypal-card-number"
                         />
                       </div>
 
@@ -219,8 +228,9 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
                           </label>
                           <PayPalHostedField
                             hostedFieldType="expirationDate"
-                            options={{ placeholder: 'MM / AA' }}
+                            options={{ selector: '#paypal-expiry', placeholder: 'MM / AA' }}
                             style={fieldStyle}
+                            id="paypal-expiry"
                           />
                         </div>
                         {/* CVV */}
@@ -230,8 +240,9 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
                           </label>
                           <PayPalHostedField
                             hostedFieldType="cvv"
-                            options={{ placeholder: '···' }}
+                            options={{ selector: '#paypal-cvv', placeholder: '···' }}
                             style={fieldStyle}
+                            id="paypal-cvv"
                           />
                         </div>
                       </div>
@@ -256,7 +267,7 @@ const PayPalOrderModal = ({ open, amount, currency, description, onClose, onSucc
                         </span>
                       </div>
                     </div>
-                  </PayPalHostedFieldsProvider>
+                  </HostedFieldsProvider>
                 </PayPalScriptProvider>
               )}
             </div>

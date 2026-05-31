@@ -1,6 +1,9 @@
 import { motion }               from 'motion/react'
 import { ReactLenis }           from 'lenis/react'
 import { useNavigate }          from 'react-router-dom'
+import { useState, useMemo }    from 'react'
+import { Search }               from 'lucide-react'
+import Fuse                     from 'fuse.js'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 import { useProductsViewModel } from '../viewmodels/useProductsViewModel'
 import { OfferCard }            from '../../../../components/ui/offer-carousel'
@@ -32,6 +35,25 @@ const ProductsView = () => {
   const navigate                     = useNavigate()
   const { user }                     = useUserAuth()
   const { addItem, openCart }        = useCartStore()
+  const [query, setQuery] = useState('')
+
+  const fuse = useMemo(() => new Fuse(products, {
+    keys:              [
+      { name: 'name',        weight: 0.5 },
+      { name: 'category',    weight: 0.3 },
+      { name: 'sku',         weight: 0.15 },
+      { name: 'description', weight: 0.05 },
+    ],
+    threshold:         0.45,
+    distance:          200,
+    includeScore:      false,
+    ignoreLocation:    true,
+    minMatchCharLength: 2,
+  }), [products])
+
+  const filtered = query.trim()
+    ? fuse.search(query).map(r => r.item)
+    : products
 
   const handleAddToCart = (product: Product) => {
     if (!user) { navigate('/login', { state: { from: '/products' } }); return }
@@ -52,13 +74,32 @@ const ProductsView = () => {
           className="mx-auto max-w-7xl px-12 pt-36 pb-16"
         >
           <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
-            <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>
-              Plataforma Nich-ká
-            </p>
-            <h1 style={{ color: '#F4F4F5', fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-              Catálogo de productos
-            </h1>
-            <div style={{ marginTop: 10, height: 1, width: 80, backgroundColor: '#22C55E', opacity: 0.4 }} />
+            <div className="flex items-end justify-between gap-6 flex-wrap">
+              <div>
+                <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>
+                  Plataforma Nich-ká
+                </p>
+                <h1 style={{ color: '#F4F4F5', fontSize: 32, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+                  Catálogo de productos
+                </h1>
+                <div style={{ marginTop: 10, height: 1, width: 80, backgroundColor: '#22C55E', opacity: 0.4 }} />
+              </div>
+
+              {/* Buscador */}
+              <div className="relative flex-shrink-0 w-full sm:w-72">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600 pointer-events-none" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Buscar por nombre, SKU o categoría…"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm text-neutral-300 placeholder-neutral-600 rounded-xl outline-none transition-colors"
+                  style={{ background: '#111113', border: '1px solid #2A2A2D' }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(34,197,94,0.4)' }}
+                  onBlur={e  => { e.currentTarget.style.borderColor = '#2A2A2D' }}
+                />
+              </div>
+            </div>
           </motion.div>
 
           {loading && (
@@ -82,9 +123,16 @@ const ProductsView = () => {
             </div>
           )}
 
-          {!loading && !error && products.length > 0 && (
+          {!loading && !error && products.length > 0 && filtered.length === 0 && (
+            <div className="flex flex-col items-center gap-3 pt-20 text-center">
+              <Search className="w-8 h-8 text-neutral-700" />
+              <p className="text-sm text-neutral-500">Sin resultados para <span className="text-neutral-300">"{query}"</span></p>
+            </div>
+          )}
+
+          {!loading && !error && filtered.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {products.map((product) => (
+              {filtered.map((product) => (
                 <OfferCard
                   key={product.id}
                   offer={toOffer(product)}
