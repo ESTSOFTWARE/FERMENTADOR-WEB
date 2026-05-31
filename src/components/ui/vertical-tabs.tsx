@@ -37,7 +37,7 @@ export function VerticalTabs({ tabs, heading, subheading }: Props) {
     if (index === activeIndex) return
     setDirection(index > activeIndex ? 1 : -1)
     setActiveIndex(index)
-    setIsPaused(false)
+    setIsPaused(true)
   }
 
   useEffect(() => {

@@ -6,10 +6,17 @@ import Header from "../components/Header"
 import Footer from "../components/Footer"
 import ContactChat from "../components/ContactChat"
 import { cn } from "../../../../lib/utils"
+import { usePlanesViewModel } from "../../../billing/presentation/viewmodels/usePlanesViewModel"
+import CheckoutModal from "../../../billing/presentation/components/CheckoutModal"
+import PaymentMethodModal from "../../../billing/presentation/components/PaymentMethodModal"
+import PayPalSubscriptionModal from "../../../billing/presentation/components/PayPalSubscriptionModal"
 
 const PLANES = [
   {
-    num: "01", nombre: "Starter", precio: "$49", periodo: "USD / mes", color: "#4ade80",
+    num: "01", nombre: "Starter", key: "starter",
+    precioMensual: "$49", precioAnual: "$490",
+    periodo: "USD / mes", periodoAnual: "USD / año",
+    color: "#4ade80",
     desc: "Para instituciones que inician su laboratorio de fermentación con un solo equipo.",
     items: [
       "1 kit activo",
@@ -28,7 +35,10 @@ const PLANES = [
     ],
   },
   {
-    num: "02", nombre: "Academic", precio: "$129", periodo: "USD / mes", color: "#a78bfa", destacado: true,
+    num: "02", nombre: "Academic", key: "academic",
+    precioMensual: "$129", precioAnual: "$1,290",
+    periodo: "USD / mes", periodoAnual: "USD / año",
+    color: "#a78bfa", destacado: true,
     desc: "Para instituciones con múltiples equipos, docentes y currículo de fermentación estructurado.",
     items: [
       "Hasta 5 kits activos",
@@ -45,7 +55,10 @@ const PLANES = [
     off: [],
   },
   {
-    num: "03", nombre: "Enterprise", precio: "$299", periodo: "USD / mes", color: "#f59e0b",
+    num: "03", nombre: "Enterprise", key: "enterprise",
+    precioMensual: "$299", precioAnual: "$2,990",
+    periodo: "USD / mes", periodoAnual: "USD / año",
+    color: "#f59e0b",
     desc: "Para instituciones que requieren escala, integración con sus sistemas y soporte garantizado.",
     items: [
       "Todo lo incluido en Academic",
@@ -62,6 +75,13 @@ const PLANES = [
 
 const PlanesView = () => {
   const [chatOpen, setChatOpen] = useState(false)
+  const {
+    billingCycle, setBillingCycle, loadingPlan, handleSelectPlan,
+    clientSecret, checkoutOpen, closeCheckout,
+    methodModalOpen, closeMethodModal, handleSelectStripe, handleSelectPayPal,
+    paypalModalOpen, setPaypalModalOpen, paypalPlan, billingCyclePaypal,
+    handlePayPalSuccess, handlePayPalError,
+  } = usePlanesViewModel()
 
   return (
     <>
@@ -69,7 +89,6 @@ const PlanesView = () => {
         <div className="min-h-screen bg-[#0A0A0B] text-white">
           <Header />
 
-          {/* ── Hero ── */}
           <section className="relative pt-40 pb-20 px-6 overflow-hidden">
             <div className={cn("pointer-events-none absolute inset-0 select-none bg-[size:40px_40px]",
               "bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)]")} />
@@ -91,13 +110,35 @@ const PlanesView = () => {
 
           <div className="mx-auto max-w-7xl px-6"><div className="h-px w-full bg-white/10" /></div>
 
-          {/* ── Cuerpo ── */}
           <main className="mx-auto max-w-7xl px-6 py-16 flex flex-col gap-16">
 
             <section className="flex flex-col gap-6">
-              <div className="flex items-center gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-green-500 shrink-0">01</span>
-                <h2 className="text-lg font-semibold text-white">Planes disponibles</h2>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-green-500 shrink-0">01</span>
+                  <h2 className="text-lg font-semibold text-white">Planes disponibles</h2>
+                </div>
+                {/* Toggle mensual / anual */}
+                <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-xl p-1">
+                  <button
+                    onClick={() => setBillingCycle('monthly')}
+                    className={cn("text-xs font-semibold px-4 py-1.5 rounded-lg transition-all duration-200",
+                      billingCycle === 'monthly' ? "bg-white text-black" : "text-neutral-400 hover:text-white")}
+                  >
+                    Mensual
+                  </button>
+                  <button
+                    onClick={() => setBillingCycle('annual')}
+                    className={cn("text-xs font-semibold px-4 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-1.5",
+                      billingCycle === 'annual' ? "bg-white text-black" : "text-neutral-400 hover:text-white")}
+                  >
+                    Anual
+                    <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full",
+                      billingCycle === 'annual' ? "bg-green-500 text-black" : "bg-green-500/20 text-green-400")}>
+                      -17%
+                    </span>
+                  </button>
+                </div>
               </div>
               <div className="pl-10 border-l border-white/5">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
@@ -121,9 +162,16 @@ const PlanesView = () => {
                           <span className="text-[10px] font-mono text-neutral-600">{plan.num}</span>
                         </div>
                         <div className="flex items-end gap-1.5">
-                          <span className="text-4xl font-black text-white leading-none">{plan.precio}</span>
-                          <span className="text-sm text-neutral-500 mb-0.5">{plan.periodo}</span>
+                          <span className="text-4xl font-black text-white leading-none">
+                            {billingCycle === 'monthly' ? plan.precioMensual : plan.precioAnual}
+                          </span>
+                          <span className="text-sm text-neutral-500 mb-0.5">
+                            {billingCycle === 'monthly' ? plan.periodo : plan.periodoAnual}
+                          </span>
                         </div>
+                        {billingCycle === 'annual' && (
+                          <p className="text-xs text-green-400/80">2 meses gratis incluidos</p>
+                        )}
                         <p className="text-neutral-400 text-sm leading-relaxed">{plan.desc}</p>
                       </div>
                       <div className="h-px bg-neutral-800" />
@@ -141,10 +189,20 @@ const PlanesView = () => {
                           </li>
                         ))}
                       </ul>
-                      <button onClick={() => setChatOpen(true)}
-                        className="mt-auto text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200"
+                      <button
+                        onClick={() => handleSelectPlan(plan.key)}
+                        disabled={loadingPlan === plan.key}
+                        className="mt-auto text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         style={plan.destacado ? { background: plan.color, color: "#0A0A0B" } : { background: `${plan.color}15`, color: plan.color, border: `1px solid ${plan.color}30` }}>
-                        Solicitar plan
+                        {loadingPlan === plan.key ? (
+                          <>
+                            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.3" strokeWidth="4"/>
+                              <path fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                            </svg>
+                            Redirigiendo...
+                          </>
+                        ) : "Suscribirse"}
                       </button>
                     </motion.div>
                   ))}
@@ -183,6 +241,31 @@ const PlanesView = () => {
         </div>
       </ReactLenis>
       <ContactChat open={chatOpen} onClose={() => setChatOpen(false)} />
+
+      <PaymentMethodModal
+        open={methodModalOpen}
+        loadingStripe={loadingPlan !== null}
+        onClose={closeMethodModal}
+        onSelectStripe={handleSelectStripe}
+        onSelectPayPal={handleSelectPayPal}
+      />
+
+      {clientSecret && (
+        <CheckoutModal
+          clientSecret={clientSecret}
+          open={checkoutOpen}
+          onClose={closeCheckout}
+        />
+      )}
+
+      <PayPalSubscriptionModal
+        plan={paypalPlan}
+        billingCycle={billingCyclePaypal}
+        open={paypalModalOpen}
+        onClose={() => setPaypalModalOpen(false)}
+        onSuccess={handlePayPalSuccess}
+        onError={handlePayPalError}
+      />
     </>
   )
 }

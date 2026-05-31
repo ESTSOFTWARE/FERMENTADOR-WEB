@@ -21,9 +21,14 @@ export const useUserAuth = () => {
   const [user, setUser] = useState<AuthUser | null>(readUserFromStorage)
 
   useEffect(() => {
-    const handler = () => setUser(readUserFromStorage())
-    window.addEventListener(USER_UPDATED_EVENT, handler)
-    return () => window.removeEventListener(USER_UPDATED_EVENT, handler)
+    const onUpdate  = () => setUser(readUserFromStorage())
+    const onExpired = () => setUser(null)
+    window.addEventListener(USER_UPDATED_EVENT, onUpdate)
+    window.addEventListener('session_expired',  onExpired)
+    return () => {
+      window.removeEventListener(USER_UPDATED_EVENT, onUpdate)
+      window.removeEventListener('session_expired',  onExpired)
+    }
   }, [])
 
   const logout = useCallback(async () => {
