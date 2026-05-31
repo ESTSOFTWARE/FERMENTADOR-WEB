@@ -32,38 +32,43 @@ import GroupsView from '../../features/groups/presentation/view/GroupsView'
 import GroupDetailView from '../../features/groups/presentation/view/GroupDetailView'
 import AdminGroupsView from '../../features/groups/presentation/view/AdminGroupsView'
 import SupportView from '../../features/support/presentation/view/SupportView'
+import ProductsView from '../../features/products/presentation/view/ProductsView'
+import ProductDetailView from '../../features/products/presentation/view/ProductDetailView'
+import BillingSuccessView from '../../features/billing/presentation/views/BillingSuccessView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationProvider'
 import PrivateRoute from './PrivateRoute'
 import ScrollToTop from './ScrollToTop'
+import PageTitle from './PageTitle'
 import NotFoundView from '../../shared/presentation/NotFoundView'
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <PageTitle />
       <Routes>
-        <Route path="/" element={<LandingView />} />
-        <Route path="/privacy" element={<PrivacyView />} />
-        <Route path="/terms" element={<TermsView />} />
-        <Route path="/cookies" element={<CookiesView />} />
-        <Route path="/hardware" element={<HardwareView />} />
-        <Route path="/planes" element={<PlanesView />} />
-        <Route path="/consultoria" element={<ConsultoriaView />} />
+        <Route path="/"              element={<LandingView />} />
+        <Route path="/privacy"       element={<PrivacyView />} />
+        <Route path="/terms"         element={<TermsView />} />
+        <Route path="/cookies"       element={<CookiesView />} />
+        <Route path="/hardware"      element={<HardwareView />} />
+        <Route path="/planes"        element={<PlanesView />} />
+        <Route path="/consultoria"   element={<ConsultoriaView />} />
         <Route path="/mantenimiento" element={<MantenimientoView />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/products"        element={<ProductsView />} />
+        <Route path="/products/:id"    element={<ProductDetailView />} />
+        <Route path="/billing/success" element={<BillingSuccessView />} />
+        <Route path="/login"         element={<Login />} />
+        <Route path="/register"      element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/callback"   element={<AuthCallbackView />} />
 
-        {/* Soporte — auth requerido, solo rol soporte */}
         <Route element={<PrivateRoute allowedRoles={['soporte']} />}>
           <Route path="/support" element={<SupportView />} />
         </Route>
 
         <Route element={<PrivateRoute />}>
           <Route element={<FermentationProvider><Layout /></FermentationProvider>}>
-
-            {/* Todos los roles autenticados */}
             <Route path="/overview"              element={<OverviewView />} />
             <Route path="/grafics"               element={<SensorsView />} />
             <Route path="/efficiency-calculator" element={<EfficiencyCalculatorView />} />
@@ -72,7 +77,6 @@ const AppRouter = () => {
             <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
 
-            {/* Solo admin y profesor */}
             <Route element={<PrivateRoute allowedRoles={['admin', 'profesor']} />}>
               <Route path="/dashboard"             element={<DashboardView />} />
               <Route path="/experiment/:id"        element={<ExperimentView />} />
@@ -84,14 +88,12 @@ const AppRouter = () => {
               <Route path="/users/add"             element={<AddUserView />} />
               <Route path="/users/manage"          element={<ManageUsersView />} />
               <Route path="/groups"                element={<GroupsView />} />
-              <Route path="/groups/:id"           element={<GroupDetailView />} />
-              <Route path="/admin/groups"         element={<AdminGroupsView />} />
+              <Route path="/groups/:id"            element={<GroupDetailView />} />
+              <Route path="/admin/groups"          element={<AdminGroupsView />} />
             </Route>
-
           </Route>
         </Route>
 
-        {/* 404 — Ruta comodín */}
         <Route path="*" element={<NotFoundView />} />
       </Routes>
     </BrowserRouter>
