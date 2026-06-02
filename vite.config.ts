@@ -30,7 +30,9 @@ export default defineConfig({
         type:    'module',
       },
       workbox: {
-        globPatterns:      ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+        globIgnores:  ['**/banner.png', '**/classrooms/**'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
