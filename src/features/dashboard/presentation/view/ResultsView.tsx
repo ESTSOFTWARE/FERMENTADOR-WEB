@@ -12,7 +12,7 @@ const ResultsView = () => {
   const result = lastResult
 
   if (!result) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
       <p className="text-sm text-red-400">No hay resultados disponibles.</p>
     </div>
   )
@@ -52,7 +52,7 @@ const ResultsView = () => {
   const total = eAgit + eBomb + eTemp
 
   return (
-    <div className="min-h-screen flex flex-col px-12 py-12" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex flex-col px-12 py-12" style={{ backgroundColor: '#0A0A0B' }}>
 
       <div className="mb-10">
         <p className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: '#22C55E' }}>

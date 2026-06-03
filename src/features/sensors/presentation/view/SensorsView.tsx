@@ -26,7 +26,7 @@ const SensorsView = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '48px', display: 'flex', flexDirection: 'column', gap: 32 }}
+      style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '48px', display: 'flex', flexDirection: 'column', gap: 32 }}
     >
       <style>{SENSORS_STYLES}</style>
 

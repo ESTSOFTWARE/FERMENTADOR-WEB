@@ -17,19 +17,19 @@ const SimulationView = () => {
   const { loading, error, simulation } = useSimulationViewModel(id!)
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
       <p className="text-sm tracking-widest uppercase animate-pulse" style={{ color: '#22C55E' }}>Cargando simulación...</p>
     </div>
   )
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
       <p className="text-sm text-red-400">{error}</p>
     </div>
   )
 
   if (!simulation || simulation.time.length === 0) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex items-center justify-center" style={{ backgroundColor: '#0A0A0B' }}>
       <p className="text-sm" style={{ color: '#71717A' }}>Este individuo no tiene datos de simulación disponibles.</p>
     </div>
   )
@@ -47,7 +47,7 @@ const SimulationView = () => {
   const totalTime = simulation?.time?.at(-1)?.toFixed(1)
 
   return (
-    <div className="min-h-screen flex flex-col px-12 py-12" style={{ backgroundColor: '#0A0A0B' }}>
+    <div className="min-h-[calc(100vh_-_3.5rem)] flex flex-col px-12 py-12" style={{ backgroundColor: '#0A0A0B' }}>
 
       <div className="mb-10">
         <p className="text-xs tracking-[0.3em] uppercase mb-3" style={{ color: '#22C55E' }}>

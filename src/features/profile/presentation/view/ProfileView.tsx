@@ -33,7 +33,7 @@ const ProfileView = () => {
   const roleColor = user?.role === 'admin' ? '#A78BFA' : user?.role === 'profesor' ? '#3B82F6' : '#22C55E'
 
   return (
-    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{PROFILE_STYLES}</style>
 
       <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>

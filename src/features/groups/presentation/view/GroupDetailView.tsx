@@ -64,7 +64,7 @@ const GroupDetailView = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      className="flex flex-col h-screen bg-[#0A0A0B]"
+      className="flex flex-col h-[calc(100vh_-_3.5rem)] bg-[#0A0A0B]"
     >
       {/* ── Header ── */}
       <div className="flex-shrink-0 px-8 pt-6 pb-0 border-b border-neutral-800/50">

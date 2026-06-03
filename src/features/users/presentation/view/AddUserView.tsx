@@ -21,7 +21,7 @@ const AddUserView = () => {
   const emailDomain = form.email.includes('@') ? '@' + form.email.split('@')[1] : ''
 
   return (
-    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{ADD_USER_STYLES}</style>
       <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
 

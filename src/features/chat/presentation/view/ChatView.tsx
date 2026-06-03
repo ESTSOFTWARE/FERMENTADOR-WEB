@@ -20,13 +20,13 @@ const ChatView = () => {
       initial="hidden"
       animate="visible"
       className="flex flex-col bg-[#0A0A0B]"
-      style={{ height: 'calc(100vh - 0px)' }}
+      style={{ height: 'calc(100vh - 3.5rem)' }}
     >
       <motion.div variants={sectionVariants} className="shrink-0 px-8 pt-7 pb-4 border-b border-neutral-900">
         <ChatHeader />
       </motion.div>
 
-      <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-4 min-h-0">
+      <div data-lenis-prevent className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-4 min-h-0">
         {messages.length === 0 && (
           <ChatEmptyState onSuggestion={sendMessage} />
         )}

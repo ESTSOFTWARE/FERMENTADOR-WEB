@@ -72,7 +72,7 @@ const DashboardView = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-screen flex flex-col px-12 py-12"
+      className="min-h-[calc(100vh_-_3.5rem)] flex flex-col px-12 py-12"
       style={{ backgroundColor: '#0A0A0B' }}
     >
 

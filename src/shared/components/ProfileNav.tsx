@@ -29,7 +29,9 @@ const ProfileNav = () => {
 
   return (
     <>
-      <div id="tour-step-profile" className="fixed top-5 right-6 z-40 flex items-center gap-2">
+      <header id="tour-step-profile"
+        className="sticky top-0 z-40 flex items-center justify-end gap-2 px-6 h-14 flex-shrink-0 border-b border-neutral-900"
+        style={{ backgroundColor: '#0A0A0B' }}>
 
         <button
           onClick={() => setOpen(v => !v)}
@@ -69,7 +71,7 @@ const ProfileNav = () => {
             </p>
           </div>
         </button>
-      </div>
+      </header>
 
       <AnimatePresence>
         {open && (

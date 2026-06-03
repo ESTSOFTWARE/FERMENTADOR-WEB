@@ -30,7 +30,7 @@ const ManageUsersView = () => {
       : users.filter(u => u.role_name === value).length
 
   return (
-    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
+    <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
       <style>{MANAGE_USERS_STYLES}</style>
 
       <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
