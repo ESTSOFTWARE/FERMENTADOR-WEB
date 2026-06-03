@@ -21,6 +21,7 @@ import SensorsView from '../../features/sensors/presentation/view/SensorsView'
 import Register from '../../features/auth/presentation/views/Register'
 import AuthCallbackView from '../../features/auth/presentation/views/AuthCallbackView'
 import ChatView from '../../features/chat/presentation/view/ChatView'
+import MessagesView from '../../features/messages/presentation/view/MessagesView'
 import OverviewView from '../../features/home/presentation/view/OverviewView'
 import EfficiencyCalculatorView from '../../features/efficiency/presentation/view/EfficiencyCalculatorView'
 import FermentationReportsView from '../../features/fermentation-reports/presentation/view/FermentationReportsView'
@@ -74,6 +75,7 @@ const AppRouter = () => {
             <Route path="/efficiency-calculator" element={<EfficiencyCalculatorView />} />
             <Route path="/fermentation-reports"  element={<FermentationReportsView />} />
             <Route path="/chat"                  element={<ChatView />} />
+            <Route path="/messages"             element={<MessagesView />} />
             <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
 

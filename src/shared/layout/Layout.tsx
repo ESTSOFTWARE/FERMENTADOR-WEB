@@ -31,10 +31,12 @@ const Layout = () => {
   return (
     <div className="flex min-h-screen" style={{ backgroundColor: '#0A0A0B' }}>
       <Sidebar />
-      <ProfileNav />
-      <main className="flex-1 ml-60">
-        <Outlet />
-      </main>
+      <div className="flex-1 ml-60 flex flex-col min-h-screen">
+        <ProfileNav />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

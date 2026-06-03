@@ -12,7 +12,7 @@ const AnnouncementsView = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '40px 48px' }}
+      style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '40px 48px' }}
     >
       <motion.div variants={sectionVariants} style={{ marginBottom: 32 }}>
         <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>

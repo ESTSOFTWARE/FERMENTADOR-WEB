@@ -15,7 +15,7 @@ const OverviewView = () => {
       variants={pageVariants}
       initial="hidden"
       animate="visible"
-      style={{ minHeight: '100vh', backgroundColor: '#0A0A0B', padding: '48px' }}
+      style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '48px' }}
     >
       <style>{OVERVIEW_STYLES}</style>
 
