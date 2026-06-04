@@ -39,6 +39,7 @@ import BillingSuccessView from '../../features/billing/presentation/views/Billin
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationProvider'
 import PrivateRoute from './PrivateRoute'
 import ScrollToTop from './ScrollToTop'
+import SessionWatcher from './SessionWatcher'
 import PageTitle from './PageTitle'
 import NotFoundView from '../../shared/presentation/NotFoundView'
 
@@ -46,6 +47,7 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <SessionWatcher />
       <PageTitle />
       <Routes>
         <Route path="/"              element={<LandingView />} />
