@@ -13,6 +13,7 @@ export const TOUR_IDS: Record<string, string> = {
   '/fermentation':                       'tour-step-fermentation',
   '/fermentation-reports':               'tour-step-reports',
   '/announcements':                      'tour-step-announcements',
+  '/messages':                           'tour-step-messages',
   '/chat':                               'tour-step-chat',
   '/groups':                             'tour-step-groups',
   '/admin/groups':                       'tour-step-admin-groups',

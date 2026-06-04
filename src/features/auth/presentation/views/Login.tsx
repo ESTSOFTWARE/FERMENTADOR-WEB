@@ -28,6 +28,23 @@ const Login = () => {
     if (oauthError) {
       sileo.error({ title: 'Error al iniciar sesión con OAuth', description: decodeURIComponent(oauthError), fill: '#1A1A1A', styles: { title: 'text-white', description: 'text-white' } })
     }
+
+    const reason = params.get('reason')
+    if (reason === 'session_replaced') {
+      sileo.error({
+        title: 'Tu sesión se cerró',
+        description: 'Se inició sesión con tu cuenta en otro dispositivo. Solo puede haber una sesión activa a la vez.',
+        fill: '#1A1A1A',
+        styles: { title: 'text-white', description: 'text-white' },
+      })
+    } else if (reason === 'expired') {
+      sileo.error({
+        title: 'Sesión finalizada',
+        description: 'Tu sesión expiró. Vuelve a iniciar sesión para continuar.',
+        fill: '#1A1A1A',
+        styles: { title: 'text-white', description: 'text-white' },
+      })
+    }
   }, [location.search])
   const registeredEmail = location.state?.email as string | undefined
 
