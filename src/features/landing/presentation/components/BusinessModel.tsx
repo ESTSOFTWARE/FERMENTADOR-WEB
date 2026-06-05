@@ -7,7 +7,6 @@ const DARK   = '#0A0A0B'
 const DARK2  = '#111113'
 
 const pages: ScrollPage[] = [
-  /* ── 1. Intro — verde izq / negro der ─────────────── */
   {
     leftBg: GREEN,
     rightBg: DARK,
@@ -43,7 +42,6 @@ const pages: ScrollPage[] = [
     },
   },
 
-  /* ── 2. HaaS — negro izq / imagen der ──────────────── */
   {
     leftBg: DARK2,
     rightBg: GREEN2,
@@ -75,7 +73,6 @@ const pages: ScrollPage[] = [
     rightContent: null,
   },
 
-  /* ── 3. SaaS — verde izq / negro der ──────────────── */
   {
     leftBg: GREEN,
     rightBg: DARK,
@@ -96,7 +93,7 @@ const pages: ScrollPage[] = [
             {[
               { title: 'Monitoreo en tiempo real',       Icon: BarChart2    },
               { title: 'NLP local — reportes en español', Icon: Bot          },
-              { title: 'App móvil para Android e iOS',   Icon: Smartphone   },
+              { title: 'App móvil para Android',   Icon: Smartphone   },
             ].map(({ title, Icon }) => (
               <div key={title} className="flex items-center gap-3 p-3 rounded-xl"
                 style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}>
