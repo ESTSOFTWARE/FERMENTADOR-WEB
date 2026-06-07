@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import type { ChatMessage } from '../../domain/models/ChatMessage'
 import { MessageBubble } from './MessageBubble'
 import { MY_ID } from '../constants/current-user.constants'
+import type { MessagePriority } from '../../domain/models/Chat.types'
 
 interface MessageContentProps {
   messages: ChatMessage[]
@@ -27,7 +28,7 @@ interface MessageContentProps {
   onEditStart: (msg: ChatMessage) => void
   onRequestDelete: (msg: ChatMessage) => void
   onRequestPin: (msg: ChatMessage) => void
-  onRequestPriority: (msg: ChatMessage, p: any) => void
+  onRequestPriority: (msg: ChatMessage, p: MessagePriority) => void
 }
 
 export const MessageContent = ({
@@ -39,13 +40,19 @@ export const MessageContent = ({
   onRequestPin, onRequestPriority
 }: MessageContentProps) => {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [now, setNow] = useState(Date.now())
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => { 
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) 
   }, [messages, typingUsers])
 
   const canEdit = (msg: ChatMessage) =>
-    msg.senderId === MY_ID && Date.now() - new Date(msg.createdAt).getTime() < 20 * 60 * 1000
+    msg.senderId === MY_ID && now - new Date(msg.createdAt).getTime() < 20 * 60 * 1000
 
   return (
     <div data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-1 bg-[#0f0f10]">

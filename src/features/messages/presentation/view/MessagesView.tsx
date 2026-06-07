@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Plus } from 'lucide-react'
 import { pageVariants } from '../../../../shared/animations/variants'
 import { useMessagesViewModel } from '../viewmodels/useMessagesViewModel'
-
 import { NewConversationModal } from '../components/NewConversationModal'
 import { MessagesTable } from '../components/MessagesTable'
 import { MessageDrawer } from '../components/MessageDrawer'
@@ -65,7 +64,7 @@ const MessagesView = () => {
     setPendingAction(null)
   }
 
-  const handleSelectConversation = (conv: any) => {
+  const handleSelectConversation = (conv: { id: string }) => {
     vm.openConversation(conv.id)
     setDrawerOpen(true)
     setShowDetails(false)
