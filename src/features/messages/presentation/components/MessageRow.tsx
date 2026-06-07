@@ -1,4 +1,3 @@
-import { cn } from '../../../../lib/utils'
 import { Users } from 'lucide-react'
 import { formatDate } from '../utils/format-date'
 import type { Conversation } from '../../domain/models/Conversation'

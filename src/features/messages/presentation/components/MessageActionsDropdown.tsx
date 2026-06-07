@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { MoreVertical, Eye, Archive, CheckCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { cn } from '../../../../lib/utils'
 
 interface MessageActionsDropdownProps {
   onViewDetail: () => void
