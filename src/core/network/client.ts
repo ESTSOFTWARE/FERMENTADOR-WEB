@@ -12,12 +12,13 @@ const MULTIPART_HEADERS = {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
     if (res.status === 401) {
       localStorage.removeItem('user_data')
       localStorage.removeItem('profile_image')
-      window.dispatchEvent(new Event('session_expired'))
+      // data.detail === 'SESSION_REPLACED' cuando se inició sesión en otro dispositivo
+      window.dispatchEvent(new CustomEvent('session_expired', { detail: data?.detail }))
     }
-    const data = await res.json().catch(() => ({}))
     throw new Error(data?.detail ?? `HTTP ${res.status}`)
   }
   if (res.status === 204) return undefined as T

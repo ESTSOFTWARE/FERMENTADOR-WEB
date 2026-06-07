@@ -21,7 +21,7 @@ interface TourStep {
 // Orden visual real del sidebar:
 // soloItems primero (sin grupo), luego grupos
 // soloItems en orden del nav: Inicio, Visualizar Gráficas, Calculadora,
-//   Iniciar Fermentación, Reportes, Comunicados, Chat
+//   Iniciar Fermentación, Reportes, Comunicados, Mensajes, Chat
 // grupos: Experimentar con IA, Gestión de Usuarios
 const STEPS: TourStep[] = [
   {
@@ -65,6 +65,12 @@ const STEPS: TourStep[] = [
     element: '#tour-step-announcements',
     title:   'Comunicados',
     desc:    'Revisa los avisos y novedades publicados por el equipo. Los comunicados fijados aparecen siempre en la parte superior.',
+  },
+  {
+    path:    '/messages',
+    element: '#tour-step-messages',
+    title:   'Mensajes',
+    desc:    'Chatea en tiempo real con tus docentes y alumnos. Crea conversaciones personales o grupos, comparte fotos y archivos, responde, reacciona y fija mensajes importantes.',
   },
   {
     path:    '/chat',

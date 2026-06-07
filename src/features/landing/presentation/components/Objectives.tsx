@@ -23,7 +23,7 @@ const TASKS_NLP = [
   { title: 'Reportes en español',              status: 'completed', meta: 'Módulo activo'              },
   { title: 'LLM local vía ngrok',              status: 'completed', meta: 'Hospedaje configurado'      },
   { title: 'Análisis periódico de sensores',   status: 'progress',  meta: 'Generando recomendaciones…' },
-  { title: 'Notificaciones push app móvil',    status: 'pending',   meta: 'Pendiente'                  },
+  { title: 'Notificaciones push en la app web',    status: 'pending',   meta: 'Pendiente'                  },
 ]
 
 function TaskList({ tasks, light = false }: { tasks: { title: string; status: string; meta: string }[]; light?: boolean }) {
@@ -204,7 +204,7 @@ const Objectives = () => (
             <p className="text-sm font-bold uppercase tracking-wider">Notificaciones push</p>
           </div>
           <p className="text-[clamp(0.85rem,1.3vw,1.05rem)] leading-relaxed opacity-50">
-            Alertas en la app móvil con acciones sugeridas en tiempo real.
+            Alertas en la app web con acciones sugeridas en tiempo real.
           </p>
         </div>
       </div>

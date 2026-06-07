@@ -1,5 +1,7 @@
 import { useState } from "react";
 import ContactChat from "./ContactChat";
+import SupportChatModal from "../../../support-chat/presentation/components/SupportChatModal";
+import { useUserAuth } from "../../../../core/hooks/userAuth";
 
 const footerLinks: Record<string, { label: string; href: string; target?: string }[]> = {
   Páginas: [
@@ -30,6 +32,8 @@ const footerLinks: Record<string, { label: string; href: string; target?: string
 
 const Footer = () => {
   const [chatOpen, setChatOpen] = useState(false);
+  const { user } = useUserAuth();
+  const isAdmin = user?.role === "admin";
 
   return (
     <footer className="relative w-full bg-bg overflow-hidden">
@@ -89,7 +93,9 @@ const Footer = () => {
           </ul>
         </div>
 
-        <ContactChat open={chatOpen} onClose={() => setChatOpen(false)} />
+        {isAdmin
+          ? <SupportChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
+          : <ContactChat     open={chatOpen} onClose={() => setChatOpen(false)} />}
       </div>
 
       <div className="relative w-full select-none overflow-hidden h-40 md:h-56">
