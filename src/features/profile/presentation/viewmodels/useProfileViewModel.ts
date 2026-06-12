@@ -59,12 +59,14 @@ export const useProfileViewModel = () => {
         phone_number: profile.phone_number ?? prev.phone_number,
       }))
       setCreatedBy(profile.created_by)
+      setCircuitId(profile.circuit_id ?? null)
       const stored = localStorage.getItem('user_data')
       if (stored) {
         localStorage.setItem('user_data', JSON.stringify({
           ...JSON.parse(stored),
           dial_code:    profile.dial_code,
           phone_number: profile.phone_number,
+          circuit_id:   profile.circuit_id ?? null,
         }))
       }
     }).catch(() => {})
