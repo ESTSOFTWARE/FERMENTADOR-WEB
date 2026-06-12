@@ -4,7 +4,7 @@ import { BioreactorChips } from "./BioreactorChips";
 
 interface Props {
   rotX: number;
-  rotY: number;
+  rotY: number; 
 }
 
 const KEYFRAMES = `
