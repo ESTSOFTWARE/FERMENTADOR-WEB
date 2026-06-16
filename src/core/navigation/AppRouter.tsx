@@ -7,6 +7,7 @@ import SimulationView from '../../features/dashboard/presentation/view/Simulatio
 import ResultsView from '../../features/dashboard/presentation/view/ResultsView'
 import ChartsView from '../../features/dashboard/presentation/view/ChartsView'
 import LandingView from '../../features/landing/presentation/views/LandingScreen'
+import JoinRedirectView from '../../features/landing/presentation/views/JoinRedirectView'
 import PrivacyView from '../../features/landing/presentation/views/PrivacyView'
 import TermsView from '../../features/landing/presentation/views/TermsView'
 import CookiesView from '../../features/landing/presentation/views/CookiesView'
@@ -51,6 +52,7 @@ const AppRouter = () => {
       <PageTitle />
       <Routes>
         <Route path="/"              element={<LandingView />} />
+        <Route path="/join"          element={<JoinRedirectView />} />
         <Route path="/privacy"       element={<PrivacyView />} />
         <Route path="/terms"         element={<TermsView />} />
         <Route path="/cookies"       element={<CookiesView />} />

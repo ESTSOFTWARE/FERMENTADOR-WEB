@@ -30,11 +30,24 @@ export const useAddUserViewModel = () => {
   const [showConfirm,    setShowConfirm]    = useState(false)
 
   useEffect(() => {
-    if (!user?.circuit_id) return
-    apiClient.get<{ activation_code: string | null }>(`/circuits/${user.circuit_id}/`)
-      .then(data => setActivationCode(data.activation_code ?? null))
-      .catch(() => setError('No se pudo obtener el código del circuito.'))
-  }, [user?.circuit_id])
+    if (!user?.id) return
+
+    const loadCode = (circuitId: number) =>
+      apiClient.get<{ activation_code: string | null }>(`/circuits/${circuitId}/`)
+        .then(data => setActivationCode(data.activation_code ?? null))
+        .catch(() => setError('No se pudo obtener el código del circuito.'))
+
+    // Si el circuit_id ya está en sesión, úsalo
+    if (user.circuit_id) { loadCode(user.circuit_id); return }
+
+    // Si no, consúltalo fresco del backend (puede no estar en el localStorage)
+    apiClient.get<{ circuit_id: number | null }>(`/users/${user.id}`)
+      .then(profile => {
+        if (profile.circuit_id) loadCode(profile.circuit_id)
+        else setError('Tu cuenta no tiene un circuito asignado. Pídele al administrador que te vincule a un circuito antes de crear usuarios.')
+      })
+      .catch(() => {})
+  }, [user?.id, user?.circuit_id])
 
   const set = (key: keyof AddUserForm, value: string) =>
     setForm(prev => ({ ...prev, [key]: value }))

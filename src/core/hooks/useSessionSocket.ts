@@ -29,8 +29,9 @@ export const useSessionSocket = () => {
     const connect = () => {
       const ws = new WebSocket(`${WS}/ws/session`)
       wsRef.current = ws
+      let opened = false
 
-      ws.onopen = () => { attemptRef.current = 0 }
+      ws.onopen = () => { opened = true; attemptRef.current = 0 }
 
       ws.onmessage = (event) => {
         try {
@@ -45,8 +46,9 @@ export const useSessionSocket = () => {
       }
 
       ws.onclose = (e) => {
-        // 4401 = sesión ya inválida; o cierre por desmontaje → no reconectar
-        if (closedByEffect || revokedRef.current || e.code === 4401) return
+        // No reconectar si: se desmontó, la sesión fue revocada, el server
+        // cerró con 4401, o el handshake fue rechazado (nunca llegó a abrir → auth).
+        if (closedByEffect || revokedRef.current || e.code === 4401 || !opened) return
         const delay = Math.min(1000 * 2 ** attemptRef.current, 15000)
         attemptRef.current += 1
         retryRef.current = setTimeout(connect, delay)
