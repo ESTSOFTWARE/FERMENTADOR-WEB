@@ -51,7 +51,7 @@ const GroupDetailView = () => {
     sileo.success({ title: 'QR descargado', description: `Código ${code} guardado como SVG.`, ...TOAST_STYLE })
   }
 
-  const professorName = user ? `${user.name} ${user.last_name}` : 'Profesor'
+  const professorName = vm.group?.professor_name ?? (user ? `${user.name} ${user.last_name}` : 'Profesor')
   const isAdmin       = user?.role === 'admin'
 
   const tabs: { id: Tab; label: string; icon: string }[] = [

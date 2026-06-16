@@ -54,12 +54,28 @@ export const useGroupsViewModel = () => {
     if (!createName.trim() || !createSubject.trim()) return
     try {
       setSaving(true)
+      // 1) Crear el grupo (esto es lo crítico)
       let group = await createGroup.execute({ name: createName.trim(), subject: createSubject.trim() })
-      if (coverFile) group = await uploadCover.execute(group.id, coverFile)
+
+      // 2) Subir la portada es opcional: si falla, el grupo igual queda creado
+      let coverFailed = false
+      if (coverFile) {
+        try {
+          group = await uploadCover.execute(group.id, coverFile)
+        } catch {
+          coverFailed = true
+        }
+      }
+
       setGroups(prev => [group, ...prev])
       resetCreate()
       setShowCreate(false)
-      sileo.success({ title: 'Grupo creado', description: `"${group.name}" listo para añadir alumnos.`, ...TOAST_STYLE })
+
+      if (coverFailed) {
+        sileo.success({ title: 'Grupo creado', description: `"${group.name}" se creó, pero no se pudo subir la portada.`, ...TOAST_STYLE })
+      } else {
+        sileo.success({ title: 'Grupo creado', description: `"${group.name}" listo para añadir alumnos.`, ...TOAST_STYLE })
+      }
     } catch (e) {
       sileo.error({ title: 'No se pudo crear el grupo', description: (e as Error).message, ...TOAST_STYLE })
     } finally {

@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.nichka.app",
+      "sha256_cert_fingerprints": [
+        "BC:DB:2E:47:3B:A8:A0:A8:1E:14:C6:CF:4F:F6:EA:82:84:76:74:B1:7D:37:90:A5:5B:D4:31:2D:40:14:A2:F5"
+      ]
+    }
+  }
+]
