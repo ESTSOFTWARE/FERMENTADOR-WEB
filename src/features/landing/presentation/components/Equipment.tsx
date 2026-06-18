@@ -71,20 +71,7 @@ const TEAM: TeamMember[] = [
       { type: "web",      url: "https://melissazarate08.github.io/Portafolio-KMCZ/" },
       { type: "linkedin", url: "https://www.linkedin.com/in/karla-melissa-corral-z%C3%A1rate-274b5529b" },
     ],
-  },
-  /*{
-    name: "Fernando Mijangos",
-    role: "IoT",
-    initials: "FM",
-    photo: "/assets/devs/fernandodev.png",
-    color: "#fbbf24",
-    bg: "from-yellow-950 to-yellow-800",
-    links: [
-      { type: "github",   url: "https://github.com/FernandoMijangos" },
-      { type: "web",      url: "https://fernandomijangos.github.io/Portafolio-FM/" },
-      { type: "linkedin", url: "https://www.linkedin.com/in/fernando-mijangos-0b2b6b20b/" },
-    ],
-  }*/
+  }
 ];
 
 const ContactIcon = ({ link }: { link: ContactLink }) => (

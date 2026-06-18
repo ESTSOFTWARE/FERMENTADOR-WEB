@@ -6,11 +6,12 @@ import { useCartStore } from '../../../../core/store/useCartStore'
 
 const navLinks = [
   { label: 'Inicio',         href: '/' },
-  { label: 'Problema',       href: '/#planteamiento' },
-  { label: 'Justificación',  href: '/#justificacion' },
+  { label: 'App móvil',      href: '/#app' },
+
+  // { label: 'Justificación',  href: '/#justificacion' },
   { label: 'Objetivos',      href: '/#objetivos' },
-  { label: 'Alcances',       href: '/#alcances' },
   { label: 'Negocio',        href: '/#negocio' },
+  { label: 'Equipo',         href: '/#equipo' },
   { label: 'Componentes',    href: '/products' },
 ]
 
