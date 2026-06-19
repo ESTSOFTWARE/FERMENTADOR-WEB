@@ -1,12 +1,15 @@
 const TECHS = [
   { icon: "python",     path: "/assets/icons/python.svg" },
+  { icon: "arduino",    path: "/assets/icons/arduino.svg" },
   { icon: "react",      path: "/assets/icons/react.svg" },
+  { icon: "flutter",    path: "/assets/icons/flutter.svg" },
+  { icon: "nodejs",     path: "/assets/icons/nodejs.svg" },
   { icon: "tailwind",   path: "/assets/icons/tailwindcss.svg" },
-  { icon: "mysql",      path: "/assets/icons/mysql.svg" },
+  { icon: "postgresql", path: "/assets/icons/postgresql.svg" },
   { icon: "docker",     path: "/assets/icons/docker.svg" },
-  { icon: "aws",        path: "/assets/icons/aws.svg" },
-  { icon: "linux",      path: "/assets/icons/linux.svg" },
-  { icon: "github",     path: "/assets/icons/github.svg" },
+  { icon: "railway",    path: "/assets/icons/railway.svg" },
+  { icon: "supabase",   path: "/assets/icons/supabase.svg" },
+  { icon: "nginx",      path: "/assets/icons/nginx.svg" },
 ];
 
 export const TechComponent = () => (

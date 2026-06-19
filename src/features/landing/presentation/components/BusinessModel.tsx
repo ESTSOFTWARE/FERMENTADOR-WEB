@@ -1,4 +1,5 @@
-import { BarChart2, Bot, Smartphone } from 'lucide-react'
+import { BarChart2, Bot, Smartphone, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import AnimatedScroll, { type ScrollPage } from '../../../../components/ui/animated-scroll'
 
 const GREEN  = '#0F8E4D'
@@ -36,6 +37,12 @@ const pages: ScrollPage[] = [
               </div>
             ))}
           </div>
+          <Link to="/planes"
+            className="inline-flex items-center justify-center gap-2 self-start mt-1 px-5 py-2.5 rounded-xl text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
+            style={{ background: '#22C55E' }}>
+            Ver planes
+            <ArrowRight className="w-4 h-4" />
+          </Link>
           <p className="text-white/25 text-xs uppercase tracking-widest mt-1">↓ Desplaza para explorar</p>
         </div>
       ),
@@ -118,7 +125,7 @@ const pages: ScrollPage[] = [
       description: (
         <div className="flex flex-col gap-4 text-left w-full">
           <p className="text-[clamp(2rem,5vw,3.5rem)] font-black leading-none tracking-tighter text-white">
-            Capaci-<br />tación<br /><span className="text-emerald-400">docente</span>
+            Capacitación<br /><span className="text-emerald-400">docente</span>
           </p>
           <p className="text-white/50 text-sm leading-relaxed">
             Onboarding presencial o remoto: calibración de sensores, validación de parámetros locales

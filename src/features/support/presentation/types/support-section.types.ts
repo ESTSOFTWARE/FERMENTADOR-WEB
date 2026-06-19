@@ -1,1 +1,1 @@
-export type SupportSection = 'tickets' | 'clients' | 'fermentadores' | 'notificaciones' | 'anuncios' | 'perfil'
+export type SupportSection = 'tickets' | 'clients' | 'fermentadores' | 'componentes' | 'notificaciones' | 'anuncios' | 'perfil'
