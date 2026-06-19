@@ -3,6 +3,7 @@ import SupportSidebar         from '../components/SupportSidebar'
 import TicketsPanel           from '../components/TicketsPanel'
 import ClientsPanel           from '../components/ClientsPanel'
 import FermentadoresPanel     from '../components/FermentadoresPanel'
+import ComponentsPanel        from '../components/ComponentsPanel'
 import NotificacionesPanel    from '../components/NotificacionesPanel'
 import AnunciosPanel          from '../components/AnunciosPanel'
 import ProfilePanel           from '../components/ProfilePanel'
@@ -20,6 +21,7 @@ const SupportView = () => {
         {section === 'tickets'        && <TicketsPanel />}
         {section === 'clients'        && <ClientsPanel />}
         {section === 'fermentadores'  && <FermentadoresPanel />}
+        {section === 'componentes'    && <ComponentsPanel />}
         {section === 'notificaciones' && <NotificacionesPanel />}
         {section === 'anuncios'       && <AnunciosPanel />}
         {section === 'perfil'         && <ProfilePanel />}

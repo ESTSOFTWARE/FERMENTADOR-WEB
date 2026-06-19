@@ -64,7 +64,7 @@ export default function AnimatedScroll({ pages }: Props) {
           const rightTrans = isActive ? 'translateY(0)' : 'translateY(-100%)'
 
           return (
-            <div key={i} className="absolute inset-0">
+            <div key={i} className={`absolute inset-0 ${isActive ? '' : 'pointer-events-none'}`}>
               {/* Left Half */}
               <div
                 className="absolute top-0 left-0 w-1/2 h-full transition-transform duration-[900ms] ease-in-out"
