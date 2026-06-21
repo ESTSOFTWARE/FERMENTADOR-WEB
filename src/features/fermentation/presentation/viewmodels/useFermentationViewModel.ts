@@ -92,6 +92,7 @@ export const useFermentationViewModel = () => {
     try {
       const scheduled = await scheduleFerm.execute({
         circuit_id:      circuitId,
+        group_id:        formData.group_id,
         scheduled_start: formData.scheduled_start,
         scheduled_end:   formData.scheduled_end,
         initial_sugar:   formData.initial_sugar,

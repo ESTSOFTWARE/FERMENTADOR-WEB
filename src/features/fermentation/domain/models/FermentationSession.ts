@@ -4,6 +4,7 @@ export interface FermentationSession {
   id:              number
   circuit_id:      number
   user_id:         number
+  group_id:        number | null
   formula_id:      number
   scheduled_start: string
   scheduled_end:   string
