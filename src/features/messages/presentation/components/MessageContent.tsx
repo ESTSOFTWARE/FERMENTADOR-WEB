@@ -39,7 +39,7 @@ export const MessageContent = ({
   onReply, onReactQuick, onEditStart, onRequestDelete,
   onRequestPin, onRequestPriority
 }: MessageContentProps) => {
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const [now, setNow] = useState(() => Date.now())
 
   useEffect(() => {
@@ -47,15 +47,18 @@ export const MessageContent = ({
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => { 
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) 
+  useEffect(() => {
+    // Scroll del propio contenedor (no scrollIntoView) para no jalar el eje
+    // horizontal de la página al abrir la conversación.
+    const el = scrollRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [messages, typingUsers])
 
   const canEdit = (msg: ChatMessage) =>
     msg.senderId === MY_ID && now - new Date(msg.createdAt).getTime() < 20 * 60 * 1000
 
   return (
-    <div data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-1 bg-[#0f0f10]">
+    <div ref={scrollRef} data-lenis-prevent className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-1 bg-[#0f0f10]">
       {messages.length === 0 ? (
         <p className="text-neutral-500 text-sm text-center py-8">No hay mensajes en esta conversación.</p>
       ) : (
@@ -107,7 +110,6 @@ export const MessageContent = ({
           </motion.div>
         )}
       </AnimatePresence>
-      <div ref={bottomRef} />
     </div>
   )
 }

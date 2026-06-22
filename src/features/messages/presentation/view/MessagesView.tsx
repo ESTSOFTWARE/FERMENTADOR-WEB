@@ -72,7 +72,7 @@ const MessagesView = () => {
 
   return (
     <motion.div variants={pageVariants} initial="hidden" animate="visible"
-      className="flex flex-col h-[calc(100vh_-_3.5rem)] overflow-hidden" style={{ background: '#0A0A0B' }}>
+      className="relative flex flex-col h-[calc(100vh_-_3.5rem)] overflow-hidden" style={{ background: '#0A0A0B' }}>
       
       {/* Header & Controls */}
       <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center justify-between gap-4">

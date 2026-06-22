@@ -70,7 +70,7 @@ const AppRouter = () => {
         <Route path="/auth/callback"   element={<AuthCallbackView />} />
 
         <Route element={<PrivateRoute allowedRoles={['soporte']} />}>
-          <Route path="/support" element={<SupportView />} />
+          <Route path="/support/*" element={<SupportView />} />
         </Route>
 
         <Route element={<PrivateRoute />}>
