@@ -9,4 +9,12 @@ const readMyId = (): string => {
   }
 }
 
-export const MY_ID = readMyId()
+// Binding viva: se recalcula cuando cambia la identidad (login, sync /users/me,
+// cambio de usuario sin recargar). Como es `let` exportado, los módulos que lo
+// importan ven siempre el valor actualizado y los mensajes "míos" se alinean bien.
+export let MY_ID = readMyId()
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('user_data_updated', () => { MY_ID = readMyId() })
+  window.addEventListener('session_expired',   () => { MY_ID = '' })
+}

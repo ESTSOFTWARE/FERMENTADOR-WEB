@@ -1,15 +1,15 @@
-import { useNavigate }        from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { cn }                 from '../../../../lib/utils'
 import { useSupportStore }    from '../../../../core/store/useSupportStore'
 import { useUserAuth }        from '../../../../core/hooks/userAuth'
 import { SIDEBAR_ITEMS }      from '../constants/sidebar-items.constants'
 import { ROLE_LABELS }        from '../constants/role-labels.constants'
-import type { SupportSidebarProps as Props } from '../types/support-sidebar.types'
 
-const SupportSidebar = ({ active, onChange }: Props) => {
+const SupportSidebar = () => {
   const pending      = useSupportStore(s => s.tickets.filter(t => t.status === 'pending').length)
   const { user, logout } = useUserAuth()
   const navigate         = useNavigate()
+  const { pathname }     = useLocation()
   const profileImage     = user?.profile_image ?? null
   const initials         = user ? `${user.name[0]}${user.last_name?.[0] ?? ''}`.toUpperCase() : '?'
 
@@ -29,10 +29,10 @@ const SupportSidebar = ({ active, onChange }: Props) => {
         {SIDEBAR_ITEMS.map(item => (
           <button
             key={item.id}
-            onClick={() => onChange(item.id)}
+            onClick={() => navigate(`/support/${item.path}`)}
             className={cn(
               'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors text-left',
-              active === item.id
+              pathname === `/support/${item.path}`
                 ? 'bg-neutral-800 text-white'
                 : 'text-neutral-500 hover:text-white hover:bg-neutral-900'
             )}
@@ -53,10 +53,10 @@ const SupportSidebar = ({ active, onChange }: Props) => {
       <div className="px-3 py-4 border-t border-neutral-900 flex flex-col gap-2">
 
         <button
-          onClick={() => onChange('perfil')}
+          onClick={() => navigate('/support/perfil')}
           className={cn(
             'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-colors text-left',
-            active === 'perfil'
+            pathname === '/support/perfil'
               ? 'bg-neutral-800 border-neutral-700'
               : 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800 hover:border-neutral-700'
           )}
