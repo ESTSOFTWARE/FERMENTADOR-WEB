@@ -17,7 +17,11 @@ const SensorsView = () => {
     autoSessionId: session?.id,
   })
 
-  const status         = WS_STATUS_CONFIG[wsStatus]
+  const isRunning      = session?.status === 'running'
+  // "En vivo" solo si hay fermentación corriendo; si no, "Detenido".
+  const status         = isRunning
+    ? WS_STATUS_CONFIG[wsStatus]
+    : { label: 'Detenido', color: '#52525B', pulse: false }
   const primarySensors   = SENSOR_META.slice(0, 2)
   const secondarySensors = SENSOR_META.slice(2)
 
@@ -57,11 +61,11 @@ const SensorsView = () => {
           </svg>
           <span style={{ color: '#52525B', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Sensores activos</span>
           <span style={{ color: '#22C55E', fontSize: 12, fontFamily: 'monospace', fontWeight: 600 }}>
-            {Object.values(latestValues).filter(v => v !== undefined).length} / {SENSOR_META.length}
+            {isRunning ? Object.values(latestValues).filter(v => v !== undefined).length : 0} / {SENSOR_META.length}
           </span>
         </div>
 
-        {session && (
+        {isRunning && (
           <>
             <div style={{ width: 1, height: 16, backgroundColor: '#1F1F22' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -79,7 +83,7 @@ const SensorsView = () => {
             <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: status.color }} />
           </div>
           <span style={{ color: status.color, fontSize: 11, fontWeight: 500, fontFamily: 'Poppins, sans-serif' }}>{status.label}</span>
-          {session && wsStatus === 'connected' && (
+          {isRunning && wsStatus === 'connected' && (
             <>
               <div style={{ width: 1, height: 12, backgroundColor: '#2A2A2D' }} />
               <span style={{ color: '#52525B', fontSize: 10, fontFamily: 'monospace' }}>sesión #{session.id}</span>

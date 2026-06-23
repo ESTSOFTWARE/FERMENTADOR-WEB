@@ -49,6 +49,19 @@ export const useFermentationViewModel = () => {
     }
   }, [sensorStates, session])
 
+  // Refresca la sesión: si el backend la detuvo (fin programado / auto-stop) o se
+  // detuvo desde otro lado, deja de mostrarse "en vivo".
+  useEffect(() => {
+    if (!circuitId) return
+    const id = setInterval(async () => {
+      try {
+        const active = await getActiveSession.execute()
+        if (!active) setSession(prev => (prev?.status === 'running' ? null : prev))
+      } catch { /* sin conexión: reintenta luego */ }
+    }, 15000)
+    return () => clearInterval(id)
+  }, [circuitId])
+
   useEffect(() => {
     if (!circuitId) return
 
