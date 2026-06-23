@@ -33,7 +33,7 @@ export const useAddUserViewModel = () => {
     if (!user?.id) return
 
     const loadCode = (circuitId: number) =>
-      apiClient.get<{ activation_code: string | null }>(`/circuits/${circuitId}/`)
+      apiClient.get<{ activation_code: string | null }>(`/circuits/${circuitId}`)
         .then(data => setActivationCode(data.activation_code ?? null))
         .catch(() => setError('No se pudo obtener el código del circuito.'))
 
