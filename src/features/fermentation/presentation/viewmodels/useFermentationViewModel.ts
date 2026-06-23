@@ -97,6 +97,9 @@ export const useFermentationViewModel = () => {
       cancelled = true
       commands.disconnect()
     }
+    // Solo debe correr al cambiar el circuito (conecta/desconecta el WS una vez);
+    // incluir `commands` reconectaría el WS en cada render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circuitId])
 
   const startFermentation = useCallback(async (formData: FermentationFormData) => {
