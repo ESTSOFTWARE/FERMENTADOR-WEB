@@ -4,7 +4,7 @@ import type { SensorKey }                     from '../../domain/models/SensorKe
 import type { SensorControlSectionProps as Props } from '../types/SensorControlSectionProps'
 import ToggleSwitch                           from './ToggleSwitch'
 
-const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
+const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggle }: Props) => {
   const total  = Object.keys(sensorStates).length
   const active = Object.values(sensorStates).filter(Boolean).length
 
@@ -130,7 +130,7 @@ const SensorControlSection = ({ sensorStates, loading, onToggle }: Props) => {
                 <ToggleSwitch
                   checked={isOn}
                   onChange={() => onToggle(sensor.key as SensorKey)}
-                  disabled={loading}
+                  disabled={loading || disabled}
                 />
               </div>
 
