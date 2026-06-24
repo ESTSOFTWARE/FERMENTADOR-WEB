@@ -115,6 +115,7 @@ const FermentationView = () => {
       <SensorControlSection
         sensorStates={sensorStates}
         loading={loading}
+        disabled={!isRunning}
         onToggle={(key: SensorKey) => toggleSensor(key)}
       />
       </motion.div>

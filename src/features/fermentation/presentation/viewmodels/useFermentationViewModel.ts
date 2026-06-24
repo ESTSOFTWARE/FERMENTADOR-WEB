@@ -49,6 +49,12 @@ export const useFermentationViewModel = () => {
     }
   }, [sensorStates, session])
 
+  // Sin fermentación activa (terminó, se detuvo o nunca arrancó) todos los
+  // sensores quedan apagados. Cubre tanto el botón de detener como el auto-stop.
+  useEffect(() => {
+    if (!isRunning) setSensorStates(ALL_SENSORS_OFF)
+  }, [isRunning])
+
   // Refresca la sesión: si el backend la detuvo (fin programado / auto-stop) o se
   // detuvo desde otro lado, deja de mostrarse "en vivo".
   useEffect(() => {
@@ -150,6 +156,8 @@ export const useFermentationViewModel = () => {
   }, [session, commands])
 
   const toggleSensor = useCallback(async (key: SensorKey) => {
+    // No se puede encender/apagar ningún sensor si no hay fermentación activa.
+    if (!session || session.status !== 'running') return
     const nextValue = !sensorStates[key]
     setSensorStates((prev: SensorToggleState) => {
       const next = { ...prev, [key]: nextValue }
