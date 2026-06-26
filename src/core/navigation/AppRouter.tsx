@@ -11,6 +11,7 @@ import JoinRedirectView from '../../features/landing/presentation/views/JoinRedi
 import PrivacyView from '../../features/landing/presentation/views/PrivacyView'
 import TermsView from '../../features/landing/presentation/views/TermsView'
 import CookiesView from '../../features/landing/presentation/views/CookiesView'
+import DeleteAccountView from '../../features/landing/presentation/views/DeleteAccountView'
 import HardwareView from '../../features/landing/presentation/views/HardwareView'
 import PlanesView from '../../features/landing/presentation/views/PlanesView'
 import ConsultoriaView from '../../features/landing/presentation/views/ConsultoriaView'
@@ -57,6 +58,7 @@ const AppRouter = () => {
         <Route path="/privacy"       element={<PrivacyView />} />
         <Route path="/terms"         element={<TermsView />} />
         <Route path="/cookies"       element={<CookiesView />} />
+        <Route path="/delete-account" element={<DeleteAccountView />} />
         <Route path="/hardware"      element={<HardwareView />} />
         <Route path="/planes"        element={<PlanesView />} />
         <Route path="/consultoria"   element={<ConsultoriaView />} />
