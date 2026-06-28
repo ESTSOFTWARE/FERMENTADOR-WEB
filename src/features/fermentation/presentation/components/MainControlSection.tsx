@@ -9,6 +9,7 @@ const MainControlSection = ({
   showForm,
   session,
   circuitId,
+  circuitCode,
   onMainToggle,
   onSubmit,
   onCancelForm,
@@ -61,7 +62,7 @@ const MainControlSection = ({
             {isRunning
               ? `Sesión #${session?.id} en curso — todos los sensores activos`
               : circuitId
-                ? `Circuito #${circuitId} · Activa todos los sensores, bomba y motor`
+                ? `Circuito ${circuitCode ?? `#${circuitId}`} · Activa todos los sensores, bomba y motor`
                 : 'Activa todos los sensores, bomba y motor'}
           </p>
         </div>
@@ -91,7 +92,7 @@ const MainControlSection = ({
       >
         {[
           { label: 'Sesión ID',      value: `#${session.id}` },
-          { label: 'Circuito',       value: `#${session.circuit_id}` },
+          { label: 'Circuito',       value: circuitCode ?? `#${session.circuit_id}` },
           {
             label: 'Inicio real',
             value: session.actual_start

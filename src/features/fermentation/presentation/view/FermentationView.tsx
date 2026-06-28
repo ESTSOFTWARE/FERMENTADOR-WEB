@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import { useFermentation } from '../hooks/useFermentation'
+import { useUserAuth } from '../../../../core/hooks/userAuth'
 import type { SensorKey } from '../../../sensors/domain/models/SensorKey'
 import MainControlSection from '../components/MainControlSection'
 import SensorControlSection from '../components/SensorControlSection'
@@ -20,6 +21,8 @@ const FermentationView = () => {
     stopFermentation,
     toggleSensor,
   } = useFermentation()
+
+  const { user } = useUserAuth()
 
   const handleMainToggle = () => {
     if (isRunning) {
@@ -105,6 +108,7 @@ const FermentationView = () => {
         showForm={showForm}
         session={session}
         circuitId={circuitId}
+        circuitCode={user?.activation_code ?? null}
         onMainToggle={handleMainToggle}
         onSubmit={startFermentation}
         onCancelForm={() => setShowForm(false)}

@@ -1,27 +1,28 @@
 import { useState }                          from 'react'
+import { useNavigate }                       from 'react-router-dom'
 import { motion }                            from 'motion/react'
 import type { Status }                       from '../types/Status'
 import { FILTERS }                           from '../constants/filters'
 import { REPORTS_STYLES }                    from '../constants/styles'
 import StatusPill                            from '../components/StatusPill'
 import { useFermentationReportsViewModel }   from '../viewmodels/useFermentationReportsViewModel'
+import { useUserAuth }                        from '../../../../core/hooks/userAuth'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
 const VISIBLE_FILTERS = FILTERS.filter(f => f.value !== 'running')
 
 const FermentationReportsView = () => {
   const { reports, loading, error, refetch } = useFermentationReportsViewModel()
+  const { user } = useUserAuth()
+  const navigate = useNavigate()
 
   const [filter,   setFilter]   = useState<Exclude<Status, 'running'> | 'all'>('all')
-  const [selected, setSelected] = useState<number | null>(null)
 
   const filtered = reports.filter(r => filter === 'all' || r.status === filter)
 
   const completadas   = reports.filter(r => r.status === 'completed').length
   const interrumpidas = reports.filter(r => r.status === 'interrupted').length
   const enCurso       = reports.filter(r => r.status === 'running').length
-
-  const selectedReport = reports.find(r => r.id === selected) ?? null
 
   return (
     <motion.div
@@ -188,7 +189,7 @@ const FermentationReportsView = () => {
         style={{
           flex:                1,
           display:             'grid',
-          gridTemplateColumns: selected ? '1fr 340px' : '1fr',
+          gridTemplateColumns: '1fr',
           gap:                 16,
           alignItems:          'start',
         }}
@@ -204,7 +205,7 @@ const FermentationReportsView = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #1A1A1D' }}>
-                {['ID', 'Circuito', 'Inicio', 'Duración', 'pH', 'Temp.', 'Estado', ''].map(h => (
+                {['N°', 'Circuito', 'Inicio', 'Duración', 'pH', 'Temp.', 'Estado', ''].map(h => (
                   <th
                     key={h}
                     style={{
@@ -238,17 +239,17 @@ const FermentationReportsView = () => {
                 <tr
                   key={r.id}
                   className="report-row"
-                  onClick={() => setSelected(selected === r.id ? null : r.id)}
+                  onClick={() => navigate(`/fermentation-reports/${r.id}`)}
                   style={{
                     borderBottom:    i < filtered.length - 1 ? '1px solid #17171A' : 'none',
-                    backgroundColor: selected === r.id ? 'rgba(34,197,94,0.04)' : 'transparent',
+                    backgroundColor: 'transparent',
                   }}
                 >
                   <td style={{ padding: '13px 20px' }}>
-                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>#{r.id}</span>
+                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>{i + 1}</span>
                   </td>
                   <td style={{ padding: '13px 20px' }}>
-                    <span style={{ color: '#71717A', fontSize: 12 }}>#{r.circuit}</span>
+                    <span style={{ color: '#71717A', fontSize: 12 }}>{user?.activation_code ?? `#${r.circuit}`}</span>
                   </td>
                   <td style={{ padding: '13px 20px' }}>
                     <span style={{ color: '#52525B', fontSize: 12 }}>{r.start}</span>
@@ -268,7 +269,7 @@ const FermentationReportsView = () => {
                   <td style={{ padding: '13px 20px' }}>
                     <svg
                       width="13" height="13" viewBox="0 0 24 24" fill="none"
-                      stroke={selected === r.id ? '#22C55E' : '#2E2E32'}
+                      stroke="#2E2E32"
                       strokeWidth="2" strokeLinecap="round"
                       style={{ transition: 'stroke 0.15s' }}
                     >
@@ -289,107 +290,6 @@ const FermentationReportsView = () => {
           </table>
         </div>
 
-        {selected && selectedReport && (
-          <div
-            style={{
-              padding:         24,
-              borderRadius:    16,
-              backgroundColor: '#111113',
-              border:          '1px solid #1F1F22',
-              display:         'flex',
-              flexDirection:   'column',
-              gap:             18,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <p style={{ color: '#52525B', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 4px 0' }}>
-                  Detalle
-                </p>
-                <p style={{ color: '#F4F4F5', fontSize: 15, fontWeight: 600, margin: 0 }}>
-                  Sesión #{selectedReport.id}
-                </p>
-              </div>
-              <button
-                onClick={() => setSelected(null)}
-                style={{
-                  background:     'none',
-                  border:         '1px solid #2A2A2D',
-                  borderRadius:   7,
-                  cursor:         'pointer',
-                  color:          '#52525B',
-                  padding:        '5px 7px',
-                  display:        'flex',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <StatusPill status={selectedReport.status} />
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {([
-                { label: 'Circuito',        value: `#${selectedReport.circuit}` },
-                { label: 'Inicio',          value: selectedReport.start },
-                { label: 'Fin',             value: selectedReport.end },
-                { label: 'Duración',        value: selectedReport.duration },
-                { label: 'pH registrado',   value: selectedReport.ph   > 0 ? `${selectedReport.ph}`        : '—' },
-                { label: 'Temperatura',     value: selectedReport.temp > 0 ? `${selectedReport.temp} °C`   : '—' },
-                { label: 'Azúcar inicial',  value: selectedReport.sugar > 0 ? `${selectedReport.sugar} g/L` : '—' },
-                { label: 'Etanol obtenido', value: selectedReport.etanol > 0 ? `${selectedReport.etanol} g/L` : '—' },
-              ] as const).map((item, i, arr) => (
-                <div
-                  key={item.label}
-                  style={{
-                    display:        'flex',
-                    justifyContent: 'space-between',
-                    alignItems:     'center',
-                    padding:        '10px 0',
-                    borderBottom:   i < arr.length - 1 ? '1px solid #17171A' : 'none',
-                  }}
-                >
-                  <span style={{ color: '#3F3F46', fontSize: 12 }}>{item.label}</span>
-                  <span style={{ color: '#A1A1AA', fontSize: 12, fontWeight: 500, fontFamily: 'monospace' }}>
-                    {item.value}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {selectedReport.efficiency != null && (
-              <div
-                style={{
-                  padding:         '16px 18px',
-                  borderRadius:    12,
-                  backgroundColor: '#0D0D0F',
-                  border:          '1px solid #1A1A1D',
-                }}
-              >
-                <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', margin: '0 0 10px 0' }}>
-                  Eficiencia estimada
-                </p>
-                <p style={{ color: '#22C55E', fontSize: 28, fontWeight: 700, margin: '0 0 10px 0', letterSpacing: '-0.03em' }}>
-                  {selectedReport.efficiency.toFixed(1)}%
-                </p>
-                <div style={{ height: 5, borderRadius: 999, backgroundColor: '#1A1A1D', overflow: 'hidden' }}>
-                  <div
-                    style={{
-                      height:          '100%',
-                      width:           `${Math.min(100, selectedReport.efficiency)}%`,
-                      borderRadius:    999,
-                      backgroundColor: '#22C55E',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </motion.div>
     </motion.div>
   )

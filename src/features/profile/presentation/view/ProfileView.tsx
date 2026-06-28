@@ -115,8 +115,8 @@ const ProfileView = () => {
             <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px 0' }}>Información de cuenta</p>
             {[
               { label: 'Rol',        value: roleLabel,                          color: roleColor                          },
-              ...(user?.role === 'admin' ? [{ label: 'Circuito', value: circuitId ? `#${circuitId}` : '—', color: circuitId ? '#22C55E' : '#52525B' }] : []),
-              { label: 'ID usuario', value: user?.id ? `#${user.id}` : '—',    color: '#A1A1AA'                          },
+              ...(user?.role === 'admin' ? [{ label: 'Cód. activación', value: user?.activation_code || '—', color: user?.activation_code ? '#22C55E' : '#52525B' }] : []),
+              { label: 'Miembro desde', value: user?.created_at ? new Date(user.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : '—', color: '#A1A1AA' },
             ].map((item, i, arr) => (
               <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < arr.length - 1 ? '1px solid #17171A' : 'none' }}>
                 <span style={{ color: '#52525B', fontSize: 12 }}>{item.label}</span>

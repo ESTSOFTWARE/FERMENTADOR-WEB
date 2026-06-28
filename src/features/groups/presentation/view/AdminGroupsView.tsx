@@ -91,7 +91,7 @@ const AdminGroupsView = () => {
                     </span>
                   </td>
                   <td style={{ padding: '14px 20px', color: '#A1A1AA', fontSize: 13 }}>
-                    Prof. #{g.professor_id}
+                    {g.professor_name ?? `Prof. #${g.professor_id}`}
                   </td>
                   <td style={{ padding: '14px 20px' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#71717A', fontSize: 13 }}>

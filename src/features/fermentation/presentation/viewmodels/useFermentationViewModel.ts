@@ -42,6 +42,13 @@ export const useFermentationViewModel = () => {
 
   const clearMessages = () => { setError(null); setSuccessMessage(null) }
 
+  // El mensaje de éxito se oculta solo después de unos segundos.
+  useEffect(() => {
+    if (!successMessage) return
+    const t = setTimeout(() => setSuccessMessage(null), 4000)
+    return () => clearTimeout(t)
+  }, [successMessage])
+
   useEffect(() => {
     if (!hydratedRef.current) return
     if (session && session.status === 'running') {

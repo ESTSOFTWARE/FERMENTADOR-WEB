@@ -12,6 +12,7 @@ import PrivacyView from '../../features/landing/presentation/views/PrivacyView'
 import TermsView from '../../features/landing/presentation/views/TermsView'
 import CookiesView from '../../features/landing/presentation/views/CookiesView'
 import DeleteAccountView from '../../features/landing/presentation/views/DeleteAccountView'
+import ExperiencesView from '../../features/experiences/presentation/views/ExperiencesView'
 import HardwareView from '../../features/landing/presentation/views/HardwareView'
 import PlanesView from '../../features/landing/presentation/views/PlanesView'
 import ConsultoriaView from '../../features/landing/presentation/views/ConsultoriaView'
@@ -27,6 +28,7 @@ import MessagesView from '../../features/messages/presentation/view/MessagesView
 import OverviewView from '../../features/home/presentation/view/OverviewView'
 import EfficiencyCalculatorView from '../../features/efficiency/presentation/view/EfficiencyCalculatorView'
 import FermentationReportsView from '../../features/fermentation-reports/presentation/view/FermentationReportsView'
+import ReportDetailView from '../../features/fermentation-reports/presentation/view/ReportDetailView'
 import AddUserView from '../../features/users/presentation/view/AddUserView'
 import ManageUsersView from '../../features/users/presentation/view/ManageUsersView'
 import ProfileView from '../../features/profile/presentation/view/ProfileView'
@@ -59,6 +61,7 @@ const AppRouter = () => {
         <Route path="/terms"         element={<TermsView />} />
         <Route path="/cookies"       element={<CookiesView />} />
         <Route path="/delete-account" element={<DeleteAccountView />} />
+        <Route path="/experiences"   element={<ExperiencesView />} />
         <Route path="/hardware"      element={<HardwareView />} />
         <Route path="/planes"        element={<PlanesView />} />
         <Route path="/consultoria"   element={<ConsultoriaView />} />
@@ -81,6 +84,7 @@ const AppRouter = () => {
             <Route path="/grafics"               element={<SensorsView />} />
             <Route path="/efficiency-calculator" element={<EfficiencyCalculatorView />} />
             <Route path="/fermentation-reports"  element={<FermentationReportsView />} />
+            <Route path="/fermentation-reports/:id" element={<ReportDetailView />} />
             <Route path="/chat"                  element={<ChatView />} />
             <Route path="/messages"             element={<MessagesView />} />
             <Route path="/announcements"         element={<AnnouncementsView />} />

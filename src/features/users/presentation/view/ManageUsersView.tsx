@@ -167,7 +167,7 @@ const ManageUsersView = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #1F1F22' }}>
-                {['ID', 'Nombre', 'Email', 'Rol', 'Circuito', 'Creado', 'Acciones'].map(h => (
+                {['N°', 'Nombre', 'Email', 'Rol', 'Cód. activación', 'Creado', 'Acciones'].map(h => (
                   <th key={h} style={{ padding: '14px 20px', textAlign: 'left', color: '#3F3F46', fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 500, whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
@@ -182,7 +182,7 @@ const ManageUsersView = () => {
                   style={{ borderBottom: i < filtered.length - 1 ? '1px solid #17171A' : 'none' }}
                 >
                   <td style={{ padding: '14px 20px' }}>
-                    <span style={{ color: '#22C55E', fontSize: 12, fontWeight: 600, fontFamily: 'monospace' }}>#{u.id}</span>
+                    <span style={{ color: '#22C55E', fontSize: 12, fontWeight: 600, fontFamily: 'monospace' }}>{i + 1}</span>
                   </td>
 
                   <td style={{ padding: '14px 20px' }}>
@@ -238,7 +238,7 @@ const ManageUsersView = () => {
 
                   <td style={{ padding: '14px 20px' }}>
                     <span style={{ color: '#52525B', fontSize: 12, fontFamily: 'monospace' }}>
-                      {u.circuit_id !== null ? `#${u.circuit_id}` : '—'}
+                      {u.circuit_code ?? '—'}
                     </span>
                   </td>
 
