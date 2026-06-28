@@ -50,7 +50,7 @@ const SensorsView = () => {
             <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
           </svg>
           <span style={{ color: '#52525B', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Circuito</span>
-          <span style={{ color: '#A1A1AA', fontSize: 12, fontFamily: 'monospace', fontWeight: 600 }}>#{user?.circuit_id ?? '—'}</span>
+          <span style={{ color: '#A1A1AA', fontSize: 12, fontFamily: 'monospace', fontWeight: 600 }}>{user?.activation_code ?? '—'}</span>
         </div>
 
         <div style={{ width: 1, height: 16, backgroundColor: '#1F1F22' }} />

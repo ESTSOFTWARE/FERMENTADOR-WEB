@@ -11,4 +11,5 @@ export interface AuthUser {
   phone_number?:   string
   tour_completed?: boolean
   oauth_provider?: 'google' | 'github' | 'email'
+  created_at?:     string | null
 }

@@ -26,10 +26,12 @@ interface MeResponse {
   email:          string
   role_name:      string | null
   circuit_id:     number | null
+  circuit_code:   string | null
   profile_image:  string | null
   dial_code:      string | null
   phone_number:   string | null
   tour_completed: boolean
+  created_at:     string | null
 }
 
 /**
@@ -50,11 +52,12 @@ export const syncCurrentUser = async (): Promise<void> => {
       role:            me.role_name ?? prev?.role ?? 'estudiante',
       circuit_id:      me.circuit_id,
       profile_image:   me.profile_image,
-      activation_code: prev?.activation_code ?? null,
+      activation_code: me.circuit_code ?? prev?.activation_code ?? null,
       dial_code:       me.dial_code    ?? prev?.dial_code,
       phone_number:    me.phone_number ?? prev?.phone_number,
       tour_completed:  me.tour_completed,
       oauth_provider:  prev?.oauth_provider,
+      created_at:      me.created_at ?? prev?.created_at ?? null,
     }
     localStorage.setItem('user_data', JSON.stringify(real))
     window.dispatchEvent(new Event(USER_UPDATED_EVENT))

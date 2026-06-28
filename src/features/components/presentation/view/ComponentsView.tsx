@@ -56,7 +56,7 @@ const ComponentsView = () => {
           style={{ background: 'rgba(255,255,255,0.02)' }}>
           {/* head */}
           <div className="grid grid-cols-[80px_1fr_140px_110px_90px_100px] gap-3 px-5 py-3 border-b border-white/6">
-            {['ID', 'Nombre', 'SKU', 'Precio', 'Stock', 'Acciones'].map(h => (
+            {['N°', 'Nombre', 'SKU', 'Precio', 'Stock', 'Acciones'].map(h => (
               <span key={h} className="text-[10px] uppercase tracking-widest text-neutral-600">{h}</span>
             ))}
           </div>
@@ -72,7 +72,7 @@ const ComponentsView = () => {
             vm.components.map((c, i) => (
               <div key={c.id}
                 className={`grid grid-cols-[80px_1fr_140px_110px_90px_100px] gap-3 px-5 py-3.5 items-center ${i < vm.components.length - 1 ? 'border-b border-white/6' : ''}`}>
-                <span className="text-green-400 font-mono text-sm">#{c.id}</span>
+                <span className="text-green-400 font-mono text-sm">{i + 1}</span>
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-white truncate">{c.name}</p>
                   <p className="text-xs text-neutral-600 truncate mt-0.5">{c.description}</p>

@@ -7,6 +7,7 @@ export type MainControlSectionProps = {
   showForm:     boolean
   session:      FermentationSession | null
   circuitId:    number | null
+  circuitCode:  string | null
   onMainToggle: () => void
   onSubmit:     (data: FermentationFormData) => void
   onCancelForm: () => void
