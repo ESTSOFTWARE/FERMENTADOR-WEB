@@ -40,7 +40,7 @@ const TEAM: TeamMember[] = [
     bg: "from-emerald-950 to-emerald-800",
     links: [
       { type: "github", url: "https://github.com/Ameth-Toledo" },
-      { type: "web", url: "https://www.amethdev.pro/" },
+      { type: "web", url: "https://www.amethdev.com/" },
       { type: "linkedin", url: "https://www.linkedin.com/in/ameth-de-jes%C3%BAs-m%C3%A9ndez-toledo/" },
       { type: "whatsapp", url: "https://wa.me/529613037813" },
     ],

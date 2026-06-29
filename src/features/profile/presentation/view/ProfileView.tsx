@@ -8,6 +8,8 @@ import { Flash }                         from '../components/Flash'
 import { PROFILE_STYLES }                from '../constants/profile-styles.constants'
 import { inputStyle, labelStyle, readonlyStyle } from '../constants/profile-input-styles.constants'
 import { ROLE_LABELS }                   from '../constants/role-labels.constants'
+import { useEntitlements }               from '../../../../core/hooks/useEntitlements'
+import { useNavigate }                   from 'react-router-dom'
 
 const ProfileView = () => {
   const {
@@ -28,9 +30,22 @@ const ProfileView = () => {
   const [showNext,    setShowNext]    = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  const navigate = useNavigate()
+  const { plan } = useEntitlements()
+  const planLabel = ({ free: 'Free', starter: 'Starter', academic: 'Academic', enterprise: 'Enterprise' } as Record<string, string>)[plan] ?? plan
+  const planColor = ({ free: '#71717A', starter: '#3B82F6', academic: '#A78BFA', enterprise: '#F59E0B' } as Record<string, string>)[plan] ?? '#22C55E'
+
   const initials  = [infoForm.name, infoForm.last_name].filter(Boolean).map(s => s[0]).join('').toUpperCase() || '?'
   const roleLabel = user?.role ? (ROLE_LABELS[user.role] ?? user.role) : '—'
   const roleColor = user?.role === 'admin' ? '#A78BFA' : user?.role === 'profesor' ? '#3B82F6' : '#22C55E'
+
+  type AccountRow = { label: string; value: string; color: string; badge?: boolean; upgrade?: boolean }
+  const accountRows: AccountRow[] = [
+    { label: 'Rol',  value: roleLabel,  color: roleColor,  badge: true },
+    { label: 'Plan', value: planLabel,  color: planColor,  badge: true, upgrade: plan === 'free' },
+    ...(user?.role === 'admin' ? [{ label: 'Cód. activación', value: user?.activation_code || '—', color: user?.activation_code ? '#22C55E' : '#52525B' }] : []),
+    { label: 'Miembro desde', value: user?.created_at ? new Date(user.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : '—', color: '#A1A1AA' },
+  ]
 
   return (
     <motion.div variants={pageVariants} initial="hidden" animate="visible" style={{ minHeight: 'calc(100vh - 3.5rem)', backgroundColor: '#0A0A0B', padding: '40px 48px' }}>
@@ -113,14 +128,26 @@ const ProfileView = () => {
 
           <div style={{ padding: 24, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22' }}>
             <p style={{ color: '#3F3F46', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 16px 0' }}>Información de cuenta</p>
-            {[
-              { label: 'Rol',        value: roleLabel,                          color: roleColor                          },
-              ...(user?.role === 'admin' ? [{ label: 'Cód. activación', value: user?.activation_code || '—', color: user?.activation_code ? '#22C55E' : '#52525B' }] : []),
-              { label: 'Miembro desde', value: user?.created_at ? new Date(user.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : '—', color: '#A1A1AA' },
-            ].map((item, i, arr) => (
+            {accountRows.map((item, i, arr) => (
               <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < arr.length - 1 ? '1px solid #17171A' : 'none' }}>
                 <span style={{ color: '#52525B', fontSize: 12 }}>{item.label}</span>
-                <span style={{ color: item.color, fontSize: 12, fontWeight: 500, fontFamily: 'monospace' }}>{item.value}</span>
+                {item.badge ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ display: 'inline-block', padding: '3px 12px', borderRadius: 999, fontSize: 11, fontWeight: 500, color: item.color, backgroundColor: `${item.color}15`, border: `1px solid ${item.color}30` }}>
+                      {item.value}
+                    </span>
+                    {item.upgrade && (
+                      <button
+                        onClick={() => navigate('/planes')}
+                        style={{ padding: '3px 10px', borderRadius: 999, fontSize: 11, fontWeight: 600, color: '#06210F', backgroundColor: '#22C55E', border: 'none', cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        Mejorar
+                      </button>
+                    )}
+                  </span>
+                ) : (
+                  <span style={{ color: item.color, fontSize: 12, fontWeight: 500, fontFamily: 'monospace' }}>{item.value}</span>
+                )}
               </div>
             ))}
           </div>

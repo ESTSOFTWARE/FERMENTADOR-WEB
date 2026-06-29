@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { useFermentationReportsViewModel } from '../viewmodels/useFermentationReportsViewModel'
 import { useUserAuth } from '../../../../core/hooks/userAuth'
+import { useEntitlements } from '../../../../core/hooks/useEntitlements'
 import StatusPill from '../components/StatusPill'
 import { REPORTS_STYLES } from '../constants/styles'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
@@ -12,6 +13,8 @@ const ReportDetailView = () => {
   const navigate   = useNavigate()
   const { reports, loading } = useFermentationReportsViewModel()
   const { user }   = useUserAuth()
+  const { hasFeature } = useEntitlements()
+  const canReports = hasFeature('reports')
 
   const [downloading, setDownloading] = useState(false)
 
@@ -104,33 +107,50 @@ const ReportDetailView = () => {
               Volver
             </button>
 
-            <button
-              onClick={downloadPdf}
-              disabled={!report || downloading}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 8,
-                border: 'none', backgroundColor: '#22C55E', color: '#06210F',
-                fontSize: 12, fontWeight: 700,
-                cursor: (report && !downloading) ? 'pointer' : 'not-allowed',
-                opacity: (report && !downloading) ? 1 : 0.6, fontFamily: 'Poppins, sans-serif',
-              }}
-            >
-              {downloading ? (
-                <>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}>
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                  </svg>
-                  Descargando…
-                </>
-              ) : (
-                <>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                  </svg>
-                  Descargar PDF
-                </>
-              )}
-            </button>
+            {canReports ? (
+              <button
+                onClick={downloadPdf}
+                disabled={!report || downloading}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 8,
+                  border: 'none', backgroundColor: '#22C55E', color: '#06210F',
+                  fontSize: 12, fontWeight: 700,
+                  cursor: (report && !downloading) ? 'pointer' : 'not-allowed',
+                  opacity: (report && !downloading) ? 1 : 0.6, fontFamily: 'Poppins, sans-serif',
+                }}
+              >
+                {downloading ? (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}>
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                    </svg>
+                    Descargando…
+                  </>
+                ) : (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                    </svg>
+                    Descargar PDF
+                  </>
+                )}
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/planes')}
+                title="Disponible en planes de pago"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 8,
+                  border: '1px solid #3F3F46', backgroundColor: '#1A1A1D', color: '#A1A1AA',
+                  fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Poppins, sans-serif',
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Mejora tu plan para descargar PDF
+              </button>
+            )}
           </div>
         </div>
       </motion.div>
