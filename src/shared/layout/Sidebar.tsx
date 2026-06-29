@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useExperimentStore } from '../../core/store/useExperimentStore'
 import { nav } from '../../core/navigation/navItems'
 import { useUserAuth } from '../../core/hooks/userAuth'
+import { useEntitlements } from '../../core/hooks/useEntitlements'
 import { cn } from '../../lib/utils'
 import { TOUR_IDS } from '../constants/tour-ids.constants'
 
@@ -24,8 +25,31 @@ const Sidebar = () => {
     return () => obs.disconnect()
   }, [])
 
+  const { hasFeature } = useEntitlements()
   const role       = user?.role?.toLowerCase() ?? 'estudiante'
+
+  // Feature requerida por grupo o por item. Si no está mapeado → visible (según rol).
+  // El free solo tiene 'sensors' y 'start_fermentation', así que todo lo mapeado se le oculta.
+  const FEATURE_BY_GROUP: Record<string, string> = {
+    'Experimentar con IA': 'genetic_algorithm',
+  }
+  const FEATURE_BY_LABEL: Record<string, string> = {
+    'Reportes de Fermentación':  'reports',
+    'Agregar Usuarios':          'user_management',
+    'Administrar Usuarios':      'user_management',
+    'Mensajes':                  'messaging',
+    'Chat IA':                   'nlp_basic',
+    'Mis Grupos':                'groups',
+    'Ver Grupos':                'groups',
+  }
+
+  // Visible por rol; las que el plan no incluye se muestran en gris (locked), no se ocultan.
   const visibleNav = nav.filter(item => item.allowedRoles.includes(role))
+
+  const isLocked = (item: typeof nav[0]) => {
+    const feature = FEATURE_BY_GROUP[item.group ?? ''] ?? FEATURE_BY_LABEL[item.label]
+    return !!feature && !hasFeature(feature)
+  }
 
   const resolvePath = (path: string) => {
     if (path.includes('/simulation/:id')) return individualId ? `/simulation/${individualId}` : null
@@ -43,20 +67,25 @@ const Sidebar = () => {
 
   const renderItem = (item: typeof nav[0], indented = false) => {
     const resolved   = resolvePath(item.path)
-    const isActive   = !!(resolved && location.pathname === resolved)
-    const isDisabled = !resolved
+    const locked     = isLocked(item)
+    const isActive   = !locked && !!(resolved && location.pathname === resolved)
+    const isDisabled = !resolved && !locked
 
     return (
       <button
         key={item.label}
         id={TOUR_IDS[item.path]}
-        onClick={() => resolved && navigate(resolved)}
+        onClick={() => {
+          if (locked) { navigate('/actualizar'); return }
+          if (resolved) navigate(resolved)
+        }}
         disabled={isDisabled && !tourActive}
         className={cn(
           'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors text-left',
           indented && 'ml-3 w-[calc(100%-12px)]',
           isActive   && 'bg-neutral-800 text-white',
-          !isActive  && !isDisabled && 'text-neutral-500 hover:text-white hover:bg-neutral-900',
+          !isActive  && !isDisabled && !locked && 'text-neutral-500 hover:text-white hover:bg-neutral-900',
+          locked     && 'text-neutral-700 hover:text-neutral-500 cursor-pointer',
           isDisabled && !tourActive && 'text-neutral-700 cursor-not-allowed opacity-40',
           isDisabled && tourActive  && 'text-neutral-600 opacity-50 pointer-events-none',
         )}
@@ -68,6 +97,12 @@ const Sidebar = () => {
         <span className={cn('flex-1 text-xs font-medium', indented && 'text-[11px]')}>
           {item.label}
         </span>
+        {locked && (
+          <svg className="w-3.5 h-3.5 flex-shrink-0 opacity-70" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        )}
       </button>
     )
   }

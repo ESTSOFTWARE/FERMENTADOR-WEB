@@ -2,6 +2,7 @@ import { useState, useEffect }  from 'react'
 import { UserRepositoryImpl }   from '../../data/repositories/UserRepositoryImpl'
 import { CreateUserUseCase }    from '../../domain/usecases/create-user.usecase'
 import { useUserAuth }          from '../../../../core/hooks/userAuth'
+import { useEntitlements }      from '../../../../core/hooks/useEntitlements'
 import { apiClient }            from '../../../../core/network/client'
 import type { AddUserForm }     from '../types/add-user-form.types'
 
@@ -18,8 +19,11 @@ const initialForm: AddUserForm = {
 
 export const useAddUserViewModel = () => {
   const { user } = useUserAuth()
+  const { plan } = useEntitlements()
 
-  const isProfesor = (user?.role ?? '') === 'profesor'
+  const isProfesor     = (user?.role ?? '') === 'profesor'
+  // Solo un admin Enterprise puede crear otros administradores (multi_admin).
+  const canCreateAdmin = !isProfesor && plan === 'enterprise'
 
   const [form,           setForm]           = useState<AddUserForm>(initialForm)
   const [activationCode, setActivationCode] = useState<string | null>(null)
@@ -88,5 +92,6 @@ export const useAddUserViewModel = () => {
     showConfirm,  setShowConfirm,
     handleSubmit,
     isProfesor,
+    canCreateAdmin,
   }
 }

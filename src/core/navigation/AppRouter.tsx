@@ -21,6 +21,7 @@ import Login from '../../features/auth/presentation/views/Login'
 import ForgotPassword from '../../features/auth/presentation/views/ForgotPassword'
 import FermentationView from '../../features/fermentation/presentation/view/FermentationView'
 import SensorsView from '../../features/sensors/presentation/view/SensorsView'
+import UpgradeView from '../../shared/components/UpgradeView'
 import Register from '../../features/auth/presentation/views/Register'
 import AuthCallbackView from '../../features/auth/presentation/views/AuthCallbackView'
 import ChatView from '../../features/chat/presentation/view/ChatView'
@@ -89,6 +90,7 @@ const AppRouter = () => {
             <Route path="/messages"             element={<MessagesView />} />
             <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
+            <Route path="/actualizar"            element={<UpgradeView />} />
 
             <Route element={<PrivateRoute allowedRoles={['admin', 'profesor']} />}>
               <Route path="/dashboard"             element={<DashboardView />} />

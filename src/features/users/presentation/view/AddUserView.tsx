@@ -15,7 +15,13 @@ const AddUserView = () => {
     showConfirm,  setShowConfirm,
     handleSubmit,
     isProfesor,
+    canCreateAdmin,
   } = useAddUserViewModel()
+
+  // Roles que puede crear: + "Administrador" solo si es admin Enterprise.
+  const roleOptions = canCreateAdmin
+    ? [...ROLES, { id: 3, label: 'Administrador', value: 'admin' }]
+    : ROLES
 
   const emailUser   = form.email.includes('@') ? form.email.split('@')[0] : form.email
   const emailDomain = form.email.includes('@') ? '@' + form.email.split('@')[1] : ''
@@ -194,15 +200,38 @@ const AddUserView = () => {
               <span style={{ color: '#38BDF8', fontSize: 12, fontWeight: 600 }}>Estudiante</span>
             </div>
           ) : (
-            <div style={{ maxWidth: 320 }}>
+            <div>
               <label style={ADD_USER_LABEL_STYLE}>Rol</label>
-              <select
-                value={form.role}
-                onChange={e => set('role', e.target.value)}
-                style={{ ...ADD_USER_INPUT_STYLE, cursor: 'pointer', colorScheme: 'dark' }}
-              >
-                {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
+              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 24, marginTop: 4 }}>
+                {roleOptions.map(r => {
+                  const active = form.role === r.value
+                  return (
+                    <button
+                      key={r.value}
+                      type="button"
+                      onClick={() => set('role', r.value)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                    >
+                      <span style={{
+                        width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
+                        border: `2px solid ${active ? '#22C55E' : '#52525B'}`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'border-color 0.15s',
+                      }}>
+                        {active && (
+                          <motion.span
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+                            style={{ width: 9, height: 9, borderRadius: '50%', backgroundColor: '#22C55E' }}
+                          />
+                        )}
+                      </span>
+                      <span style={{ color: active ? '#F4F4F5' : '#A1A1AA', fontSize: 13, fontWeight: 500 }}>{r.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           )}
         </div>
