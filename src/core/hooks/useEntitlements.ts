@@ -21,7 +21,7 @@ export const useEntitlements = () => {
   const [ent, setEnt] = useState<Entitlements>(cached ?? FREE)
 
   useEffect(() => {
-    if (cached) { setEnt(cached); return }
+    if (cached) return  // ya viene del estado inicial (cached ?? FREE)
     apiClient.get<Entitlements>('/billing/entitlements')
       .then(e => { cached = e; setEnt(e) })
       .catch(() => { /* sin datos: se queda como free */ })
