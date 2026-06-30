@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { motion } from 'motion/react'
+import PaginationBar               from '../../../../shared/components/PaginationBar'
 import { useManageUsersViewModel }    from '../viewmodels/useManageUsersViewModel'
 import { MANAGE_USERS_STYLES }        from '../constants/manage-users-styles.constants'
 import { MANAGE_USERS_INPUT_STYLE }   from '../constants/manage-users-input-style.constants'
@@ -7,6 +9,8 @@ import { MANAGE_USERS_STAT_COLORS }   from '../constants/manage-users-stat-color
 import { ROLE_CONFIG }                from '../constants/role-config.constants'
 import type { Role }                  from '../../models/entities/User'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
+
+const PAGE_SIZE = 10
 
 const ManageUsersView = () => {
   const {
@@ -19,6 +23,16 @@ const ManageUsersView = () => {
     success,
     isProfesor,
   } = useManageUsersViewModel()
+
+  const [page, setPage] = useState(1)
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage   = Math.min(page, totalPages)
+  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  // Búsqueda / filtro reinician a la primera página
+  const onSearch     = (v: string) => { setSearch(v); setPage(1) }
+  const onChangeRole = (v: string) => { setRoleFilter(v); setPage(1) }
 
   const visibleFilters = isProfesor
     ? MANAGE_USERS_FILTERS.filter(f => f.value === '' || f.value === 'Estudiante')
@@ -73,7 +87,7 @@ const ManageUsersView = () => {
               className="manage-input"
               placeholder={isProfesor ? 'Buscar estudiante...' : 'Buscar por nombre, email o rol...'}
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => onSearch(e.target.value)}
               style={{ ...MANAGE_USERS_INPUT_STYLE, paddingLeft: 36, paddingRight: 16 }}
             />
           </div>
@@ -86,7 +100,7 @@ const ManageUsersView = () => {
               </svg>
               <select
                 value={roleFilter}
-                onChange={e => setRoleFilter(e.target.value)}
+                onChange={e => onChangeRole(e.target.value)}
                 style={{
                   ...MANAGE_USERS_INPUT_STYLE,
                   width:        'auto',
@@ -119,7 +133,7 @@ const ManageUsersView = () => {
             return (
               <button
                 key={f.value}
-                onClick={() => setRoleFilter(f.value)}
+                onClick={() => onChangeRole(f.value)}
                 style={{
                   display:         'flex',
                   alignItems:      'center',
@@ -163,6 +177,7 @@ const ManageUsersView = () => {
           Cargando usuarios...
         </div>
       ) : (
+        <>
         <div style={{ borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
@@ -175,14 +190,14 @@ const ManageUsersView = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u, i) => (
+              {paged.map((u, i) => (
                 <tr
                   key={u.id}
                   className="user-row"
-                  style={{ borderBottom: i < filtered.length - 1 ? '1px solid #17171A' : 'none' }}
+                  style={{ borderBottom: i < paged.length - 1 ? '1px solid #17171A' : 'none' }}
                 >
                   <td style={{ padding: '14px 20px' }}>
-                    <span style={{ color: '#22C55E', fontSize: 12, fontWeight: 600, fontFamily: 'monospace' }}>{i + 1}</span>
+                    <span style={{ color: '#22C55E', fontSize: 12, fontWeight: 600, fontFamily: 'monospace' }}>{(safePage - 1) * PAGE_SIZE + i + 1}</span>
                   </td>
 
                   <td style={{ padding: '14px 20px' }}>
@@ -309,6 +324,18 @@ const ManageUsersView = () => {
             </tbody>
           </table>
         </div>
+
+        {filtered.length > 0 && (
+          <PaginationBar
+            page={safePage}
+            totalPages={totalPages}
+            total={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPrev={() => setPage(Math.max(1, safePage - 1))}
+            onNext={() => setPage(Math.min(totalPages, safePage + 1))}
+          />
+        )}
+        </>
       )}
 
       {deleteId !== null && (
