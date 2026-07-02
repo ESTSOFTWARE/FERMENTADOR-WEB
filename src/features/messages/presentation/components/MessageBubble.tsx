@@ -15,6 +15,10 @@ export const MessageBubble = (p: MessageBubbleProps) => {
   const isMe     = msg.senderId === MY_ID
   const PrioConf = msg.priority && msg.priority !== 'normal'
     ? PRIORITY_CONFIG[msg.priority as keyof typeof PRIORITY_CONFIG] : null
+  // Mensaje que es SOLO imagen/video (sin texto ni reply) → se muestra la media sola, sin burbuja.
+  const isMediaOnly = !msg.content && !msg.replyTo && !PrioConf
+    && (msg.attachments?.length ?? 0) > 0
+    && (msg.attachments ?? []).every(a => a.type === 'image' || a.type === 'video')
 
   return (
     <div className={`flex gap-2 group ${isMe ? 'flex-row-reverse' : 'flex-row'} ${isFirst ? 'mt-3' : 'mt-0.5'}`}>
@@ -98,14 +102,15 @@ export const MessageBubble = (p: MessageBubbleProps) => {
 
             {/* Bubble */}
             <div style={{
-              background:   isMe ? '#22c55e' : '#18181b',
+              background:   isMediaOnly ? 'transparent' : (isMe ? '#22c55e' : '#18181b'),
               color:        isMe ? '#0a0a0b' : '#e4e4e7',
-              borderRadius: isFirst && isLast ? (isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px')
+              borderRadius: isMediaOnly ? 0
+                : isFirst && isLast ? (isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px')
                 : isFirst ? (isMe ? '18px 18px 6px 18px' : '18px 18px 18px 6px')
                 : isLast  ? (isMe ? '6px 18px 4px 6px'  : '6px 18px 18px 4px')
                 : '6px 18px 6px 6px',
               border: PrioConf ? `1px solid ${PrioConf.color}40` : 'none',
-            }} className="px-4 py-2.5 text-sm leading-relaxed">
+            }} className={isMediaOnly ? 'text-sm leading-relaxed' : 'px-4 py-2.5 text-sm leading-relaxed'}>
               {/* Reply quote */}
               {msg.replyTo && (
                 <div className="flex items-stretch rounded-md overflow-hidden mb-1.5 -mx-2 -mt-1"
@@ -123,7 +128,7 @@ export const MessageBubble = (p: MessageBubbleProps) => {
               )}
               {msg.content && <p>{msg.content}</p>}
               {msg.attachments?.map(att => (
-                <div key={att.id} className="mt-2">
+                <div key={att.id} className={isMediaOnly ? '' : 'mt-2'}>
                   {att.type === 'image' && (
                     <img src={att.url} alt={att.name} className="rounded-xl max-w-xs max-h-52 object-cover cursor-pointer"
                       onClick={() => window.open(att.url, '_blank')} />
