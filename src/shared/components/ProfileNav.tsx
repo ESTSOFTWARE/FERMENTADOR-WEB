@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { CheckCheck } from 'lucide-react'
 import { useUserAuth } from '../../core/hooks/userAuth'
 import { useNotifications } from '../../core/hooks/useNotifications'
+import { useNotificationSettings, isTypeEnabled } from '../../core/hooks/useNotificationSettings'
 import { NotifRow } from './NotifRow'
 import type { NotifTab } from '../types/notif-tab.types'
 
@@ -15,14 +16,14 @@ const ProfileNav = () => {
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<'list' | 'settings'>('list')
   const [tab,  setTab]  = useState<NotifTab>('sinleer')
-  const [settings, setSettings] = useState({
-    alertas: true, reportes: true, usuarios: true, comunicados: true, sonido: false,
-  })
+  const { settings, toggle } = useNotificationSettings()
 
-  const unread  = notifications.filter(n => n.status === 'unread').length
+  // Solo notificaciones de categorías activadas en los switches.
+  const allowed = notifications.filter(n => isTypeEnabled(n.type, settings))
+  const unread  = allowed.filter(n => n.status === 'unread').length
   const visible = tab === 'sinleer'
-    ? notifications.filter(n => n.status === 'unread')
-    : notifications
+    ? allowed.filter(n => n.status === 'unread')
+    : allowed
 
   const initials     = user?.name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() ?? '?'
   const profileImage = user?.profile_image ?? null
@@ -117,7 +118,7 @@ const ProfileNav = () => {
                 <div className="flex items-center gap-1 mt-4 p-1 rounded-xl" style={{ backgroundColor: '#1A1A1C' }}>
                   {([
                     { id: 'sinleer' as NotifTab, label: 'Sin leer', count: unread },
-                    { id: 'todas'   as NotifTab, label: 'Todas',    count: notifications.length },
+                    { id: 'todas'   as NotifTab, label: 'Todas',    count: allowed.length },
                   ]).map(t => (
                     <button key={t.id} onClick={() => setTab(t.id)}
                       className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
@@ -151,7 +152,7 @@ const ProfileNav = () => {
                             <p className="text-neutral-600 text-[11px] mt-0.5">{item.desc}</p>
                           </div>
                           <button
-                            onClick={() => setSettings(s => ({ ...s, [item.key]: !s[item.key] }))}
+                            onClick={() => toggle(item.key)}
                             className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
                             style={{ backgroundColor: settings[item.key] ? '#22C55E' : '#2A2A2D' }}
                           >
@@ -169,7 +170,7 @@ const ProfileNav = () => {
                         <p className="text-white text-xs font-medium">Sonido</p>
                         <p className="text-neutral-600 text-[11px] mt-0.5">Reproducir sonido al recibir notificaciones</p>
                       </div>
-                      <button onClick={() => setSettings(s => ({ ...s, sonido: !s.sonido }))}
+                      <button onClick={() => toggle('sonido')}
                         className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
                         style={{ backgroundColor: settings.sonido ? '#22C55E' : '#2A2A2D' }}>
                         <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all"

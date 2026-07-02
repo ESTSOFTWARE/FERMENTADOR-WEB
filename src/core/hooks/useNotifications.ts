@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useUserAuth } from './userAuth'
 import { apiClient }   from '../network/client'
+import { loadNotifSettings, isTypeEnabled } from './useNotificationSettings'
 
 const WS = import.meta.env.VITE_WS_URL ?? import.meta.env.VITE_API_URL?.replace(/^http/, 'ws').replace(/\/api$/, '')
 
@@ -42,6 +43,12 @@ export const useNotifications = () => {
           session_id: msg.session_id ?? null,
           created_at: msg.occurred_at,
         }, ...prev])
+
+        // Sonido: solo si está activado y la categoría de la notificación está habilitada.
+        const s = loadNotifSettings()
+        if (s.sonido && isTypeEnabled(msg.type, s)) {
+          new Audio('/assets/sounds/sound_notification.mp3').play().catch(() => { /* autoplay bloqueado */ })
+        }
       } catch { /* ignore malformed */ }
     }
 
