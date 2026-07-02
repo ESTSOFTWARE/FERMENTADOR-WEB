@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { sileo }                            from 'sileo'
 import { ChatRepositoryImpl }               from '../../data/repositories/ChatRepositoryImpl'
 import { mapMessage, mapConversation, mapReactions } from '../../data/api/chatApi'
+import { loadNotifSettings }                  from '../../../../core/hooks/useNotificationSettings'
 import { GetConversationsUseCase }          from '../../domain/usecases/get-conversations.usecase'
 import { GetContactsUseCase }               from '../../domain/usecases/get-contacts.usecase'
 import { GetMessagesUseCase }               from '../../domain/usecases/get-messages.usecase'
@@ -100,6 +101,14 @@ export const useMessagesViewModel = () => {
                   ? c.unreadCount : c.unreadCount + 1,
               }
             : c))
+
+          // Sonido de mensaje (solo si no es mío y el sonido está activado)
+          if (msg.senderId !== MY_ID && loadNotifSettings().sonido) {
+            const file = msg.conversationId === activeIdRef.current
+              ? 'sound_response_message'  // estoy dentro de la conversación → respuesta
+              : 'sound_message'           // mensaje nuevo en otra conversación
+            new Audio(`/assets/sounds/${file}.mp3`).play().catch(() => { /* autoplay bloqueado */ })
+          }
           break
         }
         case 'message:edited':
