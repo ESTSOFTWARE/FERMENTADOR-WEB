@@ -7,6 +7,7 @@ import { StopFermentationUseCase }                  from '../../domain/usecases/
 import { GetFermentationReportUseCase }             from '../../domain/usecases/get-fermentation-report.usecase'
 import { useUserAuth }                              from '../../../../core/hooks/userAuth'
 import { useCommandsWebSocket }                     from '../../../sensors/presentation/hooks/useCommandsWebSocket'
+import { createSensorWebSocket }                    from '../../../sensors/data/api/sensorApi'
 import type { FermentationSession }                 from '../../domain/models/FermentationSession'
 import type { FermentationReport }                  from '../../domain/models/FermentationReport'
 import type { FermentationFormData }                from '../types/FermentationFormData'
@@ -62,18 +63,22 @@ export const useFermentationViewModel = () => {
     if (!isRunning) setSensorStates(ALL_SENSORS_OFF)
   }, [isRunning])
 
-  // Refresca la sesión: si el backend la detuvo (fin programado / auto-stop) o se
-  // detuvo desde otro lado, deja de mostrarse "en vivo".
+  // Sin polling: escucha por WebSocket. Si el backend detiene la fermentación
+  // (fin programado / auto-stop / stop manual), emite `fermentation_stopped` en
+  // el canal de sensores del circuito → dejamos de mostrar "en vivo".
   useEffect(() => {
-    if (!circuitId) return
-    const id = setInterval(async () => {
+    if (!circuitId || !isRunning) return
+    const ws = createSensorWebSocket(circuitId)
+    ws.onmessage = (e: MessageEvent) => {
       try {
-        const active = await getActiveSession.execute()
-        if (!active) setSession(prev => (prev?.status === 'running' ? null : prev))
-      } catch { /* sin conexión: reintenta luego */ }
-    }, 15000)
-    return () => clearInterval(id)
-  }, [circuitId])
+        const msg = JSON.parse(e.data)
+        if (msg.type === 'fermentation_stopped') {
+          setSession(prev => (prev?.status === 'running' ? null : prev))
+        }
+      } catch { /* mensaje no-JSON */ }
+    }
+    return () => ws.close()
+  }, [circuitId, isRunning])
 
   useEffect(() => {
     if (!circuitId) return
