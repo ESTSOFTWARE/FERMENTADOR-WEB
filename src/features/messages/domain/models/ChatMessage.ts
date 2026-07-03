@@ -11,6 +11,7 @@ export interface ChatMessage {
   content:        string
   createdAt:      string
   read:           boolean
+  status?:        'sent' | 'delivered' | 'read'
   deleted?:       boolean
   edited?:        boolean
   editedAt?:      string

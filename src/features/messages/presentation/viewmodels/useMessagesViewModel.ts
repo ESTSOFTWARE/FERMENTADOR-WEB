@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { sileo }                            from 'sileo'
 import { ChatRepositoryImpl }               from '../../data/repositories/ChatRepositoryImpl'
-import { mapMessage, mapConversation, mapReactions } from '../../data/api/chatApi'
+import { mapMessage, mapConversation, mapReactions, chatApi } from '../../data/api/chatApi'
 import { loadNotifSettings }                  from '../../../../core/hooks/useNotificationSettings'
 import { GetConversationsUseCase }          from '../../domain/usecases/get-conversations.usecase'
 import { GetContactsUseCase }               from '../../domain/usecases/get-contacts.usecase'
@@ -109,6 +109,35 @@ export const useMessagesViewModel = () => {
               : 'sound_message'           // mensaje nuevo en otra conversación
             new Audio(`/assets/sounds/${file}.mp3`).play().catch(() => { /* autoplay bloqueado */ })
           }
+
+          // Ack de entrega: si el mensaje no es mío, aviso que me llegó (doble flecha gris).
+          if (msg.senderId !== MY_ID) {
+            chatApi.markDelivered(msg.conversationId).catch(() => {})
+          }
+          break
+        }
+        case 'conversation:delivered': {
+          const convId = String(data.conversationId)
+          if (String(data.userId) === MY_ID) break
+          const t = new Date(data.deliveredAt).getTime()
+          setMessages(prev => ({
+            ...prev,
+            [convId]: (prev[convId] ?? []).map(m =>
+              m.senderId === MY_ID && m.status !== 'read' && new Date(m.createdAt).getTime() <= t
+                ? { ...m, status: 'delivered' } : m),
+          }))
+          break
+        }
+        case 'conversation:read': {
+          const convId = String(data.conversationId)
+          if (String(data.userId) === MY_ID) break
+          const t = new Date(data.readAt).getTime()
+          setMessages(prev => ({
+            ...prev,
+            [convId]: (prev[convId] ?? []).map(m =>
+              m.senderId === MY_ID && new Date(m.createdAt).getTime() <= t
+                ? { ...m, status: 'read' } : m),
+          }))
           break
         }
         case 'message:edited':
@@ -198,16 +227,25 @@ export const useMessagesViewModel = () => {
     markRead.execute(id).catch(() => {})
   }, [])
 
+  // Sonido al ENVIAR un mensaje (solo al enviar, no en entregado/leído).
+  const playSendSound = () => {
+    if (loadNotifSettings().sonido) {
+      new Audio('/assets/sounds/send_message.mp3').play().catch(() => {})
+    }
+  }
+
   // El estado se actualiza por los eventos WS; aquí solo enviamos el comando REST.
   const send = useCallback(async (content: string) => {
     if (!content.trim() || !activeId) return
     const reply = replyTo ?? undefined
     setReplyTo(null)
+    playSendSound()
     await sendMessage.execute(activeId, { content, replyTo: reply }).catch(() => {})
   }, [activeId, replyTo])
 
   const sendFiles = useCallback(async (files: File[]) => {
     if (!activeId) return
+    playSendSound()
     for (const file of files) {
       try {
         const attachment = await uploadFile.execute(file)

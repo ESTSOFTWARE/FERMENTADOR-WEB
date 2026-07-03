@@ -12,12 +12,11 @@ import type { MessageReplyTo }            from '../../domain/models/MessageReply
 import type { UserRole, MessagePriority } from '../../domain/models/Chat.types'
 import { apiClient }                      from '../../../../core/network/client'
 
-/* ── Shapes crudos del backend (IDs en int, camelCase) ───────────────────────── */
 interface RawAttachment { id: number; type: MessageAttachment['type']; name: string; url: string; size: number }
 interface RawReply      { id: number; content: string | null; senderName: string; attachment: RawAttachment | null }
 interface RawMessage {
   id: number; conversationId: number; senderId: number; senderName: string; senderRole: string
-  content: string | null; createdAt: string; read: boolean; deleted: boolean; edited: boolean
+  content: string | null; createdAt: string; read: boolean; status?: string; deleted: boolean; edited: boolean
   editedAt: string | null; pinned: boolean; priority: string
   attachments: RawAttachment[]; replyTo: RawReply | null; reactions: Record<string, number[]>
 }
@@ -28,7 +27,6 @@ interface RawConversation {
 }
 interface RawUpload  { id: number; type: string; name: string; url: string; size: number }
 
-/* ── Mappers int → string ────────────────────────────────────────────────────── */
 const mapAttachment = (a: RawAttachment): MessageAttachment => ({
   id: String(a.id), type: a.type, name: a.name, url: a.url, size: a.size,
 })
@@ -46,6 +44,7 @@ export const mapMessage = (m: RawMessage): ChatMessage => ({
   content:        m.content ?? '',
   createdAt:      m.createdAt,
   read:           m.read,
+  status:         (m.status ?? 'sent') as ChatMessage['status'],
   deleted:        m.deleted,
   edited:         m.edited,
   editedAt:       m.editedAt ?? undefined,
@@ -71,7 +70,6 @@ export const mapConversation = (c: RawConversation): Conversation => ({
   createdBy:   String(c.createdBy),
 })
 
-/* ── API REST (BASE_URL ya incluye /api) ─────────────────────────────────────── */
 export const chatApi = {
   getConversations: async (): Promise<Conversation[]> =>
     (await apiClient.get<RawConversation[]>('/chat/conversations')).map(mapConversation),
@@ -95,6 +93,9 @@ export const chatApi = {
 
   markRead: (conversationId: string): Promise<void> =>
     apiClient.post<void>(`/chat/conversations/${conversationId}/read`),
+
+  markDelivered: (conversationId: string): Promise<void> =>
+    apiClient.post<void>(`/chat/conversations/${conversationId}/delivered`),
 
   getMessages: async (conversationId: string): Promise<ChatMessage[]> =>
     (await apiClient.get<RawMessage[]>(`/chat/conversations/${conversationId}/messages`)).map(mapMessage),

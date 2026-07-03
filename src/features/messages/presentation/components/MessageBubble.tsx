@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { CornerUpLeft, Smile, FileText, Send, X } from 'lucide-react'
+import { CornerUpLeft, Smile, FileText, Send, X, Check, CheckCheck } from 'lucide-react'
 import { MessageMenu } from './MessageMenu'
 import { PRIORITY_CONFIG } from '../constants/priority.constants'
 import { QUICK_EMOJIS } from '../constants/quick-emojis.constants'
@@ -171,6 +171,11 @@ export const MessageBubble = (p: MessageBubbleProps) => {
           <div className="flex items-center gap-1 mt-1 px-1">
             <span className="text-[10px] text-neutral-700">{formatTime(msg.createdAt)}</span>
             {msg.edited && <span className="text-[10px] text-neutral-700">· editado</span>}
+            {isMe && !msg.deleted && (
+              msg.status === 'sent'
+                ? <Check size={13} className="text-neutral-500" />
+                : <CheckCheck size={13} style={{ color: msg.status === 'read' ? '#3399FF' : '#71717A' }} />
+            )}
           </div>
         )}
       </div>
