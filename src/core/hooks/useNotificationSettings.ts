@@ -31,6 +31,7 @@ export const categoryOf = (type: string): NotifCategory | null => {
     case 'high_temperature':
     case 'sensor_failure':
       return 'alertas'
+    case 'fermentation_started':
     case 'fermentation_complete':
     case 'fermentation_interrupted':
     case 'experiment_complete':
