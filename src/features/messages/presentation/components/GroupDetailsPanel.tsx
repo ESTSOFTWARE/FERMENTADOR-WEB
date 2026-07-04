@@ -26,7 +26,11 @@ export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, avail
 
   const notMembers = availableMembers.filter(c => !conv.members.some(m => m.id === c.id))
   const toggleSel  = (id: string) =>
-    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+    setSelected(prev => {
+      const n = new Set(prev)
+      if (n.has(id)) n.delete(id); else n.add(id)
+      return n
+    })
   const confirmAdd = () => {
     if (selected.size === 0) return
     onAddMembers([...selected])
