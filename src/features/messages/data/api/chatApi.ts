@@ -88,6 +88,11 @@ export const chatApi = {
   updateConversation: async (id: string, data: UpdateConversationRequest): Promise<Conversation> =>
     mapConversation(await apiClient.patch<RawConversation>(`/chat/conversations/${id}`, data)),
 
+  addMembers: async (id: string, userIds: string[]): Promise<Conversation> =>
+    mapConversation(await apiClient.post<RawConversation>(`/chat/conversations/${id}/members`, {
+      user_ids: userIds.map(Number),
+    })),
+
   leaveConversation: (id: string): Promise<void> =>
     apiClient.delete<void>(`/chat/conversations/${id}/leave`),
 

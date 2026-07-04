@@ -307,6 +307,14 @@ export const useMessagesViewModel = () => {
     ws.send(JSON.stringify({ type: isTyping ? 'typing:start' : 'typing:stop', conversationId: Number(activeId) }))
   }, [activeId])
 
+  const addMembers = useCallback(async (conversationId: string, userIds: string[]) => {
+    if (userIds.length === 0) return
+    try {
+      const updated = await chatApi.addMembers(conversationId, userIds)
+      setConversations(prev => prev.map(c => c.id === conversationId ? updated : c))
+    } catch { /* ignore */ }
+  }, [])
+
   return {
     conversations: filteredConversations,
     activeConversation,
@@ -337,5 +345,6 @@ export const useMessagesViewModel = () => {
     leaveConversation:  leave,
     updateGroupInfo:    updateGroup,
     createConversation: create,
+    addMembers,
   }
 }

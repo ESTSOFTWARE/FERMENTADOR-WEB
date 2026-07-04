@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   X, Pencil, Send, Camera, Users, LayoutGrid, FileText, Film,
-  Image as ImageIcon, LogOut,
+  Image as ImageIcon, LogOut, UserPlus, Check,
 } from 'lucide-react'
 import { ROLE_COLOR, ROLE_LABEL } from '../constants/role.constants'
 import { avatarUrl } from '../utils/avatar-url'
@@ -13,14 +13,25 @@ import type { GroupDetailsPanelProps } from '../types/group-details-panel.types'
 
 type PanelTab = 'members' | 'media' | 'files'
 
-export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, onClose, onLeave, onUpdateInfo }: GroupDetailsPanelProps) => {
+export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, availableMembers, onClose, onLeave, onUpdateInfo, onAddMembers }: GroupDetailsPanelProps) => {
   const [tab,      setTab]      = useState<PanelTab>('members')
   const [editName, setEditName] = useState(false)
   const [name,     setName]     = useState(conv.name ?? '')
   const [editDesc, setEditDesc] = useState(false)
   const [desc,     setDesc]     = useState(conv.description ?? '')
   const [lightbox, setLightbox] = useState<string | null>(null)
+  const [adding,   setAdding]   = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
   const avatarInputRef           = useRef<HTMLInputElement>(null)
+
+  const notMembers = availableMembers.filter(c => !conv.members.some(m => m.id === c.id))
+  const toggleSel  = (id: string) =>
+    setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
+  const confirmAdd = () => {
+    if (selected.size === 0) return
+    onAddMembers([...selected])
+    setSelected(new Set()); setAdding(false)
+  }
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -142,6 +153,43 @@ export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, onClo
       <div className="flex-1 overflow-y-auto" data-lenis-prevent>
         {tab === 'members' && (
           <div className="px-5 py-2">
+            {/* Agregar integrante */}
+            <button onClick={() => setAdding(a => !a)}
+              className="w-full flex items-center gap-2 py-3 border-b border-neutral-900 text-green-400 hover:text-green-300 transition-colors">
+              <UserPlus className="w-4 h-4" />
+              <span className="text-sm font-medium">{adding ? 'Cancelar' : 'Agregar integrante'}</span>
+            </button>
+            {adding && (
+              <div className="py-2 border-b border-neutral-900">
+                {notMembers.length === 0 ? (
+                  <p className="text-xs text-neutral-600 py-3">No hay contactos para agregar.</p>
+                ) : (
+                  <>
+                    {notMembers.map(c => {
+                      const sel = selected.has(c.id)
+                      return (
+                        <button key={c.id} onClick={() => toggleSel(c.id)}
+                          className="w-full flex items-center gap-3 py-2 text-left">
+                          <img src={avatarUrl(c.name)} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                            style={{ border: '1px solid rgba(34,197,94,0.2)' }} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white truncate">{c.name}</p>
+                            <p className="text-[11px]" style={{ color: ROLE_COLOR[c.role] }}>{ROLE_LABEL[c.role]}</p>
+                          </div>
+                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${sel ? 'bg-green-500 border-green-500' : 'border-neutral-600'}`}>
+                            {sel && <Check className="w-3 h-3 text-black" />}
+                          </div>
+                        </button>
+                      )
+                    })}
+                    <button onClick={confirmAdd} disabled={selected.size === 0}
+                      className="w-full mt-3 py-2 rounded-lg bg-green-500 text-black text-sm font-semibold disabled:opacity-40 transition-opacity">
+                      Agregar {selected.size > 0 ? `(${selected.size})` : ''}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
             {conv.members.map((m, i) => (
               <div key={m.id} className={`flex items-center gap-3 py-3 ${i < conv.members.length - 1 ? 'border-b border-neutral-900' : ''}`}>
                 <img src={avatarUrl(m.name)} alt={m.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
