@@ -166,9 +166,11 @@ const MessagesView = () => {
               style={{ width: 320, background: '#0d0d0e' }}>
               <GroupDetailsPanel conv={activeConv} isCreator={vm.isCreator}
                 mediaFiles={vm.mediaFiles} docFiles={vm.docFiles}
+                availableMembers={vm.availableMembers}
                 onClose={() => setShowDetails(false)}
                 onLeave={() => { setLeaveConfirm(true); setShowDetails(false) }}
-                onUpdateInfo={vm.updateGroupInfo} />
+                onUpdateInfo={vm.updateGroupInfo}
+                onAddMembers={(ids) => vm.addMembers(activeConv.id, ids)} />
             </motion.div>
           </>
         )}
