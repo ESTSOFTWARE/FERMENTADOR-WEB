@@ -54,15 +54,20 @@ export const mapMessage = (m: RawMessage): ChatMessage => ({
   replyTo:        mapReply(m.replyTo),
   reactions:      mapReactions(m.reactions ?? {}),
 })
+// Solo aceptamos URLs http(s) reales. Ignora blobs locales (blob:) que
+// pudieron quedar guardados por error y que ya no existen al recargar.
+const cleanAvatar = (url: string | null): string | undefined =>
+  url && /^https?:\/\//.test(url) ? url : undefined
+
 const mapMember = (m: RawMember): ChatMember => ({
-  id: String(m.id), name: m.name, role: m.role as UserRole, avatar: m.avatar ?? undefined,
+  id: String(m.id), name: m.name, role: m.role as UserRole, avatar: cleanAvatar(m.avatar),
 })
 export const mapConversation = (c: RawConversation): Conversation => ({
   id:          String(c.id),
   type:        c.type as Conversation['type'],
   name:        c.name ?? undefined,
   description: c.description ?? undefined,
-  avatar:      c.avatar ?? undefined,
+  avatar:      cleanAvatar(c.avatar),
   members:     (c.members ?? []).map(mapMember),
   lastMessage: c.lastMessage ? mapMessage(c.lastMessage) : undefined,
   unreadCount: c.unreadCount,

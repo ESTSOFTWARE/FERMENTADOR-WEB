@@ -13,7 +13,7 @@ import type { GroupDetailsPanelProps } from '../types/group-details-panel.types'
 
 type PanelTab = 'members' | 'media' | 'files'
 
-export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, availableMembers, onClose, onLeave, onUpdateInfo, onAddMembers }: GroupDetailsPanelProps) => {
+export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, availableMembers, onClose, onLeave, onUpdateInfo, onAddMembers, onUploadImage }: GroupDetailsPanelProps) => {
   const [tab,      setTab]      = useState<PanelTab>('members')
   const [editName, setEditName] = useState(false)
   const [name,     setName]     = useState(conv.name ?? '')
@@ -37,11 +37,14 @@ export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, avail
     setSelected(new Set()); setAdding(false)
   }
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file) return
-    onUpdateInfo({ avatar: URL.createObjectURL(file) })
     e.target.value = ''
+    if (!file) return
+    // Subimos la imagen y guardamos la URL real (no un blob local, que al
+    // recargar deja de existir y no carga en móvil ni en web).
+    const url = await onUploadImage(file)
+    if (url) onUpdateInfo({ avatar: url })
   }
 
   const convAvatar = getConvAvatar(conv)
