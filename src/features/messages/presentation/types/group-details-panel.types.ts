@@ -12,4 +12,5 @@ export interface GroupDetailsPanelProps {
   onLeave:          () => void
   onUpdateInfo:     (f: { name?: string; description?: string; avatar?: string }) => void
   onAddMembers:     (userIds: string[]) => void
+  onUploadImage:    (file: File) => Promise<string>
 }

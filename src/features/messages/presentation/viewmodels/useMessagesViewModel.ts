@@ -286,9 +286,19 @@ export const useMessagesViewModel = () => {
     sileo.success({ title: 'Saliste del chat', description: 'Ya no recibirás mensajes de este grupo.', ...TOAST_STYLE })
   }, [activeId])
 
+  const uploadImage = useCallback(async (file: File): Promise<string> => {
+    try {
+      const attachment = await uploadFile.execute(file)
+      return attachment.url
+    } catch {
+      return ''
+    }
+  }, [])
+
   const updateGroup = useCallback(async (fields: { name?: string; description?: string; avatar?: string }) => {
     if (!activeId) return
-    await updateConversation.execute(activeId, fields).catch(() => {})
+    const updated = await updateConversation.execute(activeId, fields).catch(() => null)
+    if (updated) setConversations(prev => prev.map(c => c.id === updated.id ? updated : c))
     sileo.success({ title: 'Grupo actualizado', ...TOAST_STYLE })
   }, [activeId])
 
@@ -346,5 +356,6 @@ export const useMessagesViewModel = () => {
     updateGroupInfo:    updateGroup,
     createConversation: create,
     addMembers,
+    uploadImage,
   }
 }

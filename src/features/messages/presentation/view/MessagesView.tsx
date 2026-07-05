@@ -170,7 +170,8 @@ const MessagesView = () => {
                 onClose={() => setShowDetails(false)}
                 onLeave={() => { setLeaveConfirm(true); setShowDetails(false) }}
                 onUpdateInfo={vm.updateGroupInfo}
-                onAddMembers={(ids) => vm.addMembers(activeConv.id, ids)} />
+                onAddMembers={(ids) => vm.addMembers(activeConv.id, ids)}
+                onUploadImage={vm.uploadImage} />
             </motion.div>
           </>
         )}
