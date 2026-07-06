@@ -10,6 +10,7 @@ import { useGroupDetailViewModel } from '../viewmodels/useGroupDetailViewModel'
 import { useUserAuth } from '../../../../core/hooks/userAuth'
 import type { GroupMember } from '../../domain/models/GroupMember'
 import PaginationBar from '../../../../shared/components/PaginationBar'
+import { UserAvatar } from '../../../../core/components/UserAvatar'
 import { JOIN_BASE, PAGE_SIZE } from '../constants/group-detail.constants'
 import { TOAST_STYLE } from '../constants/toast-style.constants'
 import { modalVariants } from '../constants/modal-variants.constants'
@@ -175,9 +176,8 @@ const GroupDetailView = () => {
                                 <td className="px-6 py-4 text-sm text-neutral-600">{(page - 1) * PAGE_SIZE + i + 1}</td>
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0 text-xs font-bold text-neutral-300">
-                                      {m.name[0]}{m.last_name[0]}
-                                    </div>
+                                    <UserAvatar src={m.avatar} name={`${m.name} ${m.last_name}`}
+                                      className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0 text-xs font-bold text-neutral-300" />
                                     <span className="text-sm text-white font-semibold">{m.name} {m.last_name}</span>
                                   </div>
                                 </td>
@@ -289,9 +289,8 @@ const GroupDetailView = () => {
             >
               {/* Header drawer */}
               <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center font-bold text-neutral-300 flex-shrink-0">
-                  {drawer.name[0]}{drawer.last_name[0]}
-                </div>
+                <UserAvatar src={drawer.avatar} name={`${drawer.name} ${drawer.last_name}`}
+                  className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center font-bold text-neutral-300 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-semibold text-sm">{drawer.name} {drawer.last_name}</p>
                   <p className="text-neutral-500 text-xs">{drawer.email}</p>
@@ -450,9 +449,8 @@ const GroupDetailView = () => {
                 {/* Selected user chip */}
                 {vm.selectedUser ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', borderRadius: 8, backgroundColor: '#0A0A0B', border: '1px solid #22C55E40', marginBottom: 16 }}>
-                    <div style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: '#1F1F22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#A1A1AA', flexShrink: 0 }}>
-                      {vm.selectedUser.name[0]}{vm.selectedUser.last_name[0]}
-                    </div>
+                    <UserAvatar src={vm.selectedUser.profile_image} name={`${vm.selectedUser.name} ${vm.selectedUser.last_name}`}
+                      style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: '#1F1F22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#A1A1AA', flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ color: '#F4F4F5', fontSize: 13, fontWeight: 600, margin: 0 }}>{vm.selectedUser.name} {vm.selectedUser.last_name}</p>
                       <p style={{ color: '#52525B', fontSize: 11, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{vm.selectedUser.email}</p>
@@ -485,9 +483,8 @@ const GroupDetailView = () => {
                             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#1F1F22')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
                           >
-                            <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: '#2A2A2D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#A1A1AA', flexShrink: 0 }}>
-                              {u.name[0]}{u.last_name[0]}
-                            </div>
+                            <UserAvatar src={u.profile_image} name={`${u.name} ${u.last_name}`}
+                              style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: '#2A2A2D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#A1A1AA', flexShrink: 0 }} />
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <p style={{ color: '#F4F4F5', fontSize: 13, fontWeight: 500, margin: 0 }}>{u.name} {u.last_name}</p>
                               <p style={{ color: '#52525B', fontSize: 11, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</p>
