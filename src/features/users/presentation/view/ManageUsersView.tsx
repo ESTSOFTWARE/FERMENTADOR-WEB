@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import PaginationBar               from '../../../../shared/components/PaginationBar'
+import { UserAvatar }                 from '../../../../core/components/UserAvatar'
 import { useManageUsersViewModel }    from '../viewmodels/useManageUsersViewModel'
 import { MANAGE_USERS_STYLES }        from '../constants/manage-users-styles.constants'
 import { MANAGE_USERS_INPUT_STYLE }   from '../constants/manage-users-input-style.constants'
@@ -207,7 +208,11 @@ const ManageUsersView = () => {
                         <input className="manage-input" value={editForm.last_name} onChange={e => setField('last_name', e.target.value)} style={{ ...MANAGE_USERS_INPUT_STYLE, width: 90  }} placeholder="Apellido" />
                       </div>
                     ) : (
-                      <span style={{ color: '#F4F4F5', fontSize: 13 }}>{u.name} {u.last_name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <UserAvatar src={u.profile_image} name={`${u.name} ${u.last_name}`}
+                          style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: '#1F1F22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#22C55E', flexShrink: 0 }} />
+                        <span style={{ color: '#F4F4F5', fontSize: 13 }}>{u.name} {u.last_name}</span>
+                      </div>
                     )}
                   </td>
 

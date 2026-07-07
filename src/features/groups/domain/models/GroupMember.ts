@@ -4,6 +4,7 @@ export interface GroupMember {
   name:           string
   last_name:      string
   email:          string
+  avatar:         string | null
   joined_at:      string | null
   oauth_provider: 'google' | 'github' | 'email'
 }
