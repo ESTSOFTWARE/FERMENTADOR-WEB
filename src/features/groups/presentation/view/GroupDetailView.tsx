@@ -111,7 +111,12 @@ const GroupDetailView = () => {
                 <Users className="w-3.5 h-3.5" />
                 {vm.group.members.length} {vm.group.members.length === 1 ? 'alumno' : 'alumnos'}
               </span>
-              <span className="text-xs text-neutral-700">Profesor: {professorName}</span>
+              <span className="flex items-center gap-1.5 text-xs text-neutral-700">
+                Profesor:
+                <UserAvatar src={vm.group.professor_avatar} name={professorName}
+                  className="w-5 h-5 rounded-full bg-neutral-800 flex items-center justify-center text-[9px] font-bold text-green-400 flex-shrink-0" />
+                {professorName}
+              </span>
             </div>
           </div>
         )}

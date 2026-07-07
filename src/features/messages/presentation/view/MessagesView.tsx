@@ -75,9 +75,15 @@ const MessagesView = () => {
       className="relative flex flex-col h-[calc(100vh_-_3.5rem)] overflow-hidden" style={{ background: '#0A0A0B' }}>
       
       {/* Header & Controls */}
-      <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-center justify-between gap-4">
+      <div className="flex-shrink-0 px-8 pt-6 pb-4 flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <h2 className="text-white font-bold text-base">Mensajes</h2>
+          <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
+            Mensajería
+          </p>
+          <h1 style={{ color: '#F4F4F5', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+            Mensajes
+          </h1>
+          <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
         </div>
         
         <div className="flex items-center gap-3">
