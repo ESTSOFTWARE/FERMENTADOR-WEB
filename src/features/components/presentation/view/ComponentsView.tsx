@@ -1,10 +1,29 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Search, Plus, Pencil, Trash2, Cpu } from 'lucide-react'
+import { Search, Plus, Trash2, Cpu } from 'lucide-react'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 import { useComponentsViewModel } from '../viewmodels/useComponentsViewModel'
 import { ComponentFormModal } from '../components/ComponentFormModal'
+import { OfferCard } from '../../../../components/ui/offer-carousel'
+import type { Offer } from '../../../../components/ui/offer-carousel'
 import type { Component } from '../../domain/models/Component'
+
+const PLACEHOLDER = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80'
+const LOGO = '/assets/logo.svg'
+
+// Mapea un componente a la misma card del catálogo de productos.
+const toOffer = (c: Component): Offer => ({
+  id:           c.id,
+  imageSrc:     PLACEHOLDER,
+  imageAlt:     c.name,
+  tag:          c.stock > 0 ? `${c.stock} disponibles` : 'Sin stock',
+  title:        c.name,
+  description:  c.description,
+  brandLogoSrc: LOGO,
+  brandName:    `$${c.price.toLocaleString('es-MX')} MXN`,
+  promoCode:    c.sku,
+  href:         '#',
+})
 
 const ComponentsView = () => {
   const vm = useComponentsViewModel()
@@ -50,52 +69,33 @@ const ComponentsView = () => {
         </div>
       )}
 
-      {/* Table */}
-      {!vm.loading && (
-        <motion.div variants={sectionVariants} className="rounded-2xl border border-white/8 overflow-hidden"
+      {/* Grid de componentes (misma card del catálogo) */}
+      {!vm.loading && vm.components.length === 0 && (
+        <motion.div variants={sectionVariants}
+          className="flex flex-col items-center gap-3 py-24 text-center rounded-2xl border border-white/8"
           style={{ background: 'rgba(255,255,255,0.02)' }}>
-          {/* head */}
-          <div className="grid grid-cols-[80px_1fr_140px_110px_90px_100px] gap-3 px-5 py-3 border-b border-white/6">
-            {['N°', 'Nombre', 'SKU', 'Precio', 'Stock', 'Acciones'].map(h => (
-              <span key={h} className="text-[10px] uppercase tracking-widest text-neutral-600">{h}</span>
-            ))}
-          </div>
+          <Cpu className="w-8 h-8 text-neutral-700" />
+          <p className="text-sm text-neutral-500">
+            {vm.search ? `Sin resultados para "${vm.search}"` : 'No hay componentes todavía. Crea el primero.'}
+          </p>
+        </motion.div>
+      )}
 
-          {vm.components.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <Cpu className="w-8 h-8 text-neutral-700" />
-              <p className="text-sm text-neutral-500">
-                {vm.search ? `Sin resultados para "${vm.search}"` : 'No hay componentes todavía. Crea el primero.'}
-              </p>
+      {!vm.loading && vm.components.length > 0 && (
+        <motion.div variants={sectionVariants}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {vm.components.map(c => (
+            <div key={c.id} className="relative group">
+              <OfferCard offer={toOffer(c)} onClick={() => vm.openEdit(c)} />
+              <button
+                onClick={e => { e.stopPropagation(); setToDelete(c) }}
+                title="Eliminar"
+                className="absolute top-3 right-3 z-10 w-8 h-8 rounded-lg flex items-center justify-center bg-black/60 backdrop-blur-sm text-neutral-300 hover:text-red-400 hover:bg-red-500/20 opacity-0 group-hover:opacity-100 transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
             </div>
-          ) : (
-            vm.components.map((c, i) => (
-              <div key={c.id}
-                className={`grid grid-cols-[80px_1fr_140px_110px_90px_100px] gap-3 px-5 py-3.5 items-center ${i < vm.components.length - 1 ? 'border-b border-white/6' : ''}`}>
-                <span className="text-green-400 font-mono text-sm">{i + 1}</span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{c.name}</p>
-                  <p className="text-xs text-neutral-600 truncate mt-0.5">{c.description}</p>
-                </div>
-                <span className="text-xs text-neutral-400 font-mono truncate">{c.sku}</span>
-                <span className="text-sm font-semibold text-white">${c.price.toLocaleString('es-MX')}</span>
-                <div className="flex items-center gap-1.5">
-                  <span className={`w-1.5 h-1.5 rounded-full ${c.stock > 0 ? 'bg-green-400' : 'bg-red-400'}`} />
-                  <span className="text-sm text-neutral-300">{c.stock}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => vm.openEdit(c)} title="Editar"
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors">
-                    <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => setToDelete(c)} title="Eliminar"
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+          ))}
         </motion.div>
       )}
 

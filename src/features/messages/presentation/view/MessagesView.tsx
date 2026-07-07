@@ -110,7 +110,7 @@ const MessagesView = () => {
       </div>
 
       {/* Main Table */}
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
         <MessagesTable 
           conversations={vm.conversations}
           loading={false} // There's no loading state in VM currently, we assume loaded
