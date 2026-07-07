@@ -8,6 +8,7 @@ export interface ChatMessage {
   senderId:       string
   senderName:     string
   senderRole:     UserRole
+  senderAvatar?:  string
   content:        string
   createdAt:      string
   read:           boolean

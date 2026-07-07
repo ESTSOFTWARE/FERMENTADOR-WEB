@@ -1,6 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
+import { useNavigate } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import PaginationBar               from '../../../../shared/components/PaginationBar'
+import { exportUsersCSV, exportUsersXLSX, exportUsersPDF } from '../utils/export-users'
 import { UserAvatar }                 from '../../../../core/components/UserAvatar'
 import { useManageUsersViewModel }    from '../viewmodels/useManageUsersViewModel'
 import { MANAGE_USERS_STYLES }        from '../constants/manage-users-styles.constants'
@@ -25,7 +28,24 @@ const ManageUsersView = () => {
     isProfesor,
   } = useManageUsersViewModel()
 
+  const navigate = useNavigate()
   const [page, setPage] = useState(1)
+  const [showExport, setShowExport] = useState(false)
+
+  const addLabel    = isProfesor ? 'Agregar estudiante' : 'Agregar usuario'
+  const exportLabel = isProfesor ? 'Exportar alumnos'   : 'Exportar usuarios'
+
+  // Atajo ⌘E / Ctrl+E para abrir el exportador
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e') {
+        e.preventDefault()
+        setShowExport(true)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const safePage   = Math.min(page, totalPages)
@@ -338,9 +358,62 @@ const ManageUsersView = () => {
             pageSize={PAGE_SIZE}
             onPrev={() => setPage(Math.max(1, safePage - 1))}
             onNext={() => setPage(Math.min(totalPages, safePage + 1))}
+            actions={<>
+              <button
+                onClick={() => navigate('/users/add')}
+                title={addLabel}
+                className="group flex items-center gap-1.5 px-2 py-2 rounded-full bg-green-600 hover:bg-green-500 text-white transition-all duration-200"
+              >
+                <Plus className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="max-w-0 group-hover:max-w-[140px] overflow-hidden whitespace-nowrap text-[11px] font-semibold transition-all duration-200">
+                  {addLabel}
+                </span>
+              </button>
+              <button
+                onClick={() => setShowExport(true)}
+                className="flex items-center gap-2 pl-3 pr-2 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-semibold transition-colors whitespace-nowrap"
+              >
+                {exportLabel}
+                <span className="bg-blue-800/50 text-blue-100 text-[10px] font-bold px-1.5 py-0.5 rounded-md tracking-wide">⌘E</span>
+              </button>
+            </>}
           />
         )}
         </>
+      )}
+
+      {showExport && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ padding: 28, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', maxWidth: 380, width: '90%' }}>
+            <p style={{ color: '#F4F4F5', fontSize: 15, fontWeight: 600, margin: '0 0 6px 0' }}>{exportLabel}</p>
+            <p style={{ color: '#71717A', fontSize: 13, margin: '0 0 20px 0', lineHeight: 1.6 }}>
+              Se exportarán {filtered.length} registro(s) según los filtros actuales.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { label: 'PDF',   action: () => exportUsersPDF(filtered, isProfesor ? 'Mis Estudiantes' : 'Usuarios', 'usuarios') },
+                { label: 'CSV',   action: () => exportUsersCSV(filtered, 'usuarios') },
+                { label: 'Excel', action: () => exportUsersXLSX(filtered, 'usuarios') },
+              ].map(opt => (
+                <button
+                  key={opt.label}
+                  onClick={() => { opt.action(); setShowExport(false) }}
+                  style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #2A2A2D', backgroundColor: '#0A0A0B', color: '#F4F4F5', fontSize: 13, fontWeight: 500, fontFamily: 'Poppins, sans-serif', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+              <button
+                onClick={() => setShowExport(false)}
+                style={{ padding: '8px 20px', borderRadius: 8, border: '1px solid #2A2A2D', backgroundColor: 'transparent', color: '#71717A', fontSize: 13, fontFamily: 'Poppins, sans-serif', cursor: 'pointer' }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {deleteId !== null && (
