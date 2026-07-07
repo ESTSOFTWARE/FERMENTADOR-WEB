@@ -4,6 +4,11 @@ import type { FermentationReportData }      from '../../domain/dtos/response/fer
 import type { ReportHistoryItem }           from '../../domain/dtos/response/report-history-item.response'
 import { apiClient }                        from '../../../../core/network/client'
 
+export interface SessionWithReportResponse {
+  session: FermentationSessionResponse
+  report:  FermentationReportData | null
+}
+
 export const fermentationApi = {
   scheduleFermentation: (body: ScheduleFermentationRequest) =>
     apiClient.post<FermentationSessionResponse>('/fermentation/schedule', body),
@@ -19,6 +24,10 @@ export const fermentationApi = {
 
   getSessionsHistory: () =>
     apiClient.get<FermentationSessionResponse[]>('/fermentation/sessions'),
+
+  // Sesiones + su reporte en una sola petición (evita el N+1)
+  getSessionsWithReports: () =>
+    apiClient.get<SessionWithReportResponse[]>('/fermentation/sessions-with-reports'),
 
   getReportBySessionId: (sessionId: number) =>
     apiClient.get<FermentationReportData>(`/fermentation/${sessionId}/report`),

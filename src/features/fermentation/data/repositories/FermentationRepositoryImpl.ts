@@ -24,6 +24,13 @@ export class FermentationRepositoryImpl implements FermentationRepository {
     return fermentationApi.getSessionsHistory() as Promise<FermentationSession[]>
   }
 
+  // Sesiones + su reporte en una sola petición (evita el N+1)
+  async getSessionsWithReports(): Promise<{ session: FermentationSession; report: FermentationReport | null }[]> {
+    return fermentationApi.getSessionsWithReports() as Promise<
+      { session: FermentationSession; report: FermentationReport | null }[]
+    >
+  }
+
   async getReport(sessionId: number): Promise<FermentationReport> {
     return fermentationApi.getReportBySessionId(sessionId) as Promise<FermentationReport>
   }
