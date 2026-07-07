@@ -4,6 +4,7 @@ import { Users }                      from 'lucide-react'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 import { useAdminGroupsViewModel }    from '../viewmodels/useAdminGroupsViewModel'
 import { formatDate }                 from '../utils/format-date'
+import { UserAvatar }                 from '../../../../core/components/UserAvatar'
 
 const AdminGroupsView = () => {
   const navigate                     = useNavigate()
@@ -91,7 +92,11 @@ const AdminGroupsView = () => {
                     </span>
                   </td>
                   <td style={{ padding: '14px 20px', color: '#A1A1AA', fontSize: 13 }}>
-                    {g.professor_name ?? `Prof. #${g.professor_id}`}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <UserAvatar src={g.professor_avatar} name={g.professor_name ?? 'Profesor'}
+                        style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: '#1F1F22', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#22C55E', flexShrink: 0 }} />
+                      <span>{g.professor_name ?? `Prof. #${g.professor_id}`}</span>
+                    </div>
                   </td>
                   <td style={{ padding: '14px 20px' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#71717A', fontSize: 13 }}>

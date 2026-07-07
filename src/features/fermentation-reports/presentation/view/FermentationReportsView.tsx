@@ -7,9 +7,11 @@ import { REPORTS_STYLES }                    from '../constants/styles'
 import StatusPill                            from '../components/StatusPill'
 import { useFermentationReportsViewModel }   from '../viewmodels/useFermentationReportsViewModel'
 import { useUserAuth }                        from '../../../../core/hooks/userAuth'
+import PaginationBar                          from '../../../../shared/components/PaginationBar'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
 const VISIBLE_FILTERS = FILTERS.filter(f => f.value !== 'running')
+const PAGE_SIZE = 10
 
 const FermentationReportsView = () => {
   const { reports, loading, error, refetch } = useFermentationReportsViewModel()
@@ -17,8 +19,13 @@ const FermentationReportsView = () => {
   const navigate = useNavigate()
 
   const [filter,   setFilter]   = useState<Exclude<Status, 'running'> | 'all'>('all')
+  const [page,     setPage]     = useState(1)
 
   const filtered = reports.filter(r => filter === 'all' || r.status === filter)
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage   = Math.min(page, totalPages)
+  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const completadas   = reports.filter(r => r.status === 'completed').length
   const interrumpidas = reports.filter(r => r.status === 'interrupted').length
@@ -165,7 +172,7 @@ const FermentationReportsView = () => {
           <button
             key={f.value}
             className="filter-btn"
-            onClick={() => setFilter(f.value as typeof filter)}
+            onClick={() => { setFilter(f.value as typeof filter); setPage(1) }}
             style={{
               padding:         '6px 16px',
               borderRadius:    7,
@@ -235,18 +242,18 @@ const FermentationReportsView = () => {
                 </tr>
               ))}
 
-              {!loading && filtered.map((r, i) => (
+              {!loading && paged.map((r, i) => (
                 <tr
                   key={r.id}
                   className="report-row"
                   onClick={() => navigate(`/fermentation-reports/${r.id}`)}
                   style={{
-                    borderBottom:    i < filtered.length - 1 ? '1px solid #17171A' : 'none',
+                    borderBottom:    i < paged.length - 1 ? '1px solid #17171A' : 'none',
                     backgroundColor: 'transparent',
                   }}
                 >
                   <td style={{ padding: '13px 20px' }}>
-                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>{i + 1}</span>
+                    <span style={{ color: '#4ADE80', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}>{(safePage - 1) * PAGE_SIZE + i + 1}</span>
                   </td>
                   <td style={{ padding: '13px 20px' }}>
                     <span style={{ color: '#71717A', fontSize: 12 }}>{user?.activation_code ?? `#${r.circuit}`}</span>
@@ -289,6 +296,17 @@ const FermentationReportsView = () => {
             </tbody>
           </table>
         </div>
+
+        {!loading && filtered.length > 0 && (
+          <PaginationBar
+            page={safePage}
+            totalPages={totalPages}
+            total={filtered.length}
+            pageSize={PAGE_SIZE}
+            onPrev={() => setPage(Math.max(1, safePage - 1))}
+            onNext={() => setPage(Math.min(totalPages, safePage + 1))}
+          />
+        )}
 
       </motion.div>
     </motion.div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import PaginationBar               from '../../../../shared/components/PaginationBar'
@@ -15,6 +15,12 @@ import type { Role }                  from '../../models/entities/User'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 
 const PAGE_SIZE = 10
+
+const modalVariants = {
+  hidden:  { opacity: 0, scale: 0.95, y: 8 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.18 } },
+  exit:    { opacity: 0, scale: 0.95, y: 8, transition: { duration: 0.12 } },
+}
 
 const ManageUsersView = () => {
   const {
@@ -382,39 +388,42 @@ const ManageUsersView = () => {
         </>
       )}
 
-      {showExport && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ padding: 28, borderRadius: 16, backgroundColor: '#111113', border: '1px solid #1F1F22', maxWidth: 380, width: '90%' }}>
-            <p style={{ color: '#F4F4F5', fontSize: 15, fontWeight: 600, margin: '0 0 6px 0' }}>{exportLabel}</p>
-            <p style={{ color: '#71717A', fontSize: 13, margin: '0 0 20px 0', lineHeight: 1.6 }}>
-              Se exportarán {filtered.length} registro(s) según los filtros actuales.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { label: 'PDF',   action: () => exportUsersPDF(filtered, isProfesor ? 'Mis Estudiantes' : 'Usuarios', 'usuarios') },
-                { label: 'CSV',   action: () => exportUsersCSV(filtered, 'usuarios') },
-                { label: 'Excel', action: () => exportUsersXLSX(filtered, 'usuarios') },
-              ].map(opt => (
-                <button
-                  key={opt.label}
-                  onClick={() => { opt.action(); setShowExport(false) }}
-                  style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #2A2A2D', backgroundColor: '#0A0A0B', color: '#F4F4F5', fontSize: 13, fontWeight: 500, fontFamily: 'Poppins, sans-serif', cursor: 'pointer', textAlign: 'left' }}
-                >
-                  {opt.label}
+      <AnimatePresence>
+        {showExport && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowExport(false)}
+              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 50 }} />
+            <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 51, pointerEvents: 'none' }}>
+              <motion.div variants={modalVariants} initial="hidden" animate="visible" exit="exit"
+                style={{ width: 360, padding: '28px 28px 24px', borderRadius: 16, backgroundColor: '#111113', border: '1px solid #2A2A2D', pointerEvents: 'auto' }}>
+                <h3 style={{ color: '#F4F4F5', fontSize: 16, fontWeight: 600, margin: '0 0 6px 0' }}>{exportLabel}</h3>
+                <p style={{ color: '#52525B', fontSize: 13, margin: '0 0 24px 0' }}>Elige el formato de descarga</p>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {([
+                    { icon: '/assets/icons/pdf.svg',  label: 'PDF',   action: () => { exportUsersPDF(filtered, isProfesor ? 'Mis Estudiantes' : 'Usuarios', 'usuarios'); setShowExport(false) } },
+                    { icon: '/assets/icons/csv.svg',  label: 'CSV',   action: () => { exportUsersCSV(filtered, 'usuarios'); setShowExport(false) } },
+                    { icon: '/assets/icons/xlsx.svg', label: 'Excel', action: () => { exportUsersXLSX(filtered, 'usuarios'); setShowExport(false) } },
+                  ] as const).map(opt => (
+                    <button key={opt.label} onClick={opt.action}
+                      style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '18px 12px', borderRadius: 12, backgroundColor: '#0A0A0B', border: '1px solid #2A2A2D', cursor: 'pointer', transition: 'border-color 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = '#3F3F46')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = '#2A2A2D')}
+                    >
+                      <img src={opt.icon} alt={opt.label} style={{ width: 32, height: 32 }} />
+                      <span style={{ color: '#A1A1AA', fontSize: 12, fontWeight: 600 }}>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setShowExport(false)}
+                  style={{ width: '100%', marginTop: 16, padding: '9px 0', borderRadius: 8, fontSize: 13, backgroundColor: '#1F1F22', border: '1px solid #2A2A2D', color: '#71717A', cursor: 'pointer' }}>
+                  Cancelar
                 </button>
-              ))}
+              </motion.div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-              <button
-                onClick={() => setShowExport(false)}
-                style={{ padding: '8px 20px', borderRadius: 8, border: '1px solid #2A2A2D', backgroundColor: 'transparent', color: '#71717A', fontSize: 13, fontFamily: 'Poppins, sans-serif', cursor: 'pointer' }}
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </AnimatePresence>
 
       {deleteId !== null && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
