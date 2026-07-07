@@ -14,10 +14,10 @@ import { GetReviewsUseCase }    from '../../../reviews/domain/usecases/get-revie
 
 import { mergeProductDetails } from '../utils/merge-product-details'
 
-const getProductById     = new GetProductByIdUseCase(new ProductRepositoryImpl())
-const getSpecifications  = new GetSpecificationsUseCase(new SpecificationRepositoryImpl())
-const getIncludes        = new GetIncludesUseCase(new IncludeRepositoryImpl())
-const getReviews         = new GetReviewsUseCase(new ReviewRepositoryImpl())
+const getProductById    = new GetProductByIdUseCase(new ProductRepositoryImpl())
+const getSpecifications = new GetSpecificationsUseCase(new SpecificationRepositoryImpl())
+const getIncludes       = new GetIncludesUseCase(new IncludeRepositoryImpl())
+const getReviews        = new GetReviewsUseCase(new ReviewRepositoryImpl())
 
 export const useProductDetailViewModel = (id: number) => {
   const [product, setProduct] = useState<Product | null>(null)
@@ -26,23 +26,35 @@ export const useProductDetailViewModel = (id: number) => {
 
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
-    setError(null)
 
-    Promise.all([
-      getProductById.execute(id),
-      getSpecifications.execute(id),
-      getIncludes.execute(id),
-      getReviews.execute(id, 1, 10),
-    ])
-      .then(([baseProduct, specs, includes, reviewPage]) => {
-        if (cancelled) return
+    // El reset de loading/error se hace DENTRO del callback .then(),
+    // no de forma síncrona en el cuerpo del efecto, para cumplir
+    // con react-hooks/set-state-in-effect.
+    Promise.resolve()
+      .then(() => {
+        if (cancelled) return undefined
+        setLoading(true)
+        setError(null)
+        return Promise.all([
+          getProductById.execute(id),
+          getSpecifications.execute(id),
+          getIncludes.execute(id),
+          getReviews.execute(id, 1, 10),
+        ])
+      })
+      .then(result => {
+        if (cancelled || !result) return
+        const [baseProduct, specs, includes, reviewPage] = result
         setProduct(mergeProductDetails(baseProduct, specs, includes, reviewPage))
       })
       .catch(err => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Error al cargar el producto.')
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Error al cargar el producto.')
+        }
       })
-      .finally(() => { if (!cancelled) setLoading(false) })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
 
     return () => { cancelled = true }
   }, [id])
