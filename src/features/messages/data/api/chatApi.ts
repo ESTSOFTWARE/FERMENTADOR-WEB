@@ -15,7 +15,7 @@ import { apiClient }                      from '../../../../core/network/client'
 interface RawAttachment { id: number; type: MessageAttachment['type']; name: string; url: string; size: number }
 interface RawReply      { id: number; content: string | null; senderName: string; attachment: RawAttachment | null }
 interface RawMessage {
-  id: number; conversationId: number; senderId: number; senderName: string; senderRole: string
+  id: number; conversationId: number; senderId: number; senderName: string; senderRole: string; senderAvatar: string | null
   content: string | null; createdAt: string; read: boolean; status?: string; deleted: boolean; edited: boolean
   editedAt: string | null; pinned: boolean; priority: string
   attachments: RawAttachment[]; replyTo: RawReply | null; reactions: Record<string, number[]>
@@ -41,6 +41,7 @@ export const mapMessage = (m: RawMessage): ChatMessage => ({
   senderId:       String(m.senderId),
   senderName:     m.senderName,
   senderRole:     m.senderRole as UserRole,
+  senderAvatar:   cleanAvatar(m.senderAvatar),
   content:        m.content ?? '',
   createdAt:      m.createdAt,
   read:           m.read,

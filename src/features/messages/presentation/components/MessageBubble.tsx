@@ -26,7 +26,7 @@ export const MessageBubble = (p: MessageBubbleProps) => {
       {!isMe && (
         <div className="w-7 flex-shrink-0 flex items-start pt-0.5">
           {isFirst && (
-            <img src={avatarUrl(msg.senderName)} alt={msg.senderName} title={msg.senderName}
+            <img src={msg.senderAvatar || avatarUrl(msg.senderName)} alt={msg.senderName} title={msg.senderName}
               className="w-7 h-7 rounded-full object-cover" style={{ border: '1px solid rgba(34,197,94,0.15)' }} />
           )}
         </div>
