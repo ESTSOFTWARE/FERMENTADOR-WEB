@@ -8,4 +8,5 @@ export const initialState = (editing: Component | null): ComponentFormState => (
   stock:       editing != null ? String(editing.stock) : '0',
   description: editing?.description ?? '',
   category_id: editing?.category_id != null ? String(editing.category_id) : '',
+  image:       editing?.image ?? '',
 })

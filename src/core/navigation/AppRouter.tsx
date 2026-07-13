@@ -40,6 +40,7 @@ import AdminGroupsView from '../../features/groups/presentation/view/AdminGroups
 import SupportView from '../../features/support/presentation/view/SupportView'
 import ProductsView from '../../features/products/presentation/view/ProductsView'
 import ComponentsView from '../../features/components/presentation/view/ComponentsView'
+import ComponentDetailView from '../../features/components/presentation/view/ComponentDetailView'
 import ProductDetailView from '../../features/products/presentation/view/ProductDetailView'
 import BillingSuccessView from '../../features/billing/presentation/views/BillingSuccessView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationProvider'
@@ -109,6 +110,7 @@ const AppRouter = () => {
 
             <Route element={<PrivateRoute allowedRoles={['admin']} />}>
               <Route path="/components"            element={<ComponentsView />} />
+              <Route path="/components/:id"        element={<ComponentDetailView />} />
             </Route>
           </Route>
         </Route>

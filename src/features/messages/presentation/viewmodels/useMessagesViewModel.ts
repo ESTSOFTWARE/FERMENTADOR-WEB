@@ -254,6 +254,25 @@ export const useMessagesViewModel = () => {
     }
   }, [activeId])
 
+  const sendSticker = useCallback(async (assetUrl: string) => {
+    if (!activeId) return
+    try {
+      const res  = await fetch(assetUrl)
+      const blob = await res.blob()
+      const filename = assetUrl.split('/').pop() ?? 'sticker.webp'
+      const file = new File([blob], filename, { type: blob.type || 'image/webp' })
+      const attachment = await uploadFile.execute(file)
+      const reply = replyTo ?? undefined
+      setReplyTo(null)
+      playSendSound()
+      await sendMessage.execute(activeId, {
+        content:     '',
+        attachments: [{ ...attachment, type: 'sticker' }],
+        replyTo:     reply,
+      })
+    } catch { /* ignore */ }
+  }, [activeId, replyTo])
+
   const edit = useCallback(async (msgId: string, content: string) => {
     await editMessage.execute(msgId, { content }).catch(() => {})
     sileo.success({ title: 'Mensaje editado', ...TOAST_STYLE })
@@ -347,6 +366,7 @@ export const useMessagesViewModel = () => {
     openConversation,
     sendMessage:        send,
     sendFiles,
+    sendSticker,
     editMessage:        edit,
     deleteMessage:      remove,
     pinMessage:         pin,
