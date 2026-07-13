@@ -31,7 +31,14 @@ const mapAttachment = (a: RawAttachment): MessageAttachment => ({
   id: String(a.id), type: a.type, name: a.name, url: a.url, size: a.size,
 })
 const mapReply = (r: RawReply | null): MessageReplyTo | undefined =>
-  r ? { id: String(r.id), content: r.content ?? '', senderName: r.senderName, attachment: !!r.attachment } : undefined
+  r ? {
+    id:             String(r.id),
+    content:        r.content ?? '',
+    senderName:     r.senderName,
+    attachment:     !!r.attachment,
+    attachmentUrl:  r.attachment?.url,
+    attachmentType: r.attachment?.type,
+  } : undefined
 export const mapReactions = (rx: Record<string, number[]>): Record<string, string[]> =>
   Object.fromEntries(Object.entries(rx).map(([emoji, ids]) => [emoji, ids.map(String)]))
 

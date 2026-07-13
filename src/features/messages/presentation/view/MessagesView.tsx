@@ -110,7 +110,7 @@ const MessagesView = () => {
       </div>
 
       {/* Main Table */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
+      <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
         <MessagesTable 
           conversations={vm.conversations}
           loading={false} // There's no loading state in VM currently, we assume loaded
@@ -142,7 +142,17 @@ const MessagesView = () => {
           onToggleMenu={(id) => setMenuMsgId(prev => prev === id ? null : id)}
           onToggleReaction={(id) => setReactionMsgId(prev => prev === id ? null : id)}
           onCloseMenu={() => setMenuMsgId(null)}
-          onReply={(msg) => vm.setReplyTo({ id: msg.id, content: msg.content, senderName: msg.senderName, attachment: !!(msg.attachments?.length && !msg.content) })}
+          onReply={(msg) => {
+            const stickerAtt = msg.attachments?.find(a => a.type === 'sticker')
+            vm.setReplyTo({
+              id:             msg.id,
+              content:        msg.content,
+              senderName:     msg.senderName,
+              attachment:     !!(msg.attachments?.length && !msg.content),
+              attachmentUrl:  stickerAtt?.url,
+              attachmentType: stickerAtt?.type,
+            })
+          }}
           onReactQuick={(id, emoji) => { vm.addReaction(id, emoji); setReactionMsgId(null) }}
           onEditStart={(msg) => { setEditingId(msg.id); setEditContent(msg.content); setMenuMsgId(null) }}
           onRequestDelete={(msg) => setPendingAction({ type: 'delete', msgId: msg.id, label: '¿Eliminar mensaje?', desc: 'Esta acción no se puede deshacer.' })}
@@ -154,6 +164,7 @@ const MessagesView = () => {
           onCancelReply={() => vm.setReplyTo(null)}
           onSend={(content) => { vm.sendMessage(content); vm.notifyTyping(false) }}
           onSendFiles={vm.sendFiles}
+          onSendSticker={vm.sendSticker}
           onTyping={handleTyping}
         />
       </MessageDrawer>

@@ -15,8 +15,12 @@ export const MessageBubble = (p: MessageBubbleProps) => {
   const isMe     = msg.senderId === MY_ID
   const PrioConf = msg.priority && msg.priority !== 'normal'
     ? PRIORITY_CONFIG[msg.priority as keyof typeof PRIORITY_CONFIG] : null
+  const isSticker = !msg.content && !msg.replyTo
+    && (msg.attachments?.length ?? 0) === 1
+    && msg.attachments![0].type === 'sticker'
+
   // Mensaje que es SOLO imagen/video (sin texto ni reply) → se muestra la media sola, sin burbuja.
-  const isMediaOnly = !msg.content && !msg.replyTo && !PrioConf
+  const isMediaOnly = !isSticker && !msg.content && !msg.replyTo && !PrioConf
     && (msg.attachments?.length ?? 0) > 0
     && (msg.attachments ?? []).every(a => a.type === 'image' || a.type === 'video')
 
@@ -47,7 +51,64 @@ export const MessageBubble = (p: MessageBubbleProps) => {
           </div>
         )}
 
-        {p.editing ? (
+        {isSticker ? (
+          /* Sticker-only: frameless, with reply+reaction+menu on hover */
+          <div className="relative">
+            {/* Hover actions */}
+            <div className={`absolute top-1/2 -translate-y-1/2 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} hidden group-hover:flex items-center gap-1`}>
+              <button onClick={p.onReply}
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-600 hover:text-white hover:bg-neutral-800 transition-colors">
+                <CornerUpLeft className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={e => { e.stopPropagation(); p.onToggleReaction() }}
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-600 hover:text-white hover:bg-neutral-800 transition-colors">
+                <Smile className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={e => { e.stopPropagation(); p.onToggleMenu() }}
+                className="w-6 h-6 rounded-lg flex items-center justify-center text-neutral-600 hover:text-white hover:bg-neutral-800 transition-colors">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                </svg>
+              </button>
+            </div>
+            <AnimatePresence>
+              {p.reactionOpen && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                  className="absolute z-30 flex gap-1 px-2 py-1.5 rounded-2xl shadow-xl"
+                  style={{ background: '#1a1a1d', border: '1px solid #2a2a2d', [isMe ? 'right' : 'left']: 0, bottom: '100%', marginBottom: 4 }}
+                  onClick={e => e.stopPropagation()}>
+                  {QUICK_EMOJIS.map(emoji => (
+                    <button key={emoji} onClick={() => p.onReactQuick(emoji)}
+                      className="text-lg hover:scale-125 transition-transform leading-none">{emoji}</button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {p.menuOpen && (
+                <MessageMenu msg={msg} isMe={isMe} canEdit={p.canEdit} isCreator={p.isCreator}
+                  onReply={p.onReply} onEdit={p.onEditStart} onDelete={p.onRequestDelete}
+                  onPin={p.onRequestPin} onPriority={p.onRequestPriority} onClose={p.onCloseMenu} />
+              )}
+            </AnimatePresence>
+            <img src={msg.attachments![0].url} alt="sticker" className="w-28 h-28 object-contain" />
+            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+              <div className={`flex flex-wrap gap-1 mt-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                {Object.entries(msg.reactions).map(([emoji, users]) => (
+                  <button key={emoji} onClick={() => p.onReactQuick(emoji)}
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-all"
+                    style={{
+                      background: users.includes(MY_ID) ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${users.includes(MY_ID) ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.1)'}`,
+                    }}>
+                    <span>{emoji}</span>
+                    <span className="text-[10px] text-neutral-400">{users.length}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : p.editing ? (
           <div className="flex gap-2 items-center">
             <input autoFocus value={p.editContent} onChange={e => p.onEditChange(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') p.onEditSubmit(); if (e.key === 'Escape') p.onEditCancel() }}
@@ -116,19 +177,27 @@ export const MessageBubble = (p: MessageBubbleProps) => {
                 <div className="flex items-stretch rounded-md overflow-hidden mb-1.5 -mx-2 -mt-1"
                   style={{ background: isMe ? 'rgba(0,0,0,0.10)' : 'rgba(255,255,255,0.05)' }}>
                   <div className="w-0.5 flex-shrink-0" style={{ background: isMe ? 'rgba(0,0,0,0.45)' : '#22c55e' }} />
-                  <div className="min-w-0 py-1 px-2">
-                    <p className="text-[11px] font-semibold truncate leading-tight" style={{ color: isMe ? 'rgba(0,0,0,0.7)' : '#22c55e' }}>
-                      {msg.replyTo.senderName}
-                    </p>
-                    <p className="text-[11px] truncate leading-tight" style={{ color: isMe ? 'rgba(10,10,11,0.6)' : '#a1a1aa' }}>
-                      {msg.replyTo.attachment ? '📎 Archivo' : msg.replyTo.content}
-                    </p>
+                  <div className="min-w-0 flex-1 py-1 px-2 flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] font-semibold truncate leading-tight" style={{ color: isMe ? 'rgba(0,0,0,0.7)' : '#22c55e' }}>
+                        {msg.replyTo.senderName}
+                      </p>
+                      <p className="text-[11px] truncate leading-tight" style={{ color: isMe ? 'rgba(10,10,11,0.6)' : '#a1a1aa' }}>
+                        {msg.replyTo.attachmentType === 'sticker' ? '🖼 Sticker' : msg.replyTo.attachment ? '📎 Archivo' : msg.replyTo.content}
+                      </p>
+                    </div>
+                    {msg.replyTo.attachmentType === 'sticker' && msg.replyTo.attachmentUrl && (
+                      <img src={msg.replyTo.attachmentUrl} alt="sticker" className="w-9 h-9 object-contain flex-shrink-0" />
+                    )}
                   </div>
                 </div>
               )}
               {msg.content && <p>{msg.content}</p>}
               {msg.attachments?.map(att => (
                 <div key={att.id} className={isMediaOnly ? '' : 'mt-2'}>
+                  {att.type === 'sticker' && (
+                    <img src={att.url} alt="sticker" className="w-24 h-24 object-contain" />
+                  )}
                   {att.type === 'image' && (
                     <img src={att.url} alt={att.name} className="rounded-xl max-w-xs max-h-52 object-cover cursor-pointer"
                       onClick={() => window.open(att.url, '_blank')} />
