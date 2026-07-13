@@ -57,6 +57,7 @@ export const useMessagesViewModel = () => {
   const [searchQuery,   setSearchQuery]   = useState('')
   const [replyTo,       setReplyTo]       = useState<MessageReplyTo | null>(null)
   const [typingByConv,  setTypingByConv]  = useState<Record<string, string[]>>({})
+  const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set())
 
   const wsRef       = useRef<WebSocket | null>(null)
   const activeIdRef = useRef<string | null>(null)
@@ -192,6 +193,21 @@ export const useMessagesViewModel = () => {
             else             current.delete(data.userName)
             return { ...prev, [convId]: [...current] }
           })
+          break
+        }
+        case 'presence:init': {
+          const ids = (data.onlineUserIds as number[]).map(String)
+          setOnlineUserIds(new Set(ids))
+          break
+        }
+        case 'user:online': {
+          const uid = String(data.userId)
+          setOnlineUserIds(prev => { const next = new Set(prev); next.add(uid); return next })
+          break
+        }
+        case 'user:offline': {
+          const uid = String(data.userId)
+          setOnlineUserIds(prev => { const next = new Set(prev); next.delete(uid); return next })
           break
         }
       }
@@ -377,5 +393,6 @@ export const useMessagesViewModel = () => {
     createConversation: create,
     addMembers,
     uploadImage,
+    onlineUserIds,
   }
 }

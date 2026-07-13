@@ -8,15 +8,16 @@ import { MessageActionsDropdown } from './MessageActionsDropdown'
 
 interface MessageRowProps {
   conversation: Conversation
+  isOnline?: boolean
   onSelect: (conv: Conversation) => void
 }
 
-export const MessageRow = ({ conversation, onSelect }: MessageRowProps) => {
+export const MessageRow = ({ conversation, isOnline, onSelect }: MessageRowProps) => {
   const name = getConvName(conversation)
   const lastMessage = conversation.lastMessage
-  
+
   return (
-    <tr 
+    <tr
       className="border-b border-neutral-900/60 hover:bg-white/[0.02] transition-colors group cursor-pointer"
       onClick={() => onSelect(conversation)}
     >
@@ -25,16 +26,21 @@ export const MessageRow = ({ conversation, onSelect }: MessageRowProps) => {
           {conversation.type === 'group' ? (
             <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
               style={{ background: '#0d2212', border: '1px solid rgba(34,197,94,0.2)' }}>
-              {conversation.avatar 
-                ? <img src={conversation.avatar} alt="" className="w-full h-full rounded-full object-cover" /> 
+              {conversation.avatar
+                ? <img src={conversation.avatar} alt="" className="w-full h-full rounded-full object-cover" />
                 : <Users className="w-3.5 h-3.5 text-green-400" />
               }
             </div>
           ) : (
-            <img src={avatarUrl(name)} alt={name}
-              className="w-8 h-8 rounded-full object-cover flex-shrink-0" 
-              style={{ border: '1px solid rgba(34,197,94,0.2)' }} 
-            />
+            <div className="relative flex-shrink-0">
+              <img src={avatarUrl(name)} alt={name}
+                className="w-8 h-8 rounded-full object-cover"
+                style={{ border: '1px solid rgba(34,197,94,0.2)' }}
+              />
+              {isOnline && (
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-400 border-2 border-[#0a0a0b]" />
+              )}
+            </div>
           )}
           <span className="text-sm text-white font-semibold truncate">{name}</span>
         </div>
