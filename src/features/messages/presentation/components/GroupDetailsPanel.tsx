@@ -179,7 +179,7 @@ export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, avail
                           return (
                             <button key={c.id} onClick={() => toggleSel(c.id)}
                               className="w-full flex items-center gap-3 py-2 text-left">
-                              <img src={avatarUrl(c.name)} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                              <img src={c.avatar ?? avatarUrl(c.name)} alt={c.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                                 style={{ border: '1px solid rgba(34,197,94,0.2)' }} />
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-white truncate">{c.name}</p>
@@ -203,7 +203,7 @@ export const GroupDetailsPanel = ({ conv, isCreator, mediaFiles, docFiles, avail
             )}
             {conv.members.map((m, i) => (
               <div key={m.id} className={`flex items-center gap-3 py-3 ${i < conv.members.length - 1 ? 'border-b border-neutral-900' : ''}`}>
-                <img src={avatarUrl(m.name)} alt={m.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                <img src={m.avatar ?? avatarUrl(m.name)} alt={m.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                   style={{ border: '1px solid rgba(34,197,94,0.2)' }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{m.name}</p>
