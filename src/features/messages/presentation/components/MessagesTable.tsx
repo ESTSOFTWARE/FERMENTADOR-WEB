@@ -3,15 +3,17 @@ import type { Conversation } from '../../domain/models/Conversation'
 import { MessageRow } from './MessageRow'
 import { LoadingMessagesState } from './LoadingMessagesState'
 import { EmptyMessagesState } from './EmptyMessagesState'
+import { MY_ID } from '../constants/current-user.constants'
 
 interface MessagesTableProps {
   conversations: Conversation[]
   loading: boolean
   hasSearchQuery: boolean
+  onlineUserIds: Set<string>
   onSelect: (conv: Conversation) => void
 }
 
-export const MessagesTable = ({ conversations, loading, hasSearchQuery, onSelect }: MessagesTableProps) => {
+export const MessagesTable = ({ conversations, loading, hasSearchQuery, onlineUserIds, onSelect }: MessagesTableProps) => {
   return (
     <div className="border border-neutral-800/60 rounded-2xl overflow-hidden">
       <table className="w-full border-collapse">
@@ -41,13 +43,18 @@ export const MessagesTable = ({ conversations, loading, hasSearchQuery, onSelect
           ) : conversations.length === 0 ? (
             <EmptyMessagesState hasQuery={hasSearchQuery} />
           ) : (
-            conversations.map(conv => (
-              <MessageRow 
-                key={conv.id} 
-                conversation={conv} 
-                onSelect={onSelect} 
-              />
-            ))
+            conversations.map(conv => {
+              const otherId = conv.members.find(m => m.id !== MY_ID)?.id
+              const isOnline = conv.type === 'personal' && !!otherId && onlineUserIds.has(otherId)
+              return (
+                <MessageRow
+                  key={conv.id}
+                  conversation={conv}
+                  isOnline={isOnline}
+                  onSelect={onSelect}
+                />
+              )
+            })
           )}
         </tbody>
       </table>

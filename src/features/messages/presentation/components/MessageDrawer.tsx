@@ -6,12 +6,13 @@ interface MessageDrawerProps {
   open: boolean
   conversation: Conversation | null
   typingUsers: string[]
+  isOnline?: boolean
   onClose: () => void
   onInfo?: () => void
-  children: React.ReactNode // will hold MessageContent and ChatComposer
+  children: React.ReactNode
 }
 
-export const MessageDrawer = ({ open, conversation, typingUsers, onClose, onInfo, children }: MessageDrawerProps) => {
+export const MessageDrawer = ({ open, conversation, typingUsers, isOnline, onClose, onInfo, children }: MessageDrawerProps) => {
   return (
     <AnimatePresence>
       {open && conversation && (
@@ -31,10 +32,11 @@ export const MessageDrawer = ({ open, conversation, typingUsers, onClose, onInfo
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 35 }}
           >
-            <MessageHeader 
-              conversation={conversation} 
-              typingUsers={typingUsers} 
-              onClose={onClose} 
+            <MessageHeader
+              conversation={conversation}
+              typingUsers={typingUsers}
+              isOnline={isOnline}
+              onClose={onClose}
               onInfo={onInfo}
             />
             

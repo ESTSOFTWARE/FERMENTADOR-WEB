@@ -14,19 +14,17 @@ export const ChatComposer = ({ replyTo, onCancelReply, onSend, onSendFiles, onSe
   const [showEmoji,    setShowEmoji]    = useState(false)
   const [showStickers, setShowStickers] = useState(false)
   const [sending,      setSending]      = useState(false)
-  const emojiRef   = useRef<HTMLDivElement>(null)
-  const stickerRef = useRef<HTMLDivElement>(null)
-  const fileRef    = useRef<HTMLInputElement>(null)
+  const emojiRef = useRef<HTMLDivElement>(null)
+  const fileRef  = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (!showEmoji && !showStickers) return
+    if (!showEmoji) return
     const h = (e: MouseEvent) => {
-      if (showEmoji    && emojiRef.current   && !emojiRef.current.contains(e.target as Node))   setShowEmoji(false)
-      if (showStickers && stickerRef.current && !stickerRef.current.contains(e.target as Node)) setShowStickers(false)
+      if (emojiRef.current && !emojiRef.current.contains(e.target as Node)) setShowEmoji(false)
     }
     document.addEventListener('mousedown', h)
     return () => document.removeEventListener('mousedown', h)
-  }, [showEmoji, showStickers])
+  }, [showEmoji])
 
   const handleChange = (value: string) => { setInput(value); onTyping(value) }
 
@@ -55,7 +53,7 @@ export const ChatComposer = ({ replyTo, onCancelReply, onSend, onSendFiles, onSe
 
   return (
     <>
-      {/* Emoji picker */}
+      {/* Emoji picker — absolute sobre la barra */}
       <AnimatePresence>
         {showEmoji && (
           <motion.div ref={emojiRef}
@@ -67,12 +65,12 @@ export const ChatComposer = ({ replyTo, onCancelReply, onSend, onSendFiles, onSe
         )}
       </AnimatePresence>
 
-      {/* Sticker picker */}
+      {/* Sticker picker — en flujo normal, sobre la barra, para que el scroll funcione */}
       <AnimatePresence>
         {showStickers && (
-          <motion.div ref={stickerRef}
-            initial={{ opacity: 0, y: 10, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.97 }}
-            className="absolute bottom-20 left-6 z-20">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden flex-shrink-0 border-t border-neutral-900">
             <StickerPicker onSelect={handleSelectSticker} />
           </motion.div>
         )}
@@ -104,21 +102,22 @@ export const ChatComposer = ({ replyTo, onCancelReply, onSend, onSendFiles, onSe
       </AnimatePresence>
 
       {/* Input */}
-      <div className="px-6 py-4 border-t border-neutral-900 flex-shrink-0">
-        <div className="flex items-center gap-2">
+      <div className="px-4 py-3 border-t border-neutral-900 flex-shrink-0">
+        <div className="flex items-center gap-1.5">
           <button onClick={() => { setShowEmoji(v => !v); setShowStickers(false) }}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors flex-shrink-0">
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors flex-shrink-0">
             <Smile className="w-4 h-4" />
           </button>
-          <button onClick={() => { setShowStickers(v => !v); setShowEmoji(false) }}
+          <button
+            onClick={() => { setShowStickers(v => !v); setShowEmoji(false) }}
             disabled={sending}
-            className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 disabled:opacity-40"
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors flex-shrink-0 disabled:opacity-40"
             style={{ color: showStickers ? '#22c55e' : undefined }}
             title="Stickers">
-            <Sticker className="w-4 h-4" />
+            <Sticker className={`w-4 h-4 ${showStickers ? '' : 'text-neutral-500'}`} />
           </button>
           <button onClick={() => fileRef.current?.click()}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors flex-shrink-0">
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-800 transition-colors flex-shrink-0">
             <Paperclip className="w-4 h-4" />
           </button>
           <input ref={fileRef} type="file" multiple className="hidden"
@@ -126,10 +125,10 @@ export const ChatComposer = ({ replyTo, onCancelReply, onSend, onSendFiles, onSe
           <input value={input} onChange={e => handleChange(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder="Escribe un mensaje…"
-            className="flex-1 px-4 py-3 text-sm text-white placeholder-neutral-600 rounded-xl outline-none"
+            className="flex-1 min-w-0 px-3 py-2.5 text-sm text-white placeholder-neutral-600 rounded-xl outline-none"
             style={{ background: '#18181b', border: '1px solid #2a2a2d' }} />
           <button onClick={handleSend} disabled={!input.trim()}
-            className="w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 flex-shrink-0"
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all disabled:opacity-40 flex-shrink-0"
             style={{ background: '#22c55e' }}>
             <Send className="w-4 h-4 text-black" />
           </button>

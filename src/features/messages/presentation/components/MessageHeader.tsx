@@ -8,18 +8,21 @@ import { ROLE_LABEL } from '../constants/role.constants'
 interface MessageHeaderProps {
   conversation: Conversation
   typingUsers: string[]
+  isOnline?: boolean
   onClose: () => void
   onInfo?: () => void
 }
 
-export const MessageHeader = ({ conversation, typingUsers, onClose, onInfo }: MessageHeaderProps) => {
+export const MessageHeader = ({ conversation, typingUsers, isOnline, onClose, onInfo }: MessageHeaderProps) => {
   const name = getConvName(conversation)
   const isTyping = typingUsers.length > 0
-  const subtitle = isTyping 
-    ? `${typingUsers[0]} está escribiendo...` 
+  const subtitle = isTyping
+    ? `${typingUsers[0]} está escribiendo...`
     : conversation.type === 'group'
       ? `${conversation.members.length} miembros`
-      : ROLE_LABEL[conversation.members.find(m => m.id !== MY_ID)?.role ?? 'estudiante'] || 'En línea'
+      : isOnline
+        ? 'En línea'
+        : ROLE_LABEL[conversation.members.find(m => m.id !== MY_ID)?.role ?? 'estudiante'] || ''
 
   return (
     <div className="flex-shrink-0 px-5 py-4 border-b border-neutral-800 flex items-center gap-3 bg-[#0f0f10]">
@@ -27,16 +30,21 @@ export const MessageHeader = ({ conversation, typingUsers, onClose, onInfo }: Me
         {conversation.type === 'group' ? (
           <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
             style={{ background: '#0d2212', border: '1px solid rgba(34,197,94,0.2)' }}>
-            {conversation.avatar 
-              ? <img src={conversation.avatar} alt="" className="w-full h-full object-cover" /> 
+            {conversation.avatar
+              ? <img src={conversation.avatar} alt="" className="w-full h-full object-cover" />
               : <Users className="w-5 h-5 text-green-400" />
             }
           </div>
         ) : (
-          <img src={avatarUrl(name)} alt={name}
-            className="w-10 h-10 rounded-full object-cover" 
-            style={{ border: '1px solid rgba(34,197,94,0.2)' }} 
-          />
+          <>
+            <img src={avatarUrl(name)} alt={name}
+              className="w-10 h-10 rounded-full object-cover"
+              style={{ border: '1px solid rgba(34,197,94,0.2)' }}
+            />
+            {isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-400 border-2 border-[#0f0f10]" />
+            )}
+          </>
         )}
       </div>
       

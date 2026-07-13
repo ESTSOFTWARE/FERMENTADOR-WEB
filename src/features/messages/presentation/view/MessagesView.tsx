@@ -43,6 +43,10 @@ const MessagesView = () => {
 
   const activeConv  = vm.activeConversation
   const typingUsers = vm.typingUsers
+  const activeOtherId = activeConv?.type === 'personal'
+    ? activeConv.members.find(m => m.id !== vm.MY_ID)?.id
+    : undefined
+  const activeIsOnline = !!activeOtherId && vm.onlineUserIds.has(activeOtherId)
 
   const handleTyping = (value: string) => {
     if (typingTimer.current) clearTimeout(typingTimer.current)
@@ -111,10 +115,11 @@ const MessagesView = () => {
 
       {/* Main Table */}
       <div data-lenis-prevent className="flex-1 min-h-0 overflow-y-auto px-6 py-5">
-        <MessagesTable 
+        <MessagesTable
           conversations={vm.conversations}
-          loading={false} // There's no loading state in VM currently, we assume loaded
+          loading={false}
           hasSearchQuery={vm.searchQuery.length > 0}
+          onlineUserIds={vm.onlineUserIds}
           onSelect={handleSelectConversation}
         />
       </div>
@@ -124,6 +129,7 @@ const MessagesView = () => {
         open={drawerOpen}
         conversation={activeConv}
         typingUsers={typingUsers}
+        isOnline={activeIsOnline}
         onClose={() => setDrawerOpen(false)}
         onInfo={activeConv?.type === 'group' ? () => setShowDetails(true) : undefined}
       >
