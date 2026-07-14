@@ -122,6 +122,13 @@ export const useFermentationViewModel = () => {
 
   const startFermentation = useCallback(async (formData: FermentationFormData) => {
     if (!circuitId) { setError('No hay un circuito asociado a tu cuenta'); return }
+    // Validación cruzada: fin posterior al inicio y azúcar inicial > 0.
+    if (new Date(formData.scheduled_end) <= new Date(formData.scheduled_start)) {
+      setError('La fecha de fin debe ser posterior a la de inicio'); return
+    }
+    if (!(formData.initial_sugar > 0)) {
+      setError('El azúcar inicial debe ser mayor a 0'); return
+    }
     setLoading(true); clearMessages()
     try {
       const scheduled = await scheduleFerm.execute({

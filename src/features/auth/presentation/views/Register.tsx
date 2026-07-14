@@ -10,8 +10,7 @@ import { REGISTER_COL1, REGISTER_COL2 } from '../constants/auth-gallery.constant
 import { authPanelVariants, authItemVariants } from '../constants/auth.variants'
 import { EyeIcon } from '../components/EyeIcon'
 import type { Field } from '../types/register.types'
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+import * as v from '../../../../core/validation/validators'
 
 const Register = () => {
   const {
@@ -35,14 +34,11 @@ const Register = () => {
   }, [error])
 
   const errors: Record<Field, string> = {
-    name:     !name.trim()                          ? 'El nombre es requerido'         : '',
-    lastName: !lastName.trim()                      ? 'El apellido es requerido'        : '',
-    email:    !email.trim()                         ? 'El correo es requerido'
-            : !EMAIL_RE.test(email)                 ? 'Correo electrónico inválido'     : '',
-    password: !password                             ? 'La contraseña es requerida'
-            : password.length < 8                   ? 'Mínimo 8 caracteres'             : '',
-    confirm:  !confirm                              ? 'Confirma tu contraseña'
-            : password !== confirm                  ? 'Las contraseñas no coinciden'    : '',
+    name:     v.personName(name, 'El nombre'),
+    lastName: v.personName(lastName, 'El apellido'),
+    email:    v.email(email),
+    password: v.password(password),
+    confirm:  !confirm ? 'Confirma tu contraseña' : v.matches(confirm, password, 'Las contraseñas no coinciden'),
   }
 
   const touch = (field: Field) => setTouched(prev => ({ ...prev, [field]: true }))
