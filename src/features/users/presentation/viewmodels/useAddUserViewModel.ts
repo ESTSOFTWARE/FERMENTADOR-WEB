@@ -5,6 +5,7 @@ import { useUserAuth }          from '../../../../core/hooks/userAuth'
 import { useEntitlements }      from '../../../../core/hooks/useEntitlements'
 import { apiClient }            from '../../../../core/network/client'
 import type { AddUserForm }     from '../types/add-user-form.types'
+import * as v                   from '../../../../core/validation/validators'
 
 const createUser = new CreateUserUseCase(new UserRepositoryImpl())
 
@@ -64,6 +65,16 @@ export const useAddUserViewModel = () => {
 
   const handleSubmit = async () => {
     if (!isValid || !activationCode) return
+    // Validación de formato/fortaleza antes de enviar (alineada con el backend).
+    const formError =
+      v.personName(form.name, 'El nombre') ||
+      v.personName(form.last_name, 'El apellido') ||
+      v.email(form.email) ||
+      v.password(form.password)
+    if (formError) {
+      setError(formError)
+      return
+    }
     setLoading(true)
     setError(null)
     try {

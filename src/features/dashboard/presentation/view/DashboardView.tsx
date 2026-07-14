@@ -34,7 +34,15 @@ const DashboardView = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: name === 'microorganism' ? value : Number(value) }))
+    if (name === 'microorganism') {
+      setForm(prev => ({ ...prev, [name]: value }))
+      return
+    }
+    // Validación de tipo: solo aceptamos números; ignoramos entradas no
+    // numéricas (evita mandar NaN al backend).
+    const num = Number(value)
+    if (Number.isNaN(num)) return
+    setForm(prev => ({ ...prev, [name]: num }))
   }
 
   const handleSubmit = async () => {

@@ -2,6 +2,7 @@ import { useState }                   from 'react'
 import { useNavigate, useLocation }   from 'react-router-dom'
 import { AuthRepositoryImpl }         from '../../data/repositories/AuthRepositoryImpl'
 import { LoginUseCase }               from '../../domain/usecases/login.usecase'
+import * as v                         from '../../../../core/validation/validators'
 
 const login = new LoginUseCase(new AuthRepositoryImpl())
 
@@ -16,6 +17,13 @@ export const useLoginViewModel = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Validación de cliente antes de llamar al servidor.
+    const emailErr = v.email(email)
+    const passErr  = v.loginPassword(password)
+    if (emailErr || passErr) {
+      setError(emailErr || passErr)
+      return
+    }
     setError(null)
     setLoading(true)
     try {
