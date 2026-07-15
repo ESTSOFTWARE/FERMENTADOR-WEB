@@ -7,4 +7,7 @@ export interface GroupMember {
   avatar:         string | null
   joined_at:      string | null
   oauth_provider: 'google' | 'github' | 'email'
+  dial_code:      string | null
+  phone_number:   string | null
+  description:    string | null
 }

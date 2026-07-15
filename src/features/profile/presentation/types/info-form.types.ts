@@ -4,4 +4,5 @@ export type InfoForm = {
   email:        string
   dial_code:    string
   phone_number: string
+  description:  string
 }

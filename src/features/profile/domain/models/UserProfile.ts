@@ -11,5 +11,6 @@ export interface UserProfile {
   profile_image:  string | null
   dial_code:      string | null
   phone_number:   string | null
+  description:    string | null
   tour_completed: boolean
 }

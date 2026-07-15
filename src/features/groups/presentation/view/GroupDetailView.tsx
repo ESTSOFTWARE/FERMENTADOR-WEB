@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { QRCodeSVG } from 'qrcode.react'
 import { sileo } from 'sileo'
-import { ArrowLeft, Users, QrCode, Plus, Link, Mail, Hash, Calendar } from 'lucide-react'
+import { ArrowLeft, Users, QrCode, Plus, Link, Mail, Hash, Calendar, Phone, AlignLeft } from 'lucide-react'
 import { cn } from '../../../../lib/utils'
 import { pageVariants } from '../../../../shared/animations/variants'
 import { useGroupDetailViewModel } from '../viewmodels/useGroupDetailViewModel'
@@ -331,6 +331,7 @@ const GroupDetailView = () => {
                     { icon: <Mail className="w-3.5 h-3.5" />,     label: 'Correo',  value: drawer.email },
                     { icon: <Hash className="w-3.5 h-3.5" />,     label: 'ID',      value: String(drawer.student_id) },
                     { icon: <Calendar className="w-3.5 h-3.5" />, label: 'Registro',value: formatDate(drawer.joined_at, true) },
+                    ...(drawer.phone_number ? [{ icon: <Phone className="w-3.5 h-3.5" />, label: 'Teléfono', value: `${drawer.dial_code ?? ''} ${drawer.phone_number}`.trim() }] : []),
                   ].map(row => (
                     <div key={row.label} className="flex items-center gap-3 px-4 py-3">
                       <span className="text-neutral-600">{row.icon}</span>
@@ -338,6 +339,14 @@ const GroupDetailView = () => {
                       <span className="text-white text-xs font-medium truncate">{row.value}</span>
                     </div>
                   ))}
+                  {/* Descripción */}
+                  {drawer.description && (
+                    <div className="flex items-start gap-3 px-4 py-3">
+                      <span className="text-neutral-600 mt-0.5"><AlignLeft className="w-3.5 h-3.5" /></span>
+                      <span className="text-neutral-500 text-xs w-16 flex-shrink-0 pt-0.5">Descripción</span>
+                      <span className="text-white text-xs leading-relaxed">{drawer.description}</span>
+                    </div>
+                  )}
                   {/* OAuth provider */}
                   <div className="flex items-center gap-3 px-4 py-3">
                     <span className="text-neutral-600">
