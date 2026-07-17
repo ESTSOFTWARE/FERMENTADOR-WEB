@@ -9,6 +9,7 @@ export interface AuthUser {
   activation_code: string | null
   dial_code?:      string
   phone_number?:   string
+  description?:    string | null
   tour_completed?: boolean
   oauth_provider?: 'google' | 'github' | 'email'
   created_at?:     string | null

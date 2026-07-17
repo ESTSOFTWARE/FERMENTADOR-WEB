@@ -200,6 +200,30 @@ const ProfileView = () => {
                 />
                 <p style={{ color: '#3F3F46', fontSize: 10, marginTop: 6 }}>10 dígitos sin espacios</p>
               </div>
+              <div>
+                <label style={labelStyle}>Descripción</label>
+                <textarea
+                  className="profile-input"
+                  value={infoForm.description}
+                  onChange={e => setInfo('description', e.target.value)}
+                  disabled={!editingInfo}
+                  rows={3}
+                  maxLength={300}
+                  placeholder={editingInfo ? 'Cuéntanos un poco sobre ti…' : ''}
+                  style={{
+                    ...(editingInfo ? inputStyle : readonlyStyle),
+                    resize: 'none',
+                    lineHeight: 1.5,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                  }}
+                />
+                {editingInfo && (
+                  <p style={{ color: '#3F3F46', fontSize: 10, marginTop: 6, textAlign: 'right' }}>
+                    {infoForm.description.length}/300
+                  </p>
+                )}
+              </div>
 
               {editingInfo && (
                 <div style={{ display: 'flex', gap: 10, paddingTop: 4 }}>

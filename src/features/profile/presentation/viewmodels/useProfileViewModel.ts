@@ -25,6 +25,7 @@ export const useProfileViewModel = () => {
     email:        user?.email        ?? '',
     dial_code:    user?.dial_code    ?? '+52',
     phone_number: user?.phone_number ?? '',
+    description:  '',
   })
   const [editingInfo, setEditingInfo] = useState(false)
   const [loadingInfo, setLoadingInfo] = useState(false)
@@ -57,6 +58,7 @@ export const useProfileViewModel = () => {
         ...prev,
         dial_code:    profile.dial_code    ?? prev.dial_code,
         phone_number: profile.phone_number ?? prev.phone_number,
+        description:  profile.description  ?? '',
       }))
       setCreatedBy(profile.created_by)
       setCircuitId(profile.circuit_id ?? null)
@@ -78,7 +80,8 @@ export const useProfileViewModel = () => {
     infoForm.name         !== (user?.name         ?? '') ||
     infoForm.last_name    !== (user?.last_name    ?? '') ||
     infoForm.email        !== (user?.email        ?? '') ||
-    infoForm.phone_number !== ''
+    infoForm.phone_number !== '' ||
+    infoForm.description  !== (user?.description ?? '')
   const hasCircuit = circuitId !== null
   const isVerified =
     (user?.role === 'admin'    && circuitId !== null) ||
@@ -94,6 +97,7 @@ export const useProfileViewModel = () => {
       await updateUserInfo.execute(user.id, {
         name: infoForm.name, last_name: infoForm.last_name,
         email: infoForm.email, dial_code: infoForm.dial_code, phone_number: infoForm.phone_number,
+        description: infoForm.description || null,
       })
       notifyUserUpdated()
       setSuccessInfo(true); setEditingInfo(false)
@@ -107,7 +111,7 @@ export const useProfileViewModel = () => {
 
   const handleCancelInfo = useCallback(() => {
     setEditingInfo(false)
-    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '' })
+    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '', description: user?.description ?? '' })
     setErrorInfo(null)
   }, [user])
 

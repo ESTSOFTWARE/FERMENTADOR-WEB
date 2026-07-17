@@ -6,4 +6,5 @@ export interface UpdateUserRequest {
   profile_image?: string
   dial_code?:     string
   phone_number?:  string
+  description?:   string | null
 }
