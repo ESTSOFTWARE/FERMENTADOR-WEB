@@ -30,6 +30,7 @@ interface MeResponse {
   profile_image:  string | null
   dial_code:      string | null
   phone_number:   string | null
+  description:    string | null
   tour_completed: boolean
   created_at:     string | null
 }
@@ -55,6 +56,7 @@ export const syncCurrentUser = async (): Promise<void> => {
       activation_code: me.circuit_code ?? prev?.activation_code ?? null,
       dial_code:       me.dial_code    ?? prev?.dial_code,
       phone_number:    me.phone_number ?? prev?.phone_number,
+      description:     me.description  ?? prev?.description ?? null,
       tour_completed:  me.tour_completed,
       oauth_provider:  prev?.oauth_provider,
       created_at:      me.created_at ?? prev?.created_at ?? null,

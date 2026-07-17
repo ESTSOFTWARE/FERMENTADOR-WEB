@@ -81,7 +81,7 @@ export const useProfileViewModel = () => {
     infoForm.last_name    !== (user?.last_name    ?? '') ||
     infoForm.email        !== (user?.email        ?? '') ||
     infoForm.phone_number !== '' ||
-    infoForm.description  !== ((user as any)?.description ?? '')
+    infoForm.description  !== (user?.description ?? '')
   const hasCircuit = circuitId !== null
   const isVerified =
     (user?.role === 'admin'    && circuitId !== null) ||
@@ -111,7 +111,7 @@ export const useProfileViewModel = () => {
 
   const handleCancelInfo = useCallback(() => {
     setEditingInfo(false)
-    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '', description: (user as any)?.description ?? '' })
+    setInfoForm({ name: user?.name ?? '', last_name: user?.last_name ?? '', email: user?.email ?? '', dial_code: user?.dial_code ?? '+52', phone_number: user?.phone_number ?? '', description: user?.description ?? '' })
     setErrorInfo(null)
   }, [user])
 
