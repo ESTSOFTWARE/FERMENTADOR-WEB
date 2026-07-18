@@ -5,6 +5,7 @@ import type { StopFermentationRequest }       from '../../domain/dtos/request/st
 import type { FermentationSession }           from '../../domain/models/FermentationSession'
 import type { FermentationReport }            from '../../domain/models/FermentationReport'
 import type { ReportHistory }                 from '../../domain/models/ReportHistory'
+import type { PredictionResult }              from '../../domain/models/PredictionResult'
 
 export class FermentationRepositoryImpl implements FermentationRepository {
 
@@ -41,5 +42,9 @@ export class FermentationRepositoryImpl implements FermentationRepository {
 
   async getActiveSession(): Promise<FermentationSession | null> {
     return fermentationApi.getActiveSession() as Promise<FermentationSession | null>
+  }
+
+  async requestPrediction(sessionId: number): Promise<PredictionResult> {
+    return fermentationApi.requestPrediction(sessionId) as Promise<PredictionResult>
   }
 }

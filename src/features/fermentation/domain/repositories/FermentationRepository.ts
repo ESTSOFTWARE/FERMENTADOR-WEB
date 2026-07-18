@@ -3,6 +3,7 @@ import type { StopFermentationRequest }      from '../dtos/request/stop-fermenta
 import type { FermentationSession }          from '../models/FermentationSession'
 import type { FermentationReport }           from '../models/FermentationReport'
 import type { ReportHistory }                from '../models/ReportHistory'
+import type { PredictionResult }             from '../models/PredictionResult'
 
 export interface FermentationRepository {
   getActiveSession():                                              Promise<FermentationSession | null>
@@ -12,4 +13,5 @@ export interface FermentationRepository {
   getSessionsHistory():                                            Promise<FermentationSession[]>
   getReport(sessionId: number):                                   Promise<FermentationReport>
   getReportHistory():                                             Promise<ReportHistory[]>
+  requestPrediction(sessionId: number):                           Promise<PredictionResult>
 }

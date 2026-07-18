@@ -9,6 +9,11 @@ export interface SessionWithReportResponse {
   report:  FermentationReportData | null
 }
 
+export interface PredictionResponse {
+  efficiency: number | null
+  message:    string | null
+}
+
 export const fermentationApi = {
   scheduleFermentation: (body: ScheduleFermentationRequest) =>
     apiClient.post<FermentationSessionResponse>('/fermentation/schedule', body),
@@ -34,4 +39,7 @@ export const fermentationApi = {
 
   getReportHistory: () =>
     apiClient.get<ReportHistoryItem[]>('/fermentation/history'),
+
+  requestPrediction: (sessionId: number) =>
+    apiClient.post<PredictionResponse>(`/fermentation/${sessionId}/predict-now`),
 }
