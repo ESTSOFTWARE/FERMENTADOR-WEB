@@ -1,45 +1,46 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { FermentationRepositoryImpl }               from '../../data/repositories/FermentationRepositoryImpl'
-import { GetActiveSessionUseCase }                  from '../../domain/usecases/get-active-session.usecase'
-import { ScheduleFermentationUseCase }              from '../../domain/usecases/schedule-fermentation.usecase'
-import { StartFermentationUseCase }                 from '../../domain/usecases/start-fermentation.usecase'
-import { StopFermentationUseCase }                  from '../../domain/usecases/stop-fermentation.usecase'
-import { GetFermentationReportUseCase }             from '../../domain/usecases/get-fermentation-report.usecase'
-import { RequestPredictionUseCase }                 from '../../domain/usecases/request-prediction.usecase'
-import { showBrowserNotification }                  from '../../../../shared/utils/show-browser-notification'
-import { useUserAuth }                              from '../../../../core/hooks/userAuth'
-import { useCommandsWebSocket }                     from '../../../sensors/presentation/hooks/useCommandsWebSocket'
-import { createSensorWebSocket }                    from '../../../sensors/data/api/sensorApi'
-import type { FermentationSession }                 from '../../domain/models/FermentationSession'
-import type { FermentationReport }                  from '../../domain/models/FermentationReport'
-import type { FermentationFormData }                from '../types/FermentationFormData'
-import type { SensorKey }                           from '../../../sensors/domain/models/SensorKey'
-import type { SensorToggleState }                   from '../../../sensors/domain/models/SensorToggleState'
-import { ALL_SENSORS_OFF, ALL_SENSORS_ON }          from '../../../sensors/domain/constants/sensor-toggle-defaults.constants'
+import { FermentationRepositoryImpl } from '../../data/repositories/FermentationRepositoryImpl'
+import { GetActiveSessionUseCase } from '../../domain/usecases/get-active-session.usecase'
+import { ScheduleFermentationUseCase } from '../../domain/usecases/schedule-fermentation.usecase'
+import { StartFermentationUseCase } from '../../domain/usecases/start-fermentation.usecase'
+import { StopFermentationUseCase } from '../../domain/usecases/stop-fermentation.usecase'
+import { GetFermentationReportUseCase } from '../../domain/usecases/get-fermentation-report.usecase'
+import { RequestPredictionUseCase } from '../../domain/usecases/request-prediction.usecase'
+import { showBrowserNotification } from '../../../../shared/utils/show-browser-notification'
+import { useUserAuth } from '../../../../core/hooks/userAuth'
+import { useCommandsWebSocket } from '../../../sensors/presentation/hooks/useCommandsWebSocket'
+import { createSensorWebSocket } from '../../../sensors/data/api/sensorApi'
+import type { FermentationSession } from '../../domain/models/FermentationSession'
+import type { FermentationReport } from '../../domain/models/FermentationReport'
+import type { FermentationFormData } from '../types/FermentationFormData'
+import type { SensorKey } from '../../../sensors/domain/models/SensorKey'
+import type { SensorToggleState } from '../../../sensors/domain/models/SensorToggleState'
+import { ALL_SENSORS_OFF, ALL_SENSORS_ON } from '../../../sensors/domain/constants/sensor-toggle-defaults.constants'
 import { loadSensorStates, saveSensorStates, clearSensorStates } from '../utils/sensor-state-storage'
-import { toDeviceState }                            from '../utils/to-device-state'
+import { toDeviceState } from '../utils/to-device-state'
 
-const repo              = new FermentationRepositoryImpl()
-const getActiveSession  = new GetActiveSessionUseCase(repo)
-const scheduleFerm      = new ScheduleFermentationUseCase(repo)
-const startFerm         = new StartFermentationUseCase(repo)
-const stopFerm          = new StopFermentationUseCase(repo)
-const getReport         = new GetFermentationReportUseCase(repo)
-const requestPredict    = new RequestPredictionUseCase(repo)
+const repo = new FermentationRepositoryImpl()
+const getActiveSession = new GetActiveSessionUseCase(repo)
+const scheduleFerm = new ScheduleFermentationUseCase(repo)
+const startFerm = new StartFermentationUseCase(repo)
+const stopFerm = new StopFermentationUseCase(repo)
+const getReport = new GetFermentationReportUseCase(repo)
+const requestPredict = new RequestPredictionUseCase(repo)
 
 export const useFermentationViewModel = () => {
   const { user } = useUserAuth()
+  const authLoading = user === undefined
   const commands = useCommandsWebSocket()
 
-  const [loading, setLoading]               = useState(false)
-  const [error, setError]                   = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [session, setSession]               = useState<FermentationSession | null>(null)
-  const [report, setReport]                 = useState<FermentationReport | null>(null)
-  const [sensorStates, setSensorStates]     = useState<SensorToggleState>(ALL_SENSORS_OFF)
-  const [showForm, setShowForm]             = useState(false)
-  const [prediction, setPrediction]         = useState<string | null>(null)
-  const [predicting, setPredicting]         = useState(false)
+  const [session, setSession] = useState<FermentationSession | null>(null)
+  const [report, setReport] = useState<FermentationReport | null>(null)
+  const [sensorStates, setSensorStates] = useState<SensorToggleState>(ALL_SENSORS_OFF)
+  const [showForm, setShowForm] = useState(false)
+  const [prediction, setPrediction] = useState<string | null>(null)
+  const [predicting, setPredicting] = useState(false)
 
   const hydratedRef = useRef(false)
 
@@ -96,7 +97,7 @@ export const useFermentationViewModel = () => {
         if (cancelled) return
 
         if (active) {
-          const stored         = loadSensorStates(active.id)
+          const stored = loadSensorStates(active.id)
           const restoredStates = stored ?? ALL_SENSORS_ON
 
           setSession(active)
@@ -137,11 +138,11 @@ export const useFermentationViewModel = () => {
     setLoading(true); clearMessages()
     try {
       const scheduled = await scheduleFerm.execute({
-        circuit_id:      circuitId,
-        group_id:        formData.group_id,
+        circuit_id: circuitId,
+        group_id: formData.group_id,
         scheduled_start: formData.scheduled_start,
-        scheduled_end:   formData.scheduled_end,
-        initial_sugar:   formData.initial_sugar,
+        scheduled_end: formData.scheduled_end,
+        initial_sugar: formData.initial_sugar,
       })
       const started = await startFerm.execute(scheduled.id)
       setSession(started)
@@ -150,7 +151,7 @@ export const useFermentationViewModel = () => {
       saveSensorStates(started.id, ALL_SENSORS_ON)
       commands.connect(circuitId, {
         initialState: toDeviceState(ALL_SENSORS_ON),
-        onConnected:  () => commands.sendAllOn(),
+        onConnected: () => commands.sendAllOn(),
       })
       setSuccessMessage('Fermentación iniciada correctamente')
       setShowForm(false)
@@ -234,6 +235,7 @@ export const useFermentationViewModel = () => {
     session, report, sensorStates,
     showForm, isRunning, circuitId,
     prediction, predicting,
+    authLoading,
     setShowForm,
     startFermentation, stopFermentation,
     toggleSensor, loadReport,

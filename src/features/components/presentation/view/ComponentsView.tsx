@@ -1,33 +1,36 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Search, Cpu } from 'lucide-react'
+import { Search, Cpu, Tags } from 'lucide-react'
+import { CategoryManagerModal } from '../components/CategoryManagerModal'
 import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
 import { useComponentsViewModel } from '../viewmodels/useComponentsViewModel'
 import { OfferCard } from '../../../../components/ui/offer-carousel'
 import type { Offer } from '../../../../components/ui/offer-carousel'
 import type { Component } from '../../domain/models/Component'
+import { useState } from 'react'
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80'
 const LOGO = '/assets/logo.svg'
 
 // Mapea un componente a la misma card del catálogo de productos.
 const toOffer = (c: Component): Offer => ({
-  id:           c.id,
-  imageSrc:     c.image ?? PLACEHOLDER,
-  imageAlt:     c.name,
-  tag:          c.stock > 0 ? `${c.stock} disponibles` : 'Sin stock',
-  title:        c.name,
-  description:  c.description,
+  id: c.id,
+  imageSrc: c.image ?? PLACEHOLDER,
+  imageAlt: c.name,
+  tag: c.stock > 0 ? `${c.stock} disponibles` : 'Sin stock',
+  title: c.name,
+  description: c.description,
   brandLogoSrc: LOGO,
-  brandName:    `$${c.price.toLocaleString('es-MX')} MXN`,
-  promoCode:    c.sku,
-  href:         '#',
+  brandName: `$${c.price.toLocaleString('es-MX')} MXN`,
+  promoCode: c.sku,
+  href: '#',
 })
 
 // Solo lectura: los componentes los crea y edita el rol Soporte.
 const ComponentsView = () => {
   const vm = useComponentsViewModel()
   const navigate = useNavigate()
+  const [showCategories, setShowCategories] = useState(false)
 
   return (
     <motion.div variants={pageVariants} initial="hidden" animate="visible"
@@ -39,6 +42,14 @@ const ComponentsView = () => {
           <p className="text-[11px] text-green-500/80 uppercase tracking-[0.3em] mb-2">Catálogo</p>
           <h1 className="text-white text-3xl font-bold tracking-tight">Componentes</h1>
           <div className="mt-2.5 h-px w-20 bg-green-500/40" />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button onClick={() => setShowCategories(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-colors"
+            style={{ background: '#111113', border: '1px solid #2A2A2D' }}>
+            <Tags className="w-4 h-4" /> Categorías
+          </button>
         </div>
 
         <div className="relative w-full sm:w-80">
@@ -86,6 +97,7 @@ const ComponentsView = () => {
           ))}
         </motion.div>
       )}
+      <CategoryManagerModal open={showCategories} onClose={() => setShowCategories(false)} />
     </motion.div>
   )
 }

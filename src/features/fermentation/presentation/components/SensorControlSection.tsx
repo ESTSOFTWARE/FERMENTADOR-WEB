@@ -1,8 +1,30 @@
 import { SENSOR_CONTROLS }                    from '../constants/sensor-controls.constants'
-import { getSensorIcon }                      from '../utils/get-sensor-icon'
 import type { SensorKey }                     from '../../domain/models/SensorKey'
 import type { SensorControlSectionProps as Props } from '../types/SensorControlSectionProps'
 import ToggleSwitch                           from './ToggleSwitch'
+
+const READONLY_DEVICES = [
+  { key: 'motor', label: 'Motor', unit: 'rpm',    color: '#06B6D4' },
+  { key: 'pump',  label: 'Bomba', unit: 'ON/OFF', color: '#FB923C' },
+] as const
+
+const thStyle: React.CSSProperties = {
+  textAlign:     'left',
+  padding:       '10px 16px',
+  color:         '#52525B',
+  fontSize:      10,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  fontWeight:    600,
+  borderBottom:  '1px solid #1F1F22',
+}
+
+const tdStyle: React.CSSProperties = {
+  padding:      '14px 16px',
+  fontSize:     13,
+  color:        '#E4E4E7',
+  borderBottom: '1px solid #1A1A1D',
+}
 
 const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggle }: Props) => {
   const total  = Object.keys(sensorStates).length
@@ -48,201 +70,78 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
         </div>
       </div>
 
-      <div style={{
-        display:             'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-        gap:                 12,
-      }}>
-        {SENSOR_CONTROLS.map(sensor => {
-          const isOn = sensorStates[sensor.key as SensorKey]
-          return (
-            <div
-              key={sensor.key}
-              style={{
-                position:        'relative',
-                padding:         '18px 20px',
-                borderRadius:    14,
-                backgroundColor: isOn ? `${sensor.color}0A` : '#0D0D0F',
-                border:          `1px solid ${isOn ? `${sensor.color}35` : '#1F1F22'}`,
-                display:         'flex',
-                flexDirection:   'column',
-                gap:             14,
-                transition:      'border-color 0.25s, background-color 0.25s',
-                overflow:        'hidden',
-              }}
-            >
-              <div style={{
-                position:        'absolute',
-                top:             0,
-                left:            20,
-                right:           20,
-                height:          1,
-                borderRadius:    1,
-                backgroundColor: sensor.color,
-                opacity:         isOn ? 0.55 : 0,
-                transition:      'opacity 0.3s',
-              }} />
+      <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid #1A1A1D' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#0D0D0F' }}>
+              <th style={{ ...thStyle, width: 56 }}>#</th>
+              <th style={thStyle}>Sensor</th>
+              <th style={thStyle}>Unidad</th>
+              <th style={{ ...thStyle, textAlign: 'right' }}>Encendido</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SENSOR_CONTROLS.map((sensor, index) => {
+              const isOn = sensorStates[sensor.key as SensorKey]
+              return (
+                <tr key={sensor.key} style={{ backgroundColor: isOn ? `${sensor.color}08` : 'transparent' }}>
+                  <td style={{ ...tdStyle, color: '#52525B' }}>{index + 1}</td>
+                  <td style={tdStyle}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{
+                        width:           8,
+                        height:          8,
+                        borderRadius:    '50%',
+                        backgroundColor: isOn ? sensor.color : '#3F3F46',
+                        flexShrink:      0,
+                      }} />
+                      <span style={{ fontWeight: 600, color: isOn ? '#F4F4F5' : '#A1A1AA' }}>
+                        {sensor.label}
+                      </span>
+                    </div>
+                  </td>
+                  <td style={{ ...tdStyle, color: '#71717A' }}>{sensor.unit}</td>
+                  <td style={{ ...tdStyle, textAlign: 'right' }}>
+                    <ToggleSwitch
+                      checked={isOn}
+                      onChange={() => onToggle(sensor.key as SensorKey)}
+                      disabled={loading || disabled}
+                    />
+                  </td>
+                </tr>
+              )
+            })}
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width:           38,
-                  height:          38,
-                  borderRadius:    10,
-                  backgroundColor: isOn ? `${sensor.color}18` : '#1A1A1D',
-                  border:          `1px solid ${isOn ? `${sensor.color}30` : '#2A2A2D'}`,
-                  display:         'flex',
-                  alignItems:      'center',
-                  justifyContent:  'center',
-                  flexShrink:      0,
-                  transition:      'all 0.25s',
-                }}>
-                  <svg
-                    width="18" height="18" viewBox="0 0 24 24"
-                    fill="none"
-                    stroke={isOn ? sensor.color : '#52525B'}
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{ transition: 'stroke 0.25s' }}
-                  >
-                    <path d={getSensorIcon(sensor.key)} />
-                  </svg>
-                </div>
-
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{
-                    color:        isOn ? '#F4F4F5' : '#71717A',
-                    fontSize:     13,
-                    fontWeight:   600,
-                    margin:       0,
-                    transition:   'color 0.25s',
-                    whiteSpace:   'nowrap',
-                    overflow:     'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {sensor.label}
-                  </p>
-                  <p style={{ color: '#3F3F46', fontSize: 11, margin: '2px 0 0 0' }}>
-                    {sensor.unit}
-                  </p>
-                </div>
-
-                <ToggleSwitch
-                  checked={isOn}
-                  onChange={() => onToggle(sensor.key as SensorKey)}
-                  disabled={loading || disabled}
-                />
-              </div>
-
-              <div style={{ height: 1, backgroundColor: '#1A1A1D' }} />
-
-              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-                <p style={{ color: '#52525B', fontSize: 11, margin: 0, lineHeight: 1.55, flex: 1 }}>
-                  {sensor.description}
-                </p>
-
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-                  {sensor.isHardware && (
+            {READONLY_DEVICES.map((device, index) => (
+              <tr key={device.key} style={{ backgroundColor: 'transparent' }}>
+                <td style={{ ...tdStyle, color: '#52525B' }}>{SENSOR_CONTROLS.length + index + 1}</td>
+                <td style={tdStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3F3F46', flexShrink: 0 }} />
+                    <span style={{ fontWeight: 600, color: '#A1A1AA' }}>{device.label}</span>
                     <span style={{
-                      padding:         '2px 6px',
-                      borderRadius:    4,
-                      backgroundColor: '#1F1F22',
-                      color:           '#3F3F46',
+                      padding:         '2px 8px',
+                      borderRadius:    999,
+                      backgroundColor: `${device.color}10`,
+                      border:          `1px solid ${device.color}25`,
+                      color:           device.color,
                       fontSize:        9,
                       letterSpacing:   '0.1em',
                       textTransform:   'uppercase',
                       fontWeight:      700,
                     }}>
-                      HW
+                      Solo lectura
                     </span>
-                  )}
-                  <span style={{
-                    fontSize:      11,
-                    fontWeight:    600,
-                    color:         isOn ? sensor.color : '#3F3F46',
-                    letterSpacing: '0.04em',
-                    transition:    'color 0.25s',
-                  }}>
-                    {isOn ? '● activo' : '○ inactivo'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
-        {([
-          { key: 'motor', label: 'Motor', description: 'Velocidad de agitación', unit: 'rpm',    color: '#06B6D4' },
-          { key: 'pump',  label: 'Bomba', description: 'Control de flujo',       unit: 'ON/OFF', color: '#FB923C' },
-        ] as const).map(device => (
-          <div
-            key={device.key}
-            style={{
-              position:        'relative',
-              padding:         '18px 20px',
-              borderRadius:    14,
-              backgroundColor: '#0D0D0F',
-              border:          '1px solid #1F1F22',
-              display:         'flex',
-              flexDirection:   'column',
-              gap:             14,
-              overflow:        'hidden',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width:           38,
-                height:          38,
-                borderRadius:    10,
-                backgroundColor: `${device.color}12`,
-                border:          `1px solid ${device.color}28`,
-                display:         'flex',
-                alignItems:      'center',
-                justifyContent:  'center',
-                flexShrink:      0,
-              }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={device.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d={getSensorIcon(device.key)} />
-                </svg>
-              </div>
-
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ color: '#71717A', fontSize: 13, fontWeight: 600, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {device.label}
-                </p>
-                <p style={{ color: '#3F3F46', fontSize: 11, margin: '2px 0 0 0' }}>
-                  {device.unit}
-                </p>
-              </div>
-
-              <span style={{
-                padding:         '3px 8px',
-                borderRadius:    6,
-                backgroundColor: `${device.color}10`,
-                border:          `1px solid ${device.color}25`,
-                color:           device.color,
-                fontSize:        9,
-                letterSpacing:   '0.12em',
-                textTransform:   'uppercase',
-                fontWeight:      700,
-                flexShrink:      0,
-              }}>
-                Solo lectura
-              </span>
-            </div>
-
-            <div style={{ height: 1, backgroundColor: '#1A1A1D' }} />
-
-            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8 }}>
-              <p style={{ color: '#52525B', fontSize: 11, margin: 0, lineHeight: 1.55, flex: 1 }}>
-                {device.description}
-              </p>
-              <span style={{ fontSize: 9, fontWeight: 700, color: '#3F3F46', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                HW
-              </span>
-            </div>
-          </div>
-        ))}
+                  </div>
+                </td>
+                <td style={{ ...tdStyle, color: '#71717A' }}>{device.unit}</td>
+                <td style={{ ...tdStyle, textAlign: 'right' }}>
+                  <ToggleSwitch checked={false} onChange={() => {}} disabled />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   )

@@ -17,6 +17,16 @@ export interface ReviewList {
   average_rating: number
 }
 
+export interface CreateReviewRequest {
+  rating:   number
+  comment?: string | null
+}
+
 export const reviewsApi = {
-  getAll: (productId: number) => apiClient.get<ReviewList>(`/products/${productId}/reviews/`),
+  getAll: (productId: number, page = 1, limit = 10) =>
+    apiClient.get<ReviewList>(`/products/${productId}/reviews/?page=${page}&limit=${limit}`),
+  create: (productId: number, data: CreateReviewRequest) =>
+    apiClient.post<Review>(`/products/${productId}/reviews/`, data),
+  delete: (productId: number, reviewId: number) =>
+    apiClient.delete<void>(`/products/${productId}/reviews/${reviewId}`),
 }
