@@ -29,6 +29,8 @@ const tdStyle: React.CSSProperties = {
 const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggle }: Props) => {
   const total = Object.keys(sensorStates).length
   const active = Object.values(sensorStates).filter(Boolean).length
+  const isActive = !disabled
+
 
   return (
     <section
@@ -117,8 +119,16 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
                 <td style={{ ...tdStyle, color: '#52525B' }}>{SENSOR_CONTROLS.length + index + 1}</td>
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3F3F46', flexShrink: 0 }} />
-                    <span style={{ fontWeight: 600, color: '#A1A1AA' }}>{device.label}</span>
+                    <span style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: isActive ? device.color : '#3F3F46',
+                      flexShrink: 0,
+                    }} />
+                    <span style={{ fontWeight: 600, color: isActive ? '#F4F4F5' : '#A1A1AA' }}>
+                      {device.label}
+                    </span>
                   </div>
                 </td>
                 <td style={{ ...tdStyle, color: '#71717A' }}>{device.unit}</td>
@@ -127,8 +137,8 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
                     display: 'inline-flex',
                     padding: '4px 10px',
                     borderRadius: 999,
-                    backgroundColor: `${device.color}10`,
-                    border: `1px solid ${device.color}25`,
+                    backgroundColor: isActive ? `${device.color}15` : `${device.color}10`,
+                    border: `1px solid ${device.color}${isActive ? '40' : '25'}`,
                     color: device.color,
                     fontSize: 9,
                     letterSpacing: '0.1em',
