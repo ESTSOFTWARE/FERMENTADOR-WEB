@@ -90,6 +90,14 @@ const STEPS: TourStep[] = [
     title:   'Ver Grupos',
     desc:    'Como administrador puedes ver todos los grupos creados por los profesores: nombre, materia, código, docente a cargo y alumnos inscritos.',
   },
+
+  {
+    path:    '/groups',
+    element: '#tour-step-groups-add',
+    title:   'Crear Grupo',
+    desc:    'Crea un nuevo grupo o clase, define la materia y sube una imagen de portada. Cada grupo genera un código QR único para que los estudiantes se unan desde la app móvil.',
+  },
+  
   // ── Grupo: Experimentar con IA ──────────────────────────────────────
   {
     path:    '/dashboard',
