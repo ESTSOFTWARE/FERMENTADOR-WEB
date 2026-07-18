@@ -5,6 +5,8 @@ import { ScheduleFermentationUseCase }              from '../../domain/usecases/
 import { StartFermentationUseCase }                 from '../../domain/usecases/start-fermentation.usecase'
 import { StopFermentationUseCase }                  from '../../domain/usecases/stop-fermentation.usecase'
 import { GetFermentationReportUseCase }             from '../../domain/usecases/get-fermentation-report.usecase'
+import { RequestPredictionUseCase }                 from '../../domain/usecases/request-prediction.usecase'
+import { showBrowserNotification }                  from '../../../../shared/utils/show-browser-notification'
 import { useUserAuth }                              from '../../../../core/hooks/userAuth'
 import { useCommandsWebSocket }                     from '../../../sensors/presentation/hooks/useCommandsWebSocket'
 import { createSensorWebSocket }                    from '../../../sensors/data/api/sensorApi'
@@ -23,6 +25,7 @@ const scheduleFerm      = new ScheduleFermentationUseCase(repo)
 const startFerm         = new StartFermentationUseCase(repo)
 const stopFerm          = new StopFermentationUseCase(repo)
 const getReport         = new GetFermentationReportUseCase(repo)
+const requestPredict    = new RequestPredictionUseCase(repo)
 
 export const useFermentationViewModel = () => {
   const { user } = useUserAuth()
@@ -35,6 +38,8 @@ export const useFermentationViewModel = () => {
   const [report, setReport]                 = useState<FermentationReport | null>(null)
   const [sensorStates, setSensorStates]     = useState<SensorToggleState>(ALL_SENSORS_OFF)
   const [showForm, setShowForm]             = useState(false)
+  const [prediction, setPrediction]         = useState<string | null>(null)
+  const [predicting, setPredicting]         = useState(false)
 
   const hydratedRef = useRef(false)
 
@@ -188,6 +193,29 @@ export const useFermentationViewModel = () => {
     commands.toggleDevice(key, nextValue)
   }, [sensorStates, commands, session])
 
+  // Predicción de eficiencia (ML). El mensaje se muestra en la vista y llega
+  // también como notificación del navegador. El backend no la emite por WS:
+  // cada plataforma lee su propia respuesta HTTP.
+  const requestPrediction = useCallback(async () => {
+    if (!session || predicting) return
+    setPredicting(true); setError(null)
+    try {
+      const result = await requestPredict.execute(session.id)
+      if (result.message) {
+        setPrediction(result.message)
+        showBrowserNotification('Predicción de eficiencia', result.message)
+      } else {
+        setError('Aún no hay lecturas suficientes para predecir. Intenta más tarde.')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al solicitar la predicción')
+    } finally {
+      setPredicting(false)
+    }
+  }, [session, predicting])
+
+  const clearPrediction = useCallback(() => setPrediction(null), [])
+
   const loadReport = useCallback(async () => {
     if (!session) return
     setLoading(true); clearMessages()
@@ -205,8 +233,10 @@ export const useFermentationViewModel = () => {
     loading, error, successMessage,
     session, report, sensorStates,
     showForm, isRunning, circuitId,
+    prediction, predicting,
     setShowForm,
     startFermentation, stopFermentation,
     toggleSensor, loadReport,
+    requestPrediction, clearPrediction,
   }
 }
