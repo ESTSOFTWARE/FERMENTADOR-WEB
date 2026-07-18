@@ -51,14 +51,55 @@ const FermentationView = () => {
       }}
     >
       {/* ── Header ── */}
-      <motion.div variants={sectionVariants} style={{ marginBottom: 40 }}>
-        <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 12 }}>
-          Control
-        </p>
-        <h1 style={{ color: '#F4F4F5', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-          Iniciar Fermentación
-        </h1>
-        <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
+      <motion.div
+        variants={sectionVariants}
+        style={{
+          marginBottom: 40,
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          gap: 24,
+        }}
+      >
+        <div>
+          <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 12 }}>
+            Control
+          </p>
+          <h1 style={{ color: '#F4F4F5', fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+            Iniciar Fermentación
+          </h1>
+          <div style={{ marginTop: 12, height: 1, width: 96, backgroundColor: '#22C55E', opacity: 0.4 }} />
+        </div>
+
+        {/* ── Botón: solicitar predicción ML (solo con fermentación activa) ── */}
+        {isRunning && (
+          <button
+            onClick={requestPrediction}
+            disabled={predicting}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 10,
+              backgroundColor: '#22C55E15',
+              border: '1px solid #22C55E40',
+              color: '#22C55E',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: predicting ? 'wait' : 'pointer',
+              opacity: predicting ? 0.6 : 1,
+              transition: 'opacity 0.2s',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            {predicting ? 'Analizando lecturas…' : 'Solicitar predicción de eficiencia'}
+          </button>
+        )}
       </motion.div>
 
       {/* ── Alerts ── */}
@@ -91,16 +132,16 @@ const FermentationView = () => {
             marginBottom: 24,
             padding: '14px 16px',
             borderRadius: 10,
-            backgroundColor: '#A78BFA10',
-            border: '1px solid #A78BFA30',
+            backgroundColor: '#22C55E10',
+            border: '1px solid #22C55E30',
             color: '#E4E4E7',
             fontSize: 13,
             lineHeight: 1.6,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ color: '#A78BFA', fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <span style={{ color: '#22C55E', fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
               </svg>
               Predicción de eficiencia
@@ -155,36 +196,6 @@ const FermentationView = () => {
           onCancelForm={() => setShowForm(false)}
         />
       </motion.div>
-
-      {/* ── Botón: solicitar predicción ML (solo con fermentación activa) ── */}
-      {isRunning && (
-        <motion.div variants={sectionVariants} style={{ marginTop: 24 }}>
-          <button
-            onClick={requestPrediction}
-            disabled={predicting}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '10px 20px',
-              borderRadius: 10,
-              backgroundColor: '#A78BFA15',
-              border: '1px solid #A78BFA40',
-              color: '#A78BFA',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: predicting ? 'wait' : 'pointer',
-              opacity: predicting ? 0.6 : 1,
-              transition: 'opacity 0.2s',
-            }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-            </svg>
-            {predicting ? 'Analizando lecturas…' : 'Solicitar predicción de eficiencia'}
-          </button>
-        </motion.div>
-      )}
 
       <motion.div variants={sectionVariants}>
         <SensorControlSection

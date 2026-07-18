@@ -1,3 +1,4 @@
+// SensorsView.tsx
 import { motion }                 from 'motion/react'
 import { useSensorsViewModel }   from '../viewmodels/useSensorsViewModel'
 import { useFermentation }       from '../../../fermentation/presentation/hooks/useFermentation'
@@ -8,6 +9,8 @@ import { WS_STATUS_CONFIG }      from '../constants/ws-status-config.constants'
 import SensorCard                from '../components/SensorCard'
 import { pageVariants, sectionVariants, cardVariants, gridVariants } from '../../../../shared/animations/variants'
 
+const CHART_ORDER = ['ph', 'rpm', 'temperature', 'turbidity', 'alcohol', 'conductivity'] as const
+
 const SensorsView = () => {
   const { user }    = useUserAuth()
   const { session } = useFermentation()
@@ -17,13 +20,14 @@ const SensorsView = () => {
     autoSessionId: session?.id,
   })
 
-  const isRunning      = session?.status === 'running'
-  // "En vivo" solo si hay fermentación corriendo; si no, "Detenido".
-  const status         = isRunning
+  const isRunning = session?.status === 'running'
+  const status    = isRunning
     ? WS_STATUS_CONFIG[wsStatus]
     : { label: 'Detenido', color: '#52525B', pulse: false }
-  const primarySensors   = SENSOR_META.slice(0, 2)
-  const secondarySensors = SENSOR_META.slice(2)
+
+  const orderedSensors = CHART_ORDER
+    .map(key => SENSOR_META.find(s => s.key === key))
+    .filter((s): s is typeof SENSOR_META[number] => Boolean(s))
 
   return (
     <motion.div
@@ -101,24 +105,20 @@ const SensorsView = () => {
         </div>
       )}
 
-      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        {primarySensors.map((sensor, i) => (
+      <motion.div
+        variants={gridVariants}
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridAutoFlow: 'row', gap: 16 }}
+      >
+        {orderedSensors.map((sensor, i) => (
           <motion.div key={sensor.key} variants={cardVariants} className="sensor-card-wrap" style={{ animationDelay: `${i * 0.05}s` }}>
-            <SensorCard label={sensor.label} unit={sensor.unit} color={sensor.color} description={sensor.description} data={chartData[sensor.key]} latestValue={latestValues[sensor.key]} />
-          </motion.div>
-        ))}
-      </motion.div>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ flex: 1, height: 1, backgroundColor: '#1A1A1D' }} />
-        <span style={{ color: '#2A2A2D', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Sensores adicionales</span>
-        <div style={{ flex: 1, height: 1, backgroundColor: '#1A1A1D' }} />
-      </div>
-
-      <motion.div variants={gridVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-        {secondarySensors.map((sensor, i) => (
-          <motion.div key={sensor.key} variants={cardVariants} className="sensor-card-wrap" style={{ animationDelay: `${(i + 2) * 0.05}s` }}>
-            <SensorCard label={sensor.label} unit={sensor.unit} color={sensor.color} description={sensor.description} data={chartData[sensor.key]} latestValue={latestValues[sensor.key]} />
+            <SensorCard
+              label={sensor.label}
+              unit={sensor.unit}
+              color={sensor.color}
+              description={sensor.description}
+              data={chartData[sensor.key]}
+              latestValue={latestValues[sensor.key]}
+            />
           </motion.div>
         ))}
       </motion.div>
