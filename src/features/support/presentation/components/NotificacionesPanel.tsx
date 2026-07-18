@@ -1,29 +1,37 @@
-import { useState }              from 'react'
-import { cn }                    from '../../../../lib/utils'
-import PaginationBar             from '../../../../shared/components/PaginationBar'
-import { PAGE_SIZE }             from '../constants/pagination.constants'
-import { NOTIF_TIPO_STYLE }      from '../constants/notif-tipo-style.constants'
-import { NOTIF_TIPO_ICON }       from '../constants/notif-tipo-icon.constants'
-import { MOCK_NOTIFICACIONES }   from '../constants/mock-notificaciones.constants'
-import { timeAgo }               from '../utils/time-ago'
-import type { NotifType }        from '../types/notif-type.types'
-import type { Notificacion }     from '../types/notificacion.types'
+import { useState } from 'react'
+import { cn } from '../../../../lib/utils'
+import PaginationBar from '../../../../shared/components/PaginationBar'
+import { PAGE_SIZE } from '../constants/pagination.constants'
+import { NOTIF_TIPO_STYLE } from '../constants/notif-tipo-style.constants'
+import { NOTIF_TIPO_ICON } from '../constants/notif-tipo-icon.constants'
+import { useSupportNotificationsViewModel } from '../viewmodels/useSupportNotificationsViewModel'
+import { timeAgo } from '../utils/time-ago'
+import type { NotifType } from '../types/notif-type.types'
+import type { Notificacion } from '../types/notificacion.types'
 
 const NotificacionesPanel = () => {
-  const [notifs, setNotifs] = useState<Notificacion[]>(MOCK_NOTIFICACIONES)
+  const { notifications, markAsRead, markAllAsRead } = useSupportNotificationsViewModel()
   const [filter, setFilter] = useState<'todas' | 'no-leidas'>('todas')
-  const [page, setPage]     = useState(1)
+  const [page, setPage] = useState(1)
+
+  // Adaptador: SupportNotification (dominio) → Notificacion (shape que consume el JSX).
+  // 'ticket' ya tiene estilo/ícono definidos en NOTIF_TIPO_STYLE / NOTIF_TIPO_ICON.
+  const notifs: Notificacion[] = notifications.map(n => ({
+    id:          n.id,
+    tipo:        'ticket',
+    titulo:      n.title,
+    descripcion: n.description,
+    leida:       n.read,
+    creadoEn:    n.createdAt,
+  }))
+
+  const marcarLeida = markAsRead
+  const marcarTodas = markAllAsRead
 
   const noLeidas   = notifs.filter(n => !n.leida).length
   const filtered   = filter === 'no-leidas' ? notifs.filter(n => !n.leida) : notifs
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paged      = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-
-  const marcarLeida = (id: string) =>
-    setNotifs(prev => prev.map(n => n.id === id ? { ...n, leida: true } : n))
-
-  const marcarTodas = () =>
-    setNotifs(prev => prev.map(n => ({ ...n, leida: true })))
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -55,7 +63,7 @@ const NotificacionesPanel = () => {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
             <svg className="w-10 h-10 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             <p className="text-neutral-600 text-sm">Sin notificaciones</p>
           </div>
