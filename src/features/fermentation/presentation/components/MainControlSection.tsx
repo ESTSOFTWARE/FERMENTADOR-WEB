@@ -5,6 +5,7 @@ import ScheduleForm from './ScheduleForm'
 
 const MainControlSection = ({
   isRunning,
+  authLoading,
   loading,
   showForm,
   session,
@@ -117,7 +118,7 @@ const MainControlSection = ({
     )}
 
     {/* Aviso si el usuario no tiene circuito */}
-    {!circuitId && !session && (
+    {!authLoading && !circuitId && !session && (
       <div
         style={{
           marginTop:       16,

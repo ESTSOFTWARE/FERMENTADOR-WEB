@@ -18,6 +18,7 @@ const FermentationView = () => {
     circuitId,
     prediction,
     predicting,
+    authLoading,
     setShowForm,
     startFermentation,
     stopFermentation,
@@ -44,9 +45,9 @@ const FermentationView = () => {
       style={{
         minHeight: 'calc(100vh - 3.5rem)',
         backgroundColor: '#0A0A0B',
-        padding:         '48px',
-        display:         'flex',
-        flexDirection:   'column',
+        padding: '48px',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* ── Header ── */}
@@ -64,16 +65,16 @@ const FermentationView = () => {
       {error && (
         <div
           style={{
-            marginBottom:    24,
-            padding:         '12px 16px',
-            borderRadius:    10,
+            marginBottom: 24,
+            padding: '12px 16px',
+            borderRadius: 10,
             backgroundColor: '#F43F5E10',
-            border:          '1px solid #F43F5E30',
-            color:           '#F43F5E',
-            fontSize:        13,
-            display:         'flex',
-            alignItems:      'center',
-            gap:             8,
+            border: '1px solid #F43F5E30',
+            color: '#F43F5E',
+            fontSize: 13,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
           }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -87,20 +88,20 @@ const FermentationView = () => {
       {prediction && (
         <div
           style={{
-            marginBottom:    24,
-            padding:         '14px 16px',
-            borderRadius:    10,
+            marginBottom: 24,
+            padding: '14px 16px',
+            borderRadius: 10,
             backgroundColor: '#A78BFA10',
-            border:          '1px solid #A78BFA30',
-            color:           '#E4E4E7',
-            fontSize:        13,
-            lineHeight:      1.6,
+            border: '1px solid #A78BFA30',
+            color: '#E4E4E7',
+            fontSize: 13,
+            lineHeight: 1.6,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <span style={{ color: '#A78BFA', fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
               </svg>
               Predicción de eficiencia
             </span>
@@ -121,16 +122,16 @@ const FermentationView = () => {
       {successMessage && (
         <div
           style={{
-            marginBottom:    24,
-            padding:         '12px 16px',
-            borderRadius:    10,
+            marginBottom: 24,
+            padding: '12px 16px',
+            borderRadius: 10,
             backgroundColor: '#22C55E10',
-            border:          '1px solid #22C55E30',
-            color:           '#22C55E',
-            fontSize:        13,
-            display:         'flex',
-            alignItems:      'center',
-            gap:             8,
+            border: '1px solid #22C55E30',
+            color: '#22C55E',
+            fontSize: 13,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
           }}
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -141,17 +142,18 @@ const FermentationView = () => {
       )}
 
       <motion.div variants={sectionVariants}>
-      <MainControlSection
-        isRunning={isRunning}
-        loading={loading}
-        showForm={showForm}
-        session={session}
-        circuitId={circuitId}
-        circuitCode={user?.activation_code ?? null}
-        onMainToggle={handleMainToggle}
-        onSubmit={startFermentation}
-        onCancelForm={() => setShowForm(false)}
-      />
+        <MainControlSection
+          isRunning={isRunning}
+          loading={loading}
+          showForm={showForm}
+          session={session}
+          circuitId={circuitId}
+          circuitCode={user?.activation_code ?? null}
+          authLoading={authLoading}
+          onMainToggle={handleMainToggle}
+          onSubmit={startFermentation}
+          onCancelForm={() => setShowForm(false)}
+        />
       </motion.div>
 
       {/* ── Botón: solicitar predicción ML (solo con fermentación activa) ── */}
@@ -161,23 +163,23 @@ const FermentationView = () => {
             onClick={requestPrediction}
             disabled={predicting}
             style={{
-              display:         'inline-flex',
-              alignItems:      'center',
-              gap:             8,
-              padding:         '10px 20px',
-              borderRadius:    10,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              borderRadius: 10,
               backgroundColor: '#A78BFA15',
-              border:          '1px solid #A78BFA40',
-              color:           '#A78BFA',
-              fontSize:        13,
-              fontWeight:      600,
-              cursor:          predicting ? 'wait' : 'pointer',
-              opacity:         predicting ? 0.6 : 1,
-              transition:      'opacity 0.2s',
+              border: '1px solid #A78BFA40',
+              color: '#A78BFA',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: predicting ? 'wait' : 'pointer',
+              opacity: predicting ? 0.6 : 1,
+              transition: 'opacity 0.2s',
             }}
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
             </svg>
             {predicting ? 'Analizando lecturas…' : 'Solicitar predicción de eficiencia'}
           </button>
@@ -185,12 +187,12 @@ const FermentationView = () => {
       )}
 
       <motion.div variants={sectionVariants}>
-      <SensorControlSection
-        sensorStates={sensorStates}
-        loading={loading}
-        disabled={!isRunning}
-        onToggle={(key: SensorKey) => toggleSensor(key)}
-      />
+        <SensorControlSection
+          sensorStates={sensorStates}
+          loading={loading}
+          disabled={!isRunning}
+          onToggle={(key: SensorKey) => toggleSensor(key)}
+        />
       </motion.div>
     </motion.div>
   )
