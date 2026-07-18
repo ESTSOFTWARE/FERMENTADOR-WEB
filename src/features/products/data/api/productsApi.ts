@@ -17,6 +17,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-MX', { day: '2
 
 const toReview = (r: ReviewDto): ProductReview => ({
   id:          r.id,
+  userId:      r.user_id,
   name:        `Usuario #${r.user_id}`,
   initials:    `U${r.user_id}`,
   institution: 'Cliente verificado',

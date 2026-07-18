@@ -1,18 +1,21 @@
-import { useParams, useNavigate }         from 'react-router-dom'
-import { useEffect, useState }             from 'react'
-import { motion }                          from 'motion/react'
-import { ReactLenis }                      from 'lenis/react'
-import { ShoppingCart, Zap, Truck, ShieldCheck, RotateCcw, Lock, Minus, Plus } from 'lucide-react'
-import { pageVariants, sectionVariants }   from '../../../../shared/animations/variants'
-import { useProductDetailViewModel }       from '../viewmodels/useProductDetailViewModel'
-import { useProductsViewModel }            from '../viewmodels/useProductsViewModel'
-import { OfferCard }                       from '../../../../components/ui/offer-carousel'
-import type { ProductReview }              from '../../domain/models/Product'
-import { useUserAuth }                     from '../../../../core/hooks/userAuth'
-import { useCartStore }                    from '../../../../core/store/useCartStore'
-import { CartDrawer }                      from '../components/CartDrawer'
-import Header                              from '../../../landing/presentation/components/Header'
-import Footer                              from '../../../landing/presentation/components/Footer'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { motion } from 'motion/react'
+import { ReactLenis } from 'lenis/react'
+import { ShoppingCart, Zap, Truck, ShieldCheck, RotateCcw, Lock, Minus, Plus, Trash2 } from 'lucide-react'
+import { pageVariants, sectionVariants } from '../../../../shared/animations/variants'
+import { useProductDetailViewModel } from '../viewmodels/useProductDetailViewModel'
+import { useProductsViewModel } from '../viewmodels/useProductsViewModel'
+import { OfferCard } from '../../../../components/ui/offer-carousel'
+import type { ProductReview } from '../../domain/models/Product'
+import { useUserAuth } from '../../../../core/hooks/userAuth'
+import { useCartStore } from '../../../../core/store/useCartStore'
+import { CartDrawer } from '../components/CartDrawer'
+import Header from '../../../landing/presentation/components/Header'
+import Footer from '../../../landing/presentation/components/Footer'
+import { useLeaveReviewViewModel } from '../viewmodels/useLeaveReviewViewModel'
+import { ReviewFormModal } from '../components/ReviewFormModal'
+import { useDeleteReviewViewModel } from '../viewmodels/useDeleteReviewViewModel'
 
 const SPEC_ICONS = [
   'M9 3h6M10 3v6L6 17a1 1 0 001 1h10a1 1 0 001-1L14 9V3',
@@ -39,21 +42,29 @@ const THUMB_ICONS = [
 ]
 
 const BENEFITS = [
-  { Icon: Truck,       title: 'Envío nacional',      desc: 'Entrega en 24–48 h hábiles' },
-  { Icon: ShieldCheck, title: 'Garantía 12 meses',   desc: 'Cobertura directa del fabricante' },
-  { Icon: RotateCcw,   title: 'Devolución 30 días',  desc: 'Sin preguntas, reembolso total' },
-  { Icon: Lock,        title: 'Pago seguro',          desc: 'Cifrado SSL · Tarjeta y SPEI' },
+  { Icon: Truck, title: 'Envío nacional', desc: 'Entrega en 24–48 h hábiles' },
+  { Icon: ShieldCheck, title: 'Garantía 12 meses', desc: 'Cobertura directa del fabricante' },
+  { Icon: RotateCcw, title: 'Devolución 30 días', desc: 'Sin preguntas, reembolso total' },
+  { Icon: Lock, title: 'Pago seguro', desc: 'Cifrado SSL · Tarjeta y SPEI' },
 ]
 
 const ProductDetailView = () => {
-  const { id }                      = useParams<{ id: string }>()
-  const navigate                    = useNavigate()
-  const { user }                    = useUserAuth()
-  const { addItem, openCart }       = useCartStore()
-  const { product, loading, error } = useProductDetailViewModel(Number(id))
-  const { products: allProducts }   = useProductsViewModel()
-  const [qty, setQty]               = useState(1)
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { user } = useUserAuth()
+  const { addItem, openCart } = useCartStore()
+  const { product, loading, error, reload } = useProductDetailViewModel(Number(id))
+  const { products: allProducts } = useProductsViewModel()
+  const [qty, setQty] = useState(1)
   const [activeThumb, setActiveThumb] = useState(3)
+
+  const review = useLeaveReviewViewModel(Number(id), reload)
+  const deleteReview = useDeleteReviewViewModel(Number(id), reload)
+
+  const handleWriteReview = () => {
+    if (!user) { navigate('/login', { state: { from: `/products/${id}` } }); return }
+    review.setOpen(true)
+  }
 
   useEffect(() => {
     if (product?.name) document.title = product.name
@@ -76,6 +87,16 @@ const ProductDetailView = () => {
       <div className="min-h-screen bg-[#0A0A0B]">
         <Header />
         <CartDrawer />
+        <ReviewFormModal
+          open={review.open}
+          rating={review.rating}
+          comment={review.comment}
+          saving={review.saving}
+          onRatingChange={review.setRating}
+          onCommentChange={review.setComment}
+          onClose={() => review.setOpen(false)}
+          onSubmit={review.submit}
+        />
 
         <motion.div variants={pageVariants} initial="hidden" animate="visible"
           className="mx-auto max-w-6xl px-6 pt-32 pb-8">
@@ -120,7 +141,7 @@ const ProductDetailView = () => {
 
                     {product.image
                       ? <img src={product.image} alt={product.name} className="w-full h-full object-cover opacity-90"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                       : (
                         <div className="flex flex-col items-center justify-center h-full gap-3 opacity-30">
                           <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
@@ -133,11 +154,10 @@ const ProductDetailView = () => {
 
                     {/* Stock badge */}
                     <div className="absolute top-4 left-4">
-                      <span className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm ${
-                        product.stock > 0
-                          ? 'bg-black/40 text-green-400 border border-green-500/20'
-                          : 'bg-black/40 text-red-400 border border-red-500/20'
-                      }`}>
+                      <span className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm ${product.stock > 0
+                        ? 'bg-black/40 text-green-400 border border-green-500/20'
+                        : 'bg-black/40 text-red-400 border border-red-500/20'
+                        }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? 'bg-green-400' : 'bg-red-400'}`} />
                         {product.stock > 0 ? `${product.stock} en stock` : 'Sin stock'}
                       </span>
@@ -146,7 +166,7 @@ const ProductDetailView = () => {
                     {/* SKU */}
                     <div className="absolute bottom-4 left-4 flex items-center gap-1.5 text-xs text-white/30 font-mono">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
                       </svg>
                       {product.sku}
                     </div>
@@ -156,11 +176,10 @@ const ProductDetailView = () => {
                   <div className="grid grid-cols-4 gap-2">
                     {THUMB_ICONS.map((path, i) => (
                       <button key={i} onClick={() => setActiveThumb(i)}
-                        className={`rounded-xl aspect-square flex items-center justify-center transition-all duration-200 border ${
-                          activeThumb === i
-                            ? 'border-green-500/40'
-                            : 'border-white/6 hover:border-white/15'
-                        }`}
+                        className={`rounded-xl aspect-square flex items-center justify-center transition-all duration-200 border ${activeThumb === i
+                          ? 'border-green-500/40'
+                          : 'border-white/6 hover:border-white/15'
+                          }`}
                         style={{ background: activeThumb === i ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)' }}>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                           stroke={activeThumb === i ? '#22C55E' : '#3F3F46'}
@@ -175,8 +194,8 @@ const ProductDetailView = () => {
                   <div className="flex items-start gap-2.5">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white"
                       strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-0.5 opacity-40">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                      <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                     </svg>
                     <p className="text-xs text-neutral-500 leading-relaxed">
                       Este componente <span className="text-neutral-400 font-medium">no incluye instalación ni mano de obra.</span> El precio cubre únicamente la pieza; el servicio de colocación en el equipo debe contratarse por separado.
@@ -197,7 +216,7 @@ const ProductDetailView = () => {
                     {/* Rating */}
                     <div className="flex items-center gap-2 mt-2">
                       <div className="flex items-center gap-0.5">
-                        {[1,2,3,4,5].map(s => (
+                        {[1, 2, 3, 4, 5].map(s => (
                           <svg key={s} width="14" height="14" viewBox="0 0 24 24"
                             fill={s <= Math.round(product.rating) ? '#F59E0B' : 'none'}
                             stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -289,9 +308,9 @@ const ProductDetailView = () => {
                     {/* Trust inline */}
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       {[
-                        { Icon: Truck,       label: 'Envío 24–48 h'    },
+                        { Icon: Truck, label: 'Envío 24–48 h' },
                         { Icon: ShieldCheck, label: 'Garantía 12 meses' },
-                        { Icon: RotateCcw,   label: '30 días devolución' },
+                        { Icon: RotateCcw, label: '30 días devolución' },
                       ].map(({ Icon, label }) => (
                         <div key={label} className="flex flex-col items-center gap-1 text-center">
                           <Icon className="w-4 h-4 text-neutral-600" />
@@ -305,9 +324,9 @@ const ProductDetailView = () => {
                   <div className="grid grid-cols-3 rounded-2xl border border-white/8 overflow-hidden"
                     style={{ background: 'rgba(255,255,255,0.02)' }}>
                     {[
-                      { label: 'SKU',         value: product.sku,                mono: true  },
-                      { label: 'Disponibles', value: `${product.stock} uds`,     mono: false },
-                      { label: 'Categoría',   value: product.category ?? '—',    mono: false },
+                      { label: 'SKU', value: product.sku, mono: true },
+                      { label: 'Disponibles', value: `${product.stock} uds`, mono: false },
+                      { label: 'Categoría', value: product.category ?? '—', mono: false },
                     ].map(({ label, value, mono }, i) => (
                       <div key={label} className={`flex flex-col gap-1 px-4 py-3 ${i < 2 ? 'border-r border-white/6' : ''}`}>
                         <span className="text-[10px] uppercase tracking-widest text-neutral-600">{label}</span>
@@ -359,9 +378,8 @@ const ProductDetailView = () => {
                       style={{ background: 'rgba(255,255,255,0.02)' }}>
                       {product.specs.map(({ label, value }, i) => (
                         <div key={label}
-                          className={`flex items-center justify-between px-5 py-3.5 ${
-                            i < product.specs!.length - 1 ? 'border-b border-white/6' : ''
-                          }`}>
+                          className={`flex items-center justify-between px-5 py-3.5 ${i < product.specs!.length - 1 ? 'border-b border-white/6' : ''
+                            }`}>
                           <div className="flex items-center gap-3">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                               stroke="rgba(34,197,94,0.65)" strokeWidth="1.5"
@@ -422,7 +440,8 @@ const ProductDetailView = () => {
                         Reseñas de clientes
                       </h2>
                     </div>
-                    <button className="px-4 py-2 rounded-xl text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-all mt-1">
+                    <button onClick={handleWriteReview}
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-white border border-white/15 hover:bg-white/5 transition-all mt-1">
                       Escribir reseña
                     </button>
                   </div>
@@ -439,7 +458,7 @@ const ProductDetailView = () => {
                           <span className="text-lg text-neutral-500 mb-0.5">/ 5</span>
                         </div>
                         <div className="flex items-center gap-0.5 mt-2.5">
-                          {[1,2,3,4,5].map(s => (
+                          {[1, 2, 3, 4, 5].map(s => (
                             <svg key={s} width="16" height="16" viewBox="0 0 24 24"
                               fill={s <= Math.round(product.rating) ? '#F59E0B' : 'none'}
                               stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -454,7 +473,7 @@ const ProductDetailView = () => {
 
                       {/* Distribution bars */}
                       <div className="flex flex-col gap-2">
-                        {[5,4,3,2,1].map(star => {
+                        {[5, 4, 3, 2, 1].map(star => {
                           const pct = product.ratingDistribution?.[star] ?? 0
                           return (
                             <div key={star} className="flex items-center gap-2">
@@ -477,48 +496,67 @@ const ProductDetailView = () => {
 
                     {/* Right: review cards */}
                     <div className="flex flex-col gap-3">
-                      {product.reviews.map((review: ProductReview) => (
-                        <div key={review.id} className="rounded-2xl border border-white/8 p-5"
-                          style={{ background: 'rgba(255,255,255,0.02)' }}>
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                              {/* Avatar */}
-                              <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-green-400"
-                                style={{ background: 'linear-gradient(135deg,#0a1a0e,#0d2212)', border: '1px solid rgba(34,197,94,0.2)' }}>
-                                {review.initials}
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-sm font-semibold text-white">{review.name}</span>
-                                  {review.verified && (
-                                    <span className="flex items-center gap-1 text-[10px] text-green-400 font-medium">
-                                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M20 6L9 17l-5-5" />
-                                      </svg>
-                                      Verificado
-                                    </span>
-                                  )}
+                      {product.reviews.map((review: ProductReview) => {
+                        const isOwn = user != null && review.userId === user.id
+                        return (
+                          <div key={review.id} className="rounded-2xl border border-white/8 p-5"
+                            style={{ background: 'rgba(255,255,255,0.02)' }}>
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex items-center gap-3">
+                                {/* Avatar */}
+                                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold text-green-400"
+                                  style={{ background: 'linear-gradient(135deg,#0a1a0e,#0d2212)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                                  {review.initials}
                                 </div>
-                                <p className="text-xs text-neutral-500 mt-0.5">{review.institution}</p>
+                                <div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-sm font-semibold text-white">{review.name}</span>
+                                    {review.verified && (
+                                      <span className="flex items-center gap-1 text-[10px] text-green-400 font-medium">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                                          stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M20 6L9 17l-5-5" />
+                                        </svg>
+                                        Verificado
+                                      </span>
+                                    )}
+                                    {isOwn && (
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded-full text-green-400"
+                                        style={{ background: 'rgba(34,197,94,0.12)' }}>
+                                        Tu reseña
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-neutral-500 mt-0.5">{review.institution}</p>
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-4">
+                                <div className="flex items-center gap-0.5">
+                                  {[1, 2, 3, 4, 5].map(s => (
+                                    <svg key={s} width="12" height="12" viewBox="0 0 24 24"
+                                      fill={s <= review.rating ? '#F59E0B' : 'none'}
+                                      stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                  ))}
+                                </div>
+                                <span className="text-[10px] text-neutral-600">{review.date}</span>
+                                {isOwn && (
+                                  <button
+                                    onClick={() => deleteReview.remove(review.id)}
+                                    disabled={deleteReview.deletingId === review.id}
+                                    className="flex items-center gap-1 text-[10px] text-neutral-600 hover:text-red-400 transition-colors mt-1 disabled:opacity-40"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    {deleteReview.deletingId === review.id ? 'Eliminando…' : 'Eliminar'}
+                                  </button>
+                                )}
                               </div>
                             </div>
-                            <div className="flex flex-col items-end gap-1 flex-shrink-0 ml-4">
-                              <div className="flex items-center gap-0.5">
-                                {[1,2,3,4,5].map(s => (
-                                  <svg key={s} width="12" height="12" viewBox="0 0 24 24"
-                                    fill={s <= review.rating ? '#F59E0B' : 'none'}
-                                    stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                  </svg>
-                                ))}
-                              </div>
-                              <span className="text-[10px] text-neutral-600">{review.date}</span>
-                            </div>
+                            <p className="text-sm text-neutral-400 leading-relaxed">{review.text}</p>
                           </div>
-                          <p className="text-sm text-neutral-400 leading-relaxed">{review.text}</p>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
@@ -533,51 +571,51 @@ const ProductDetailView = () => {
           p.id !== product.id &&
           (p.category === product.category || p.tags?.some(t => product.tags?.includes(t)))
         ).slice(0, 5).length > 0 && (
-          <div className="pb-20">
-            <div className="mx-auto max-w-6xl px-6 mb-8">
-              <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
-                También te puede servir
-              </p>
-              <h2 style={{ color: '#F4F4F5', fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-                Productos relacionados
-              </h2>
+            <div className="pb-20">
+              <div className="mx-auto max-w-6xl px-6 mb-8">
+                <p style={{ color: '#22C55E', fontSize: 11, letterSpacing: '0.3em', textTransform: 'uppercase', margin: '0 0 8px 0' }}>
+                  También te puede servir
+                </p>
+                <h2 style={{ color: '#F4F4F5', fontSize: 28, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
+                  Productos relacionados
+                </h2>
+              </div>
+              <div
+                className="grid gap-5"
+                style={{
+                  paddingLeft: 'max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem))',
+                  paddingRight: 'max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem))',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                }}>
+                {allProducts.filter(p =>
+                  p.id !== product.id &&
+                  (p.category === product.category || p.tags?.some(t => product.tags?.includes(t)))
+                ).slice(0, 5).map(p => (
+                  <OfferCard
+                    key={p.id}
+                    offer={{
+                      id: p.id,
+                      imageSrc: p.image ?? 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+                      imageAlt: p.name,
+                      tag: p.stock > 0 ? `${p.stock} disponibles` : 'Sin stock',
+                      title: p.name,
+                      description: p.description,
+                      brandLogoSrc: '/assets/logo.svg',
+                      brandName: `$${p.price.toLocaleString('es-MX')} MXN`,
+                      promoCode: p.sku,
+                      href: `/products/${p.id}`,
+                    }}
+                    onClick={() => navigate(`/products/${p.id}`)}
+                    onAddToCart={() => {
+                      if (!user) { navigate('/login', { state: { from: `/products/${p.id}` } }); return }
+                      addItem(p)
+                      openCart()
+                    }}
+                  />
+                ))}
+              </div>
             </div>
-            <div
-              className="grid gap-5"
-              style={{
-                paddingLeft:         'max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem))',
-                paddingRight:        'max(1.5rem, calc((100vw - 72rem) / 2 + 1.5rem))',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              }}>
-              {allProducts.filter(p =>
-                p.id !== product.id &&
-                (p.category === product.category || p.tags?.some(t => product.tags?.includes(t)))
-              ).slice(0, 5).map(p => (
-                <OfferCard
-                  key={p.id}
-                  offer={{
-                    id:           p.id,
-                    imageSrc:     p.image ?? 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
-                    imageAlt:     p.name,
-                    tag:          p.stock > 0 ? `${p.stock} disponibles` : 'Sin stock',
-                    title:        p.name,
-                    description:  p.description,
-                    brandLogoSrc: '/assets/logo.svg',
-                    brandName:    `$${p.price.toLocaleString('es-MX')} MXN`,
-                    promoCode:    p.sku,
-                    href:         `/products/${p.id}`,
-                  }}
-                  onClick={() => navigate(`/products/${p.id}`)}
-                  onAddToCart={() => {
-                    if (!user) { navigate('/login', { state: { from: `/products/${p.id}` } }); return }
-                    addItem(p)
-                    openCart()
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+          )}
 
         <Footer />
       </div>

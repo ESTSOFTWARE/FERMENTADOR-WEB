@@ -5,6 +5,7 @@ export interface ProductSpec {
 
 export interface ProductReview {
   id:          number
+  userId:      number
   name:        string
   initials:    string
   institution: string
