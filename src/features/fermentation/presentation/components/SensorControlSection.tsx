@@ -1,42 +1,42 @@
-import { SENSOR_CONTROLS }                    from '../constants/sensor-controls.constants'
-import type { SensorKey }                     from '../../domain/models/SensorKey'
+import { SENSOR_CONTROLS } from '../constants/sensor-controls.constants'
+import type { SensorKey } from '../../domain/models/SensorKey'
 import type { SensorControlSectionProps as Props } from '../types/SensorControlSectionProps'
-import ToggleSwitch                           from './ToggleSwitch'
+import ToggleSwitch from './ToggleSwitch'
 
 const READONLY_DEVICES = [
-  { key: 'motor', label: 'Motor', unit: 'rpm',    color: '#06B6D4' },
-  { key: 'pump',  label: 'Bomba', unit: 'ON/OFF', color: '#FB923C' },
+  { key: 'motor', label: 'Motor', unit: 'rpm', color: '#06B6D4' },
+  { key: 'pump', label: 'Bomba', unit: 'ON/OFF', color: '#FB923C' },
 ] as const
 
 const thStyle: React.CSSProperties = {
-  textAlign:     'left',
-  padding:       '10px 16px',
-  color:         '#52525B',
-  fontSize:      10,
+  textAlign: 'left',
+  padding: '10px 16px',
+  color: '#52525B',
+  fontSize: 10,
   letterSpacing: '0.15em',
   textTransform: 'uppercase',
-  fontWeight:    600,
-  borderBottom:  '1px solid #1F1F22',
+  fontWeight: 600,
+  borderBottom: '1px solid #1F1F22',
 }
 
 const tdStyle: React.CSSProperties = {
-  padding:      '14px 16px',
-  fontSize:     13,
-  color:        '#E4E4E7',
+  padding: '14px 16px',
+  fontSize: 13,
+  color: '#E4E4E7',
   borderBottom: '1px solid #1A1A1D',
 }
 
 const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggle }: Props) => {
-  const total  = Object.keys(sensorStates).length
+  const total = Object.keys(sensorStates).length
   const active = Object.values(sensorStates).filter(Boolean).length
 
   return (
     <section
       style={{
-        padding:         28,
-        borderRadius:    16,
+        padding: 28,
+        borderRadius: 16,
         backgroundColor: '#111113',
-        border:          '1px solid #1F1F22',
+        border: '1px solid #1F1F22',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -50,18 +50,18 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
         </div>
 
         <div style={{
-          display:         'flex',
-          alignItems:      'center',
-          gap:             8,
-          padding:         '6px 14px',
-          borderRadius:    999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 14px',
+          borderRadius: 999,
           backgroundColor: active > 0 ? '#22C55E10' : '#18181B',
-          border:          `1px solid ${active > 0 ? '#22C55E28' : '#27272A'}`,
+          border: `1px solid ${active > 0 ? '#22C55E28' : '#27272A'}`,
         }}>
           <div style={{
-            width:           6,
-            height:          6,
-            borderRadius:    '50%',
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
             backgroundColor: active > 0 ? '#22C55E' : '#3F3F46',
           }} />
           <span style={{ color: active > 0 ? '#22C55E' : '#52525B', fontSize: 12, fontWeight: 500 }}>
@@ -89,11 +89,11 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{
-                        width:           8,
-                        height:          8,
-                        borderRadius:    '50%',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
                         backgroundColor: isOn ? sensor.color : '#3F3F46',
-                        flexShrink:      0,
+                        flexShrink: 0,
                       }} />
                       <span style={{ fontWeight: 600, color: isOn ? '#F4F4F5' : '#A1A1AA' }}>
                         {sensor.label}
@@ -119,24 +119,24 @@ const SensorControlSection = ({ sensorStates, loading, disabled = false, onToggl
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#3F3F46', flexShrink: 0 }} />
                     <span style={{ fontWeight: 600, color: '#A1A1AA' }}>{device.label}</span>
-                    <span style={{
-                      padding:         '2px 8px',
-                      borderRadius:    999,
-                      backgroundColor: `${device.color}10`,
-                      border:          `1px solid ${device.color}25`,
-                      color:           device.color,
-                      fontSize:        9,
-                      letterSpacing:   '0.1em',
-                      textTransform:   'uppercase',
-                      fontWeight:      700,
-                    }}>
-                      Solo lectura
-                    </span>
                   </div>
                 </td>
                 <td style={{ ...tdStyle, color: '#71717A' }}>{device.unit}</td>
                 <td style={{ ...tdStyle, textAlign: 'right' }}>
-                  <ToggleSwitch checked={false} onChange={() => {}} disabled />
+                  <span style={{
+                    display: 'inline-flex',
+                    padding: '4px 10px',
+                    borderRadius: 999,
+                    backgroundColor: `${device.color}10`,
+                    border: `1px solid ${device.color}25`,
+                    color: device.color,
+                    fontSize: 9,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    fontWeight: 700,
+                  }}>
+                    Solo lectura
+                  </span>
                 </td>
               </tr>
             ))}
