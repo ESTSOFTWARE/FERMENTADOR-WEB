@@ -16,10 +16,14 @@ const FermentationView = () => {
     showForm,
     isRunning,
     circuitId,
+    prediction,
+    predicting,
     setShowForm,
     startFermentation,
     stopFermentation,
     toggleSensor,
+    requestPrediction,
+    clearPrediction,
   } = useFermentation()
 
   const { user } = useUserAuth()
@@ -79,6 +83,41 @@ const FermentationView = () => {
         </div>
       )}
 
+      {/* ── Predicción de eficiencia (ML) ── */}
+      {prediction && (
+        <div
+          style={{
+            marginBottom:    24,
+            padding:         '14px 16px',
+            borderRadius:    10,
+            backgroundColor: '#A78BFA10',
+            border:          '1px solid #A78BFA30',
+            color:           '#E4E4E7',
+            fontSize:        13,
+            lineHeight:      1.6,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ color: '#A78BFA', fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+              Predicción de eficiencia
+            </span>
+            <button
+              onClick={clearPrediction}
+              style={{ background: 'none', border: 'none', color: '#71717A', cursor: 'pointer', padding: 4, lineHeight: 0 }}
+              aria-label="Cerrar predicción"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          {prediction}
+        </div>
+      )}
+
       {successMessage && (
         <div
           style={{
@@ -114,6 +153,36 @@ const FermentationView = () => {
         onCancelForm={() => setShowForm(false)}
       />
       </motion.div>
+
+      {/* ── Botón: solicitar predicción ML (solo con fermentación activa) ── */}
+      {isRunning && (
+        <motion.div variants={sectionVariants} style={{ marginTop: 24 }}>
+          <button
+            onClick={requestPrediction}
+            disabled={predicting}
+            style={{
+              display:         'inline-flex',
+              alignItems:      'center',
+              gap:             8,
+              padding:         '10px 20px',
+              borderRadius:    10,
+              backgroundColor: '#A78BFA15',
+              border:          '1px solid #A78BFA40',
+              color:           '#A78BFA',
+              fontSize:        13,
+              fontWeight:      600,
+              cursor:          predicting ? 'wait' : 'pointer',
+              opacity:         predicting ? 0.6 : 1,
+              transition:      'opacity 0.2s',
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+            {predicting ? 'Analizando lecturas…' : 'Solicitar predicción de eficiencia'}
+          </button>
+        </motion.div>
+      )}
 
       <motion.div variants={sectionVariants}>
       <SensorControlSection
