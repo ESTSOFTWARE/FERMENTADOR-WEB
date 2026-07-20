@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { notifyUserUpdated } from '../../../../core/hooks/userAuth'
+import { notifyUserUpdated, syncCurrentUser } from '../../../../core/hooks/userAuth'
 
 const AuthCallbackView = () => {
   const [searchParams] = useSearchParams()
@@ -14,15 +14,21 @@ const AuthCallbackView = () => {
       return
     }
 
-    try {
-      const userData = JSON.parse(atob(userDataB64))
-      localStorage.setItem('user_data', JSON.stringify(userData))
-      notifyUserUpdated()
-      const role = userData.role?.toLowerCase() ?? ''
-      navigate(role === 'soporte' ? '/support' : '/overview', { replace: true })
-    } catch {
-      navigate('/login', { replace: true })
+    const run = async () => {
+      try {
+        const userData = JSON.parse(atob(userDataB64))
+        localStorage.setItem('user_data', JSON.stringify(userData))
+        notifyUserUpdated()
+        // Completa circuit_code y demás datos que el callback no trae, antes
+        // de navegar (evita el falso "sin circuito" hasta recargar).
+        await syncCurrentUser()
+        const role = userData.role?.toLowerCase() ?? ''
+        navigate(role === 'soporte' ? '/support' : '/overview', { replace: true })
+      } catch {
+        navigate('/login', { replace: true })
+      }
     }
+    void run()
   }, [navigate, searchParams])
 
   return (
