@@ -7,7 +7,7 @@ import { StopFermentationUseCase } from '../../domain/usecases/stop-fermentation
 import { GetFermentationReportUseCase } from '../../domain/usecases/get-fermentation-report.usecase'
 import { RequestPredictionUseCase } from '../../domain/usecases/request-prediction.usecase'
 import { showBrowserNotification } from '../../../../shared/utils/show-browser-notification'
-import { useUserAuth } from '../../../../core/hooks/userAuth'
+import { useUserAuth, syncCurrentUser } from '../../../../core/hooks/userAuth'
 import { useCommandsWebSocket } from '../../../sensors/presentation/hooks/useCommandsWebSocket'
 import { createSensorWebSocket } from '../../../sensors/data/api/sensorApi'
 import type { FermentationSession } from '../../domain/models/FermentationSession'
@@ -46,6 +46,14 @@ export const useFermentationViewModel = () => {
 
   const isRunning = session?.status === 'running'
   const circuitId = user?.circuit_id ?? null
+
+  // localStorage puede traer un user viejo sin circuito (se lo asignaron
+  // después de su último login). Re-consulta /users/me una vez: si el circuito
+  // existe, el evento user_data_updated refresca todo sin recargar la página.
+  useEffect(() => {
+    if (user && user.circuit_id == null) void syncCurrentUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.circuit_id])
 
   const clearMessages = () => { setError(null); setSuccessMessage(null) }
 

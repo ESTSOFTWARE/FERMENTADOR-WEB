@@ -2,6 +2,7 @@ import { useState }                   from 'react'
 import { useNavigate, useLocation }   from 'react-router-dom'
 import { AuthRepositoryImpl }         from '../../data/repositories/AuthRepositoryImpl'
 import { LoginUseCase }               from '../../domain/usecases/login.usecase'
+import { syncCurrentUser }            from '../../../../core/hooks/userAuth'
 import * as v                         from '../../../../core/validation/validators'
 
 const login = new LoginUseCase(new AuthRepositoryImpl())
@@ -28,6 +29,9 @@ export const useLoginViewModel = () => {
     setLoading(true)
     try {
       const user = await login.execute(email, password)
+      // Completa los datos que el login no trae (circuit_code, teléfono, etc.)
+      // ANTES de navegar; si no, el docente ve "sin circuito" hasta recargar.
+      await syncCurrentUser()
       const from = (location.state as { from?: string } | null)?.from
       if (from) {
         navigate(from, { replace: true })
