@@ -276,6 +276,31 @@ input[type=number] {
 .fermest-tour .driver-popover-arrow-side-top.driver-popover-arrow   { border-bottom-color: #111113; }
 .fermest-tour .driver-popover-arrow-side-bottom.driver-popover-arrow{ border-top-color:    #111113; }
 
+/* ── Responsive utilities ──────────────────────────────── */
+@media (max-width: 640px) {
+  .flow-art-container {
+    padding-left: 5vw !important;
+    padding-right: 5vw !important;
+  }
+}
+
+/* Smooth scroll for Lenis */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

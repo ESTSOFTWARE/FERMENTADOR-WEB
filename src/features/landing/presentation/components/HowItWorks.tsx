@@ -307,7 +307,7 @@ const HowItWorks = () => {
         style={{ background: "radial-gradient(ellipse 80% 50% at 50% 100%, rgba(15,142,77,0.08), transparent)" }}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-24">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 flex flex-col gap-16 sm:gap-24">
 
         <motion.div
           className="flex flex-col gap-4"
@@ -317,11 +317,11 @@ const HowItWorks = () => {
           transition={{ duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] }}
         >
           <span className="text-xs uppercase tracking-[0.3em] text-green-500/80 font-medium">El proceso</span>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-8 flex-wrap">
             <Text3DFlip
               className="bg-transparent justify-start"
-              textClassName="bg-transparent bg-linear-to-b from-white to-white/50 bg-clip-text text-transparent text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter"
-              flipTextClassName="bg-transparent bg-linear-to-b from-white/50 to-white/20 bg-clip-text text-transparent text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter"
+              textClassName="bg-transparent bg-linear-to-b from-white to-white/50 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[0.95] tracking-tighter"
+              flipTextClassName="bg-transparent bg-linear-to-b from-white/50 to-white/20 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[0.95] tracking-tighter"
               rotateDirection="top"
               staggerDuration={0.03}
               staggerFrom="first"
@@ -329,14 +329,14 @@ const HowItWorks = () => {
             >
               ¿Cómo Funciona?
             </Text3DFlip>
-            <div className="ml-auto">
+            <div className="ml-auto hidden sm:block">
               <GeneratingLoader />
             </div>
           </div>
           <div className="w-12 h-1 rounded-full bg-green-500/40 mt-1" />
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 items-start">
           {STEPS.map(({ Icon, tag, title, description, num, offset, iconColor, iconBg, iconBorder, cardBg, cardBorder }, i) => (
             <motion.div
               key={tag}
@@ -380,8 +380,8 @@ const HowItWorks = () => {
             </div>
             <Text3DFlip
               className="bg-transparent justify-start"
-              textClassName="bg-transparent bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent text-3xl md:text-4xl font-black leading-tight tracking-tight"
-              flipTextClassName="bg-transparent bg-linear-to-b from-white/60 to-white/20 bg-clip-text text-transparent text-3xl md:text-4xl font-black leading-tight tracking-tight"
+              textClassName="bg-transparent bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight"
+              flipTextClassName="bg-transparent bg-linear-to-b from-white/60 to-white/20 bg-clip-text text-transparent text-2xl sm:text-3xl md:text-4xl font-black leading-tight tracking-tight"
               rotateDirection="top"
               staggerDuration={0.025}
               staggerFrom="first"
@@ -396,9 +396,9 @@ const HowItWorks = () => {
             </p>
           </div>
 
-          <div className="relative w-full flex items-stretch gap-0" style={{ height: 320 }}>
+          <div className="relative w-full flex flex-col md:flex-row items-stretch gap-4" style={{ height: 'auto' }}>
             <motion.div
-              className="relative flex-1"
+              className="relative flex-1 min-h-[250px] md:min-h-[320px]"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true, margin: "-60px" }}
@@ -418,7 +418,7 @@ const HowItWorks = () => {
               </div>
             </motion.div>
 
-            <div className="flex flex-col justify-around py-4 pl-4 shrink-0 w-52">
+            <div className="flex md:flex-col justify-around gap-3 md:gap-0 py-4 md:pl-4 shrink-0 md:w-52">
               {[
                 { label: "pH óptimo",      sub: "Acidez ideal para el perfil", n: "01" },
                 { label: "Temperatura",    sub: "°C — rango controlado",       n: "02" },

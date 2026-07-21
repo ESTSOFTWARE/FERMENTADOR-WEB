@@ -27,7 +27,7 @@ const AppPromo = () => (
     <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
     <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
 
-    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 grid grid-cols-1 lg:grid-cols-2 items-center gap-16">
+    <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 grid grid-cols-1 lg:grid-cols-2 items-center gap-10 sm:gap-16">
 
       <motion.div
         className="flex flex-col gap-6"
@@ -39,7 +39,7 @@ const AppPromo = () => (
         <span className="text-[11px] font-semibold text-white/70 uppercase tracking-[0.3em]">
           App móvil
         </span>
-        <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
           Lleva Nich-Ká<br />en tu bolsillo
         </h2>
         <p className="text-white/85 text-base leading-relaxed max-w-md">

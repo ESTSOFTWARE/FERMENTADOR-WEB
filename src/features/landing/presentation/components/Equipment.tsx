@@ -95,7 +95,7 @@ const MemberCard = ({ member }: { member: TeamMember }) => {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="flex flex-col gap-5 items-start w-[300px]">
+    <div className="flex flex-col gap-5 items-start w-full max-w-[300px]">
       <div className="relative w-full" style={{ height: 300 }}>
         <div className="absolute -inset-y-[30%] -left-7 h-[160%] w-6 mask-t-from-90% mask-b-from-90% z-10">
           <Scales size={7} className="rounded-lg" color={member.color} />
@@ -182,7 +182,7 @@ const Equipment = () => (
       }}
     />
 
-    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-24">
+    <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 flex flex-col gap-16 sm:gap-24">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <motion.div
           className="flex flex-col gap-4"
@@ -194,7 +194,7 @@ const Equipment = () => (
           <span className="text-xs uppercase tracking-[0.3em] text-green-500/70 font-medium">
             El equipo
           </span>
-          <h2 className="text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[0.95] tracking-tighter">
             <Text3DFlip
               className="bg-transparent justify-start"
               textClassName="bg-transparent bg-linear-to-b from-white to-white/50 bg-clip-text text-transparent"

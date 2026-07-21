@@ -20,6 +20,7 @@ const Hero = () => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+
       <div
         className={cn(
           "pointer-events-none absolute inset-0 select-none bg-size-[40px_40px]",
@@ -36,7 +37,7 @@ const Hero = () => {
 
       <Spotlight className="-top-40 left-0 md:-top-20 md:left-60" fill="white" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-32 flex flex-col md:flex-row items-center justify-between gap-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 py-24 md:py-32 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-16">
         <div
           className={cn(
             "flex-1 flex flex-col gap-8 text-left transition-all duration-1000 ease-out",
@@ -47,7 +48,7 @@ const Hero = () => {
             Fermentación inteligente del grano de café
           </p>
 
-          <h1 className="flex flex-col gap-1 text-6xl md:text-7xl font-black leading-[0.95] tracking-tighter">
+          <h1 className="flex flex-col gap-1 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.95] tracking-tighter">
             <Text3DFlip
               className="bg-transparent justify-start"
               textClassName="bg-transparent bg-linear-to-b from-white to-white/50 bg-clip-text text-transparent"
@@ -87,8 +88,8 @@ const Hero = () => {
             Un sistema automatizado que optimiza y controla la fermentación del café para obtener perfiles de sabor únicos y consistentes.
           </p>
 
-          <div className="flex items-center gap-4">
-            <button className="group relative flex items-center gap-2 rounded-full bg-green-500 px-6 py-3 text-sm font-semibold text-black transition-all duration-200 hover:bg-green-400 hover:shadow-[0_0_24px_rgba(74,222,128,0.4)]">
+          <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+            <button className="group relative flex items-center gap-2 rounded-full bg-green-500 px-5 sm:px-6 py-2.5 sm:py-3 text-sm font-semibold text-black transition-all duration-200 hover:bg-green-400 hover:shadow-[0_0_24px_rgba(74,222,128,0.4)]">
               Empezar ahora
               <svg
                 className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -114,11 +115,11 @@ const Hero = () => {
             </a>
           </div>
 
-          <div className="flex items-center gap-8 pt-2 border-t border-white/5">
+          <div className="flex items-center gap-6 sm:gap-8 pt-2 border-t border-white/5 flex-wrap">
             {STATS.map(({ value, label }) => (
               <div key={label} className="flex flex-col gap-0.5">
-                <span className="text-xl font-black text-white">{value}</span>
-                <span className="text-xs text-neutral-500">{label}</span>
+                <span className="text-lg sm:text-xl font-black text-white">{value}</span>
+                <span className="text-[10px] sm:text-xs text-neutral-500">{label}</span>
               </div>
             ))}
           </div>
@@ -132,7 +133,9 @@ const Hero = () => {
           )}
           style={{ perspective: "1200px" }}
         >
-          <BioreactorVisual rotX={rotX} rotY={rotY} />
+          <div className="scale-[0.55] sm:scale-[0.7] md:scale-[0.85] lg:scale-100 origin-center">
+            <BioreactorVisual rotX={rotX} rotY={rotY} />
+          </div>
         </div>
       </div>
     </section>

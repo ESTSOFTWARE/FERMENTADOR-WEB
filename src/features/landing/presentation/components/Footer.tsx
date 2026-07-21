@@ -41,7 +41,7 @@ const Footer = () => {
         <div className="h-px w-full bg-white/10" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-16 grid grid-cols-1 md:grid-cols-6 gap-12">
+      <div className="mx-auto max-w-7xl px-6 py-10 sm:py-16 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8 sm:gap-12">
         <div className="md:col-span-1 flex flex-col gap-4">
           <div className="flex items-center gap-3">
             <img

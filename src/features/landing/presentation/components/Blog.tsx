@@ -123,7 +123,7 @@ const Blog = () => (
     <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
     <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
 
-    <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-14">
+    <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 flex flex-col gap-10 sm:gap-14">
 
       {/* header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -135,7 +135,7 @@ const Blog = () => (
           transition={{ duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] }}
         >
           <span className="text-xs uppercase tracking-[0.3em] text-white/60 font-medium">Nuestro blog</span>
-          <h2 className="text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">
             Historias y consejos
           </h2>
           <div className="w-12 h-1 rounded-full bg-white/40" />
@@ -146,7 +146,7 @@ const Blog = () => (
       </div>
 
       {/* cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {POSTS.map((post, i) => (
           <motion.div
             key={post.title}

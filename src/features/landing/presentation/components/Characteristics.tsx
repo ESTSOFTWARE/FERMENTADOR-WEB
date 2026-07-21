@@ -26,11 +26,11 @@ const Characteristics = () => {
       <div className="absolute top-0 left-0 right-0 h-px bg-white/10" />
       <div className="absolute bottom-0 left-0 right-0 h-px bg-black/20" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-20">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 flex flex-col gap-12 sm:gap-20">
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12">
           <motion.div
-            className="flex flex-col gap-6 max-w-xl"
+            className="flex flex-col gap-4 sm:gap-6 max-w-xl"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -39,7 +39,7 @@ const Characteristics = () => {
             <span className="text-xs uppercase tracking-[0.3em] text-white/60 font-medium">
               El problema
             </span>
-            <h2 className="text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[0.95] tracking-tighter">
               ¿Por qué Nich-Ká?
             </h2>
             <div className="w-12 h-1 rounded-full bg-white/40" />
@@ -47,14 +47,14 @@ const Characteristics = () => {
           <div className="flex items-center justify-center">
             <NodeServer />
           </div>
-          <p className="max-w-md text-white/75 text-lg leading-relaxed md:pt-16">
+          <p className="max-w-md text-white/75 text-base sm:text-lg leading-relaxed md:pt-16">
             La fermentación del café es el paso más crítico y menos controlado del proceso.
             Pequeñas variaciones en temperatura o pH cambian radicalmente el perfil de sabor.
             Fermest lo automatiza.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {STATS.map(({ value, label }, i) => (
             <motion.div
               key={value}
@@ -65,7 +65,7 @@ const Characteristics = () => {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.55, delay: i * 0.14, ease: [0.21, 0.47, 0.32, 0.98] }}
             >
-              <span className="text-6xl font-black text-white tracking-tighter">{value}</span>
+              <span className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tighter">{value}</span>
               <span className="text-white/65 text-sm leading-relaxed">{label}</span>
             </motion.div>
           ))}
@@ -90,7 +90,7 @@ const Characteristics = () => {
               <span className="text-xs uppercase tracking-[0.3em] font-medium" style={{ color: "#0F8E4D" }}>
                 La solución
               </span>
-              <p className="text-2xl md:text-3xl font-black text-white leading-tight tracking-tight">
+              <p className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-tight tracking-tight">
                 Control total del proceso de fermentación, en tiempo real.
               </p>
               <p className="text-neutral-400 text-sm leading-relaxed">
@@ -99,7 +99,7 @@ const Characteristics = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               {OUTCOMES.map(({ svg, label }) => (
                 <div
                   key={label}
@@ -115,7 +115,7 @@ const Characteristics = () => {
 
           <div
             className="relative md:w-1/2 min-h-[220px] flex items-center justify-center p-8"
-            style={{ borderLeft: "1.5px dashed rgba(255,255,255,0.4)", background: "rgba(15,142,77,0.06)" }}
+            style={{ borderLeft: "1.5px dashed rgba(255,255,255,0.4)", borderTop: "1.5px dashed rgba(255,255,255,0.4)", background: "rgba(15,142,77,0.06)" }}
           >
             <div className="relative flex items-center justify-center">
               <div
