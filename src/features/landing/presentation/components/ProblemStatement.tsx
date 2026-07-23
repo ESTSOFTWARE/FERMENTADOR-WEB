@@ -1,35 +1,16 @@
 import { motion } from 'motion/react'
 import { HexagonPattern } from '../../../../components/ui/hexagon-pattern'
-import { ImageAccordion } from '../../../../components/ui/interactive-image-accordion'
 import { cn } from '../../../../lib/utils'
 
-const ACCORDION_ITEMS = [
-  {
-    id: 1,
-    title: 'Brecha instrumental',
-    imageUrl: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&q=80',
-  },
-  {
-    id: 2,
-    title: 'Aprendizaje desconectado',
-    imageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80',
-  },
-  {
-    id: 3,
-    title: 'Costos inaccesibles',
-    imageUrl: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=800&q=80',
-  },
-  {
-    id: 4,
-    title: 'Sin datos en tiempo real',
-    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-  },
-  {
-    id: 5,
-    title: 'Propuesta: Nich-Ká',
-    imageUrl: '/assets/nich-ka.png',
-  },
+const PHONES = [
+  { src: '/assets/login.png', alt: 'Inicio de sesión', z: 10, x: -135, rotate: -8, scale: 0.86, delay: 0.15, float: 6.5 },
+  { src: '/assets/overview.png', alt: 'Panel principal', z: 30, x: 0, rotate: 0, scale: 1, delay: 0.45, float: 8.5 },
+  { src: '/assets/sensores.png', alt: 'Sensores en vivo', z: 20, x: 135, rotate: 8, scale: 0.86, delay: 0.75, float: 7.5 },
 ]
+
+const Phone = ({ src, alt }: { src: string; alt: string }) => (
+  <img src={src} alt={alt} style={{ width: 310 }} />
+)
 
 const ProblemStatement = () => (
   <section className="relative w-full overflow-hidden" style={{ background: '#0F8E4D' }}>
@@ -48,7 +29,7 @@ const ProblemStatement = () => (
 
     <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 flex flex-col gap-20">
 
-      {/* Top: heading left + accordion right */}
+      {/* Top: heading left + app promo right */}
       <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
 
         {/* Left — text */}
@@ -82,16 +63,27 @@ const ProblemStatement = () => (
           </ul>
         </motion.div>
 
-        {/* Right — accordion */}
-        <motion.div
-          className="w-full lg:w-auto"
-          initial={{ opacity: 0, x: 32 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ type: 'spring', stiffness: 70, damping: 20, delay: 0.1 }}
-        >
-          <ImageAccordion items={ACCORDION_ITEMS} defaultIndex={4} />
-        </motion.div>
+        {/* Right — App phones animation */}
+        <div className="relative h-[520px] w-full lg:w-1/2 flex items-center justify-center">
+          {PHONES.map((p) => (
+            <motion.div
+              key={p.src}
+              className="absolute"
+              style={{ zIndex: p.z }}
+              initial={{ opacity: 0, y: 90, rotate: p.rotate, scale: p.scale }}
+              whileInView={{ opacity: 1, y: 0, x: p.x, rotate: p.rotate, scale: p.scale }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1], delay: p.delay }}
+            >
+              <motion.div
+                animate={{ y: [0, -14, 0] }}
+                transition={{ duration: p.float, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <Phone src={p.src} alt={p.alt} />
+              </motion.div>
+            </motion.div>
+          ))}
+        </div>
 
       </div>
 
