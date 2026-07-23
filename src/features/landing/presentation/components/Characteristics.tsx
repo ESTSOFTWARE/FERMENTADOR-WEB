@@ -50,7 +50,7 @@ const Characteristics = () => {
           <p className="max-w-md text-white/75 text-lg leading-relaxed md:pt-16">
             La fermentación del café es el paso más crítico y menos controlado del proceso.
             Pequeñas variaciones en temperatura o pH cambian radicalmente el perfil de sabor.
-            Fermest lo automatiza.
+            Nich-Ká lo automatiza.
           </p>
         </div>
 
