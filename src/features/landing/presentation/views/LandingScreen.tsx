@@ -8,19 +8,15 @@ import Header from "../components/Header";
 import Hero from "../components/Hero";
 import HowItWorks from "../components/HowItWorks";
 import Objectives from "../components/Objectives";
-import ProblemStatement from "../components/ProblemStatement";
-import Justification from "../components/Justification";
-import Scope from "../components/Scope";
+import AppPromo from "../components/AppPromo";
 
 const LandingView = () => {
     return (
         <ReactLenis root options={{ lerp: 0.08, duration: 1.2, smoothWheel: true }}>
             <Header/>
             <Hero/>
-            <div id="planteamiento"><ProblemStatement/></div>
-            <div id="justificacion"><Justification/></div>
+            <div id="app"><AppPromo/></div>
             <div id="objetivos"><Objectives/></div>
-            <div id="alcances"><Scope/></div>
             <div id="negocio"><BusinessModel/></div>
             <div id="features"><Characteristics/></div>
             <div id="how-it-works"><HowItWorks/></div>
