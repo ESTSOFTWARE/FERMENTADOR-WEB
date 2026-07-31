@@ -1,15 +1,21 @@
 import { AnimatePresence, motion } from 'motion/react'
-import { X } from 'lucide-react'
+import { Banknote, Landmark, X } from 'lucide-react'
 
 interface Props {
   open:              boolean
   loadingStripe:     boolean
+  loadingCash:       boolean
   onClose:           () => void
   onSelectStripe:    () => void
   onSelectPayPal:    () => void
+  onSelectOxxo:      () => void
+  onSelectSpei:      () => void
 }
 
-const PaymentMethodModal = ({ open, loadingStripe, onClose, onSelectStripe, onSelectPayPal }: Props) => (
+const PaymentMethodModal = ({
+  open, loadingStripe, loadingCash, onClose,
+  onSelectStripe, onSelectPayPal, onSelectOxxo, onSelectSpei,
+}: Props) => (
   <AnimatePresence>
     {open && (
       <motion.div
@@ -80,6 +86,40 @@ const PaymentMethodModal = ({ open, loadingStripe, onClose, onSelectStripe, onSe
               <div className="flex flex-col items-start">
                 <span className="text-sm font-semibold">PayPal</span>
                 <span className="text-xs text-[#71717a]">Saldo PayPal o tarjeta vinculada</span>
+              </div>
+            </button>
+
+            {/* OXXO (efectivo) */}
+            <button
+              onClick={onSelectOxxo}
+              disabled={loadingCash}
+              className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border transition-all duration-150 disabled:opacity-50"
+              style={{ background: '#18181b', borderColor: '#3f3f46', color: '#f4f4f5' }}
+            >
+              <Banknote className="h-5 w-5 shrink-0" style={{ color: '#eab308' }} />
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold">Efectivo (OXXO)</span>
+                <span className="text-xs text-[#71717a]">Paga en la tienda con una referencia</span>
+              </div>
+              {loadingCash && (
+                <svg className="animate-spin w-4 h-4 ml-auto text-[#71717a]" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.3" strokeWidth="4"/>
+                  <path fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+              )}
+            </button>
+
+            {/* SPEI (transferencia) */}
+            <button
+              onClick={onSelectSpei}
+              disabled={loadingCash}
+              className="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border transition-all duration-150 disabled:opacity-50"
+              style={{ background: '#18181b', borderColor: '#3f3f46', color: '#f4f4f5' }}
+            >
+              <Landmark className="h-5 w-5 shrink-0" style={{ color: '#22c55e' }} />
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold">Transferencia (SPEI)</span>
+                <span className="text-xs text-[#71717a]">Transfiere desde tu banco con una CLABE</span>
               </div>
             </button>
           </div>
