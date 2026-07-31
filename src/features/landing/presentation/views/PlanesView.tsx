@@ -259,6 +259,7 @@ const PlanesView = () => {
       <CashVoucherModal
         key={cashPayment?.payment_id ?? 'cash'}
         open={cashModalOpen}
+        loading={loadingCash}
         payment={cashPayment}
         onClose={closeCashModal}
         pollStatus={pollCashStatus}

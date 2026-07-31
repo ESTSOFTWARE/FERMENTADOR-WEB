@@ -64,16 +64,20 @@ export const usePlanesViewModel = () => {
   }
 
   const startCashPayment = async (method: 'oxxo' | 'spei') => {
+    // Abrimos el modal de inmediato en estado "generando" (spinner) para que el
+    // usuario vea que algo está pasando mientras se crea el pago (~1-2s).
     setMethodModalOpen(false)
+    setCashPayment(null)
     setLoadingCash(true)
+    setCashModalOpen(true)
     try {
       const payment = method === 'oxxo'
         ? await cashPaymentUC.oxxo(pendingPlan, billingCycle)
         : await cashPaymentUC.spei(pendingPlan, billingCycle)
       setCashPayment(payment)
-      setCashModalOpen(true)
     } catch (err) {
       console.error(`[Billing] Error al crear pago ${method}:`, err)
+      setCashModalOpen(false)   // si falla, cerramos el modal
     } finally {
       setLoadingCash(false)
     }
