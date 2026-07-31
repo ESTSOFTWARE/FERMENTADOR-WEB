@@ -20,7 +20,8 @@ export interface CashPayment {
   reference:     string | null
   expires_at:    string | null
   voucher_url?:  string | null   // OXXO: URL del voucher imprimible
-  clabe?:        string | null   // SPEI: CLABE a la que transferir
+  clabe?:        string | null   // SPEI: CLABE (18 dígitos) a la que transferir
+  concepto?:     string | null   // SPEI: concepto/referencia del pago
 }
 
 export interface CheckoutSession {
