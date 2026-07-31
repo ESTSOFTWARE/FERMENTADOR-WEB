@@ -10,6 +10,7 @@ import { usePlanesViewModel } from "../../../billing/presentation/viewmodels/use
 import CheckoutModal from "../../../billing/presentation/components/CheckoutModal"
 import PaymentMethodModal from "../../../billing/presentation/components/PaymentMethodModal"
 import PayPalSubscriptionModal from "../../../billing/presentation/components/PayPalSubscriptionModal"
+import CashVoucherModal from "../../../billing/presentation/components/CashVoucherModal"
 
 const PLANES = [
   {
@@ -79,6 +80,8 @@ const PlanesView = () => {
     billingCycle, setBillingCycle, loadingPlan, handleSelectPlan,
     clientSecret, checkoutOpen, closeCheckout,
     methodModalOpen, closeMethodModal, handleSelectStripe, handleSelectPayPal,
+    handleSelectOxxo, handleSelectSpei,
+    loadingCash, cashPayment, cashModalOpen, closeCashModal, pollCashStatus, handleCashSucceeded,
     paypalModalOpen, setPaypalModalOpen, paypalPlan, billingCyclePaypal,
     handlePayPalSuccess, handlePayPalError,
   } = usePlanesViewModel()
@@ -245,9 +248,21 @@ const PlanesView = () => {
       <PaymentMethodModal
         open={methodModalOpen}
         loadingStripe={loadingPlan !== null}
+        loadingCash={loadingCash}
         onClose={closeMethodModal}
         onSelectStripe={handleSelectStripe}
         onSelectPayPal={handleSelectPayPal}
+        onSelectOxxo={handleSelectOxxo}
+        onSelectSpei={handleSelectSpei}
+      />
+
+      <CashVoucherModal
+        key={cashPayment?.payment_id ?? 'cash'}
+        open={cashModalOpen}
+        payment={cashPayment}
+        onClose={closeCashModal}
+        pollStatus={pollCashStatus}
+        onSucceeded={handleCashSucceeded}
       />
 
       {clientSecret && (
