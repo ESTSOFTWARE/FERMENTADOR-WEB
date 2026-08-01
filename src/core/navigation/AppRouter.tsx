@@ -45,6 +45,7 @@ import ProductDetailView from '../../features/products/presentation/view/Product
 import BillingSuccessView from '../../features/billing/presentation/views/BillingSuccessView'
 import { FermentationProvider } from '../../features/fermentation/presentation/context/FermentationProvider'
 import PrivateRoute from './PrivateRoute'
+import RequireFeature from './RequireFeature'
 import ScrollToTop from './ScrollToTop'
 import SessionWatcher from './SessionWatcher'
 import PageTitle from './PageTitle'
@@ -88,7 +89,9 @@ const AppRouter = () => {
             <Route path="/fermentation-reports"  element={<FermentationReportsView />} />
             <Route path="/fermentation-reports/:id" element={<ReportDetailView />} />
             <Route path="/chat"                  element={<ChatView />} />
-            <Route path="/messages"             element={<MessagesView />} />
+            <Route element={<RequireFeature feature="messaging" />}>
+              <Route path="/messages"           element={<MessagesView />} />
+            </Route>
             <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
             <Route path="/actualizar"            element={<UpgradeView />} />

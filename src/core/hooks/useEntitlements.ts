@@ -19,18 +19,23 @@ let cached: Entitlements | null = null
  */
 export const useEntitlements = () => {
   const [ent, setEnt] = useState<Entitlements>(cached ?? FREE)
+  // loading = todavía no sabemos el plan real (evita bloquear features de un
+  // plan pagado antes de que responda /entitlements).
+  const [loading, setLoading] = useState<boolean>(cached === null)
 
   useEffect(() => {
-    if (cached) return  // ya viene del estado inicial (cached ?? FREE)
+    if (cached) return  // loading ya inició en false (cached === null)
     apiClient.get<Entitlements>('/billing/entitlements')
       .then(e => { cached = e; setEnt(e) })
       .catch(() => { /* sin datos: se queda como free */ })
+      .finally(() => setLoading(false))
   }, [])
 
   return {
     plan:       ent.plan,
     features:   ent.features,
     maxCircuits: ent.max_circuits,
+    loading,
     hasFeature: (f: string) => ent.features.includes(f),
   }
 }
