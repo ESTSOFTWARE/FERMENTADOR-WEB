@@ -83,32 +83,56 @@ const AppRouter = () => {
 
         <Route element={<PrivateRoute />}>
           <Route element={<FermentationProvider><Layout /></FermentationProvider>}>
+            {/* Núcleo (plan free): sensores, calculadora, perfil, comunicados */}
             <Route path="/overview"              element={<OverviewView />} />
             <Route path="/grafics"               element={<SensorsView />} />
             <Route path="/efficiency-calculator" element={<EfficiencyCalculatorView />} />
-            <Route path="/fermentation-reports"  element={<FermentationReportsView />} />
-            <Route path="/fermentation-reports/:id" element={<ReportDetailView />} />
-            <Route path="/chat"                  element={<ChatView />} />
-            <Route element={<RequireFeature feature="messaging" />}>
-              <Route path="/messages"           element={<MessagesView />} />
-            </Route>
             <Route path="/announcements"         element={<AnnouncementsView />} />
             <Route path="/profile"               element={<ProfileView />} />
             <Route path="/actualizar"            element={<UpgradeView />} />
 
+            {/* Reportes de fermentación (starter+) */}
+            <Route element={<RequireFeature feature="reports" />}>
+              <Route path="/fermentation-reports"     element={<FermentationReportsView />} />
+              <Route path="/fermentation-reports/:id" element={<ReportDetailView />} />
+            </Route>
+
+            {/* Chat IA (starter+) */}
+            <Route element={<RequireFeature feature="nlp_basic" />}>
+              <Route path="/chat"                  element={<ChatView />} />
+            </Route>
+
+            {/* Mensajería en la plataforma (enterprise) */}
+            <Route element={<RequireFeature feature="messaging" />}>
+              <Route path="/messages"           element={<MessagesView />} />
+            </Route>
+
             <Route element={<PrivateRoute allowedRoles={['admin', 'profesor']} />}>
-              <Route path="/dashboard"             element={<DashboardView />} />
-              <Route path="/experiment/:id"        element={<ExperimentView />} />
-              <Route path="/experiment/:id/best-per-generation" element={<BestPerGenerationView />} />
-              <Route path="/simulation/:id"        element={<SimulationView />} />
-              <Route path="/experiment/:id/charts" element={<ChartsView />} />
-              <Route path="/results/:id"           element={<ResultsView />} />
+              {/* Iniciar fermentación (free) */}
               <Route path="/fermentation"          element={<FermentationView />} />
-              <Route path="/users/add"             element={<AddUserView />} />
-              <Route path="/users/manage"          element={<ManageUsersView />} />
-              <Route path="/groups"                element={<GroupsView />} />
-              <Route path="/groups/:id"            element={<GroupDetailView />} />
-              <Route path="/admin/groups"          element={<AdminGroupsView />} />
+
+              {/* Gestión de usuarios (starter+) */}
+              <Route element={<RequireFeature feature="user_management" />}>
+                <Route path="/users/add"             element={<AddUserView />} />
+                <Route path="/users/manage"          element={<ManageUsersView />} />
+              </Route>
+
+              {/* Experimentos con IA / algoritmo genético (academic+) */}
+              <Route element={<RequireFeature feature="genetic_algorithm" />}>
+                <Route path="/dashboard"             element={<DashboardView />} />
+                <Route path="/experiment/:id"        element={<ExperimentView />} />
+                <Route path="/experiment/:id/best-per-generation" element={<BestPerGenerationView />} />
+                <Route path="/simulation/:id"        element={<SimulationView />} />
+                <Route path="/experiment/:id/charts" element={<ChartsView />} />
+                <Route path="/results/:id"           element={<ResultsView />} />
+              </Route>
+
+              {/* Grupos (enterprise) */}
+              <Route element={<RequireFeature feature="groups" />}>
+                <Route path="/groups"                element={<GroupsView />} />
+                <Route path="/groups/:id"            element={<GroupDetailView />} />
+                <Route path="/admin/groups"          element={<AdminGroupsView />} />
+              </Route>
             </Route>
 
             <Route element={<PrivateRoute allowedRoles={['admin']} />}>
