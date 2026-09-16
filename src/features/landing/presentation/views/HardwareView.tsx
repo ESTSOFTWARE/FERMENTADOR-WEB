@@ -64,6 +64,9 @@ const HardwareView = () => {
 
           {/* ── Cuerpo ── */}
           <main className="mx-auto max-w-7xl px-6 py-16 flex flex-col gap-16">
+            <Link to="/prototipo" className="flex items-center justify-between gap-4 rounded-2xl border border-green-500/20 bg-green-500/5 p-6 text-sm text-green-400 transition-colors hover:bg-green-500/10">
+              Explora nuestro prototipo en 3D <span aria-hidden="true">↗</span>
+            </Link>
 
             {/* Componentes */}
             <section className="flex flex-col gap-6">
