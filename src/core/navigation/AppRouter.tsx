@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from '../../shared/layout/Layout'
 import DashboardView from '../../features/dashboard/presentation/view/DashboardView'
@@ -51,6 +52,8 @@ import SessionWatcher from './SessionWatcher'
 import PageTitle from './PageTitle'
 import NotFoundView from '../../shared/presentation/NotFoundView'
 
+const PrototypeView = lazy(() => import('../../features/landing/presentation/views/PrototypeView'))
+
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -66,6 +69,7 @@ const AppRouter = () => {
         <Route path="/delete-account" element={<DeleteAccountView />} />
         <Route path="/experiences"   element={<ExperiencesView />} />
         <Route path="/hardware"      element={<HardwareView />} />
+        <Route path="/prototipo" element={<Suspense fallback={<div className="min-h-screen bg-bg p-12 text-center text-white" role="status">Cargando prototipo…</div>}><PrototypeView /></Suspense>} />
         <Route path="/planes"        element={<PlanesView />} />
         <Route path="/consultoria"   element={<ConsultoriaView />} />
         <Route path="/mantenimiento" element={<MantenimientoView />} />

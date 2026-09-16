@@ -9,6 +9,7 @@ const TITLES: Record<string, string> = {
   '/terms':                'Términos',
   '/cookies':              'Cookies',
   '/hardware':             'Hardware',
+  '/prototipo':            'Prototipo 3D · Nich-Ká',
   '/planes':               'Planes',
   '/consultoria':          'Consultoría',
   '/mantenimiento':        'Mantenimiento',
