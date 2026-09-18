@@ -17,7 +17,12 @@ function disposeModel(scene: Scene | import('three').Group) {
   })
 }
 
-export default function PrototypeViewer() {
+interface PrototypeViewerProps {
+  src: string
+  label: string
+}
+
+export default function PrototypeViewer({ src, label }: PrototypeViewerProps) {
   const mount = useRef<HTMLDivElement>(null)
   const actions = useRef<{ reset: () => void; zoom: (factor: number) => void; rotate: (value: boolean) => void } | null>(null)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -42,7 +47,7 @@ export default function PrototypeViewer() {
     renderer.toneMappingExposure = 0.85
     host.appendChild(renderer.domElement)
     renderer.domElement.style.display = 'block'
-    renderer.domElement.setAttribute('aria-label', 'Modelo 3D de Nich-Ká. Usa los controles para girar y acercar la vista.')
+    renderer.domElement.setAttribute('aria-label', `Modelo 3D de Nich-Ká: ${label}. Usa los controles para girar y acercar la vista.`)
     const camera = new PerspectiveCamera(32, 1, 0.01, 100)
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
@@ -108,7 +113,7 @@ export default function PrototypeViewer() {
       setStatus('error')
     }
     renderer.domElement.addEventListener('webglcontextlost', onContextLost)
-    new GLTFLoader().load('/assets/model/nichka.glb', gltf => {
+    new GLTFLoader().load(src, gltf => {
       if (disposed) { disposeModel(gltf.scene); return }
       const bounds = new Box3().setFromObject(gltf.scene)
       radius = Math.max(bounds.getBoundingSphere(new Sphere()).radius, 0.01)
@@ -177,19 +182,19 @@ export default function PrototypeViewer() {
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [attempt])
+  }, [attempt, src, label])
 
   const buttonClass = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 text-xs text-neutral-200 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-green-400 disabled:opacity-40'
   return (
     <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#111514]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
-        <span className="text-sm font-medium">Nich-Ká <span className="ml-2 text-neutral-500">/ Prototipo</span></span>
+        <span className="text-sm font-medium">Nich-Ká <span className="ml-2 text-neutral-500">/ {label}</span></span>
         <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-green-400"><span className="h-1.5 w-1.5 rounded-full bg-green-400" />Explorador 3D</span>
       </div>
       <div className="relative">
         <div ref={mount} className="h-[60svh] min-h-105 w-full sm:h-[76svh] sm:min-h-160" />
         {status !== 'ready' && <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#171b1a] px-6 text-center" role="status" aria-live="polite">
-          {status === 'loading' ? <><LoaderCircle className="animate-spin text-green-400" /><p className="text-sm text-neutral-300">Preparando el prototipo{progress > 0 && progress < 100 ? ` · ${progress}%` : '…'}</p></> : <><p className="text-sm text-neutral-300">No se pudo mostrar el modelo 3D. Revisa tu conexión y que tu navegador permita WebGL.</p><button className={buttonClass} onClick={() => { setStatus('loading'); setProgress(0); setRotating(false); setAttempt(value => value + 1) }}>Volver a intentar</button></>}
+          {status === 'loading' ? <><LoaderCircle className="animate-spin text-green-400" /><p className="text-sm text-neutral-300">Cargando {label.toLowerCase()}{progress > 0 && progress < 100 ? ` · ${progress}%` : '…'}</p></> : <><p className="text-sm text-neutral-300">No se pudo mostrar el modelo 3D. Revisa tu conexión y que tu navegador permita WebGL.</p><button className={buttonClass} onClick={() => { setStatus('loading'); setProgress(0); setRotating(false); setAttempt(value => value + 1) }}>Volver a intentar</button></>}
         </div>}
       </div>
       <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 px-5 py-4 sm:flex-row">
