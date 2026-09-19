@@ -59,6 +59,7 @@ export default function PrototypeView() {
             <p className="max-w-sm text-sm leading-relaxed text-neutral-400">Conoce Nich-Ká en tres dimensiones. Gira el modelo, acércate a sus detalles y explora el diseño de nuestro prototipo de fermentación.</p>
           </div>
           <div className="mb-5">
+            <Link to="/prototipo/medidas" className="mb-5 inline-flex min-h-11 items-center gap-2 rounded-xl border border-green-400/25 bg-green-400/5 px-4 text-sm text-green-400 transition hover:bg-green-400/10">Ver imágenes y medidas<ArrowUpRight size={16} /></Link>
             <p id="model-selector-label" className="mb-3 text-xs text-neutral-400">Explora el prototipo completo o selecciona una pieza</p>
             <div className="flex flex-wrap gap-2" role="group" aria-labelledby="model-selector-label">
               {MODELS.map(model => (
