@@ -12,6 +12,7 @@ const footerLinks: Record<string, { label: string; href: string; target?: string
     { label: "Equipo",               href: "#team" },
     { label: "Experiencias",         href: "/experiences" },
     { label: "Prototipo 3D",         href: "/prototipo" },
+    { label: "Medidas del prototipo", href: "/prototipo/medidas" },
   ],
   Redes: [
     { label: "Facebook",             href: "https://www.facebook.com/share/17AH5RJtvN/", target: "_blank" },
